@@ -155,6 +155,96 @@ describe('Ap CRUD tests', function() {
             });
     });
 
+    it('should not be able to save an Ap if no docdate is provided', function(done) {
+        // Invalidate name field
+        ap.docdate = null;
+
+        agent.post('/api/auth/signin')
+            .send(credentials)
+            .expect(200)
+            .end(function(signinErr, signinRes) {
+                // Handle signin error
+                if (signinErr) {
+                    return done(signinErr);
+                }
+
+                // Get the userId
+                var userId = user.id;
+
+                // Save a new Ap
+                agent.post('/api/aps')
+                    .send(ap)
+                    .expect(400)
+                    .end(function(apSaveErr, apSaveRes) {
+                        // Set message assertion
+                        (apSaveRes.body.message).should.match('Please fill Ap docdate');
+
+                        // Handle Ap save error
+                        done(apSaveErr);
+                    });
+            });
+    });
+
+    it('should not be able to save an Ap if no contact is provided', function(done) {
+        // Invalidate name field
+        ap.contact = '';
+
+        agent.post('/api/auth/signin')
+            .send(credentials)
+            .expect(200)
+            .end(function(signinErr, signinRes) {
+                // Handle signin error
+                if (signinErr) {
+                    return done(signinErr);
+                }
+
+                // Get the userId
+                var userId = user.id;
+
+                // Save a new Ap
+                agent.post('/api/aps')
+                    .send(ap)
+                    .expect(400)
+                    .end(function(apSaveErr, apSaveRes) {
+                        // Set message assertion
+                        (apSaveRes.body.message).should.match('Please fill Ap contact');
+
+                        // Handle Ap save error
+                        done(apSaveErr);
+                    });
+            });
+    });
+
+    it('should not be able to save an Ap if no items is provided', function(done) {
+        // Invalidate name field
+        ap.items = null;
+
+        agent.post('/api/auth/signin')
+            .send(credentials)
+            .expect(200)
+            .end(function(signinErr, signinRes) {
+                // Handle signin error
+                if (signinErr) {
+                    return done(signinErr);
+                }
+
+                // Get the userId
+                var userId = user.id;
+
+                // Save a new Ap
+                agent.post('/api/aps')
+                    .send(ap)
+                    .expect(400)
+                    .end(function(apSaveErr, apSaveRes) {
+                        // Set message assertion
+                        (apSaveRes.body.message).should.match('Please fill Ap items');
+
+                        // Handle Ap save error
+                        done(apSaveErr);
+                    });
+            });
+    });
+
     it('should be able to update an Ap if signed in', function(done) {
         agent.post('/api/auth/signin')
             .send(credentials)
@@ -413,6 +503,61 @@ describe('Ap CRUD tests', function() {
                         });
                 });
         });
+    });
+
+    it('middleware read ap', function(done) {
+        agent.post('/api/auth/signin')
+            .send(credentials)
+            .expect(200)
+            .end(function(signinErr, signinRes) {
+                // Handle signin error
+                if (signinErr) {
+                    return done(signinErr);
+                }
+
+                // Get the userId
+                // var userId = user.id;
+
+                // Save a new Ap
+                agent.post('/api/aps')
+                    .send(ap)
+                    .expect(200)
+                    .end(function(apSaveErr, apSaveRes) {
+                        // Handle Ap save error
+                        if (apSaveErr) {
+                            return done(apSaveErr);
+                        }
+
+                        // Get a list of Aps
+                        agent.get('/api/reportaps')
+                            .end(function(apsGetErr, apsGetRes) {
+                                // Handle Aps save error
+                                if (apsGetErr) {
+                                    return done(apsGetErr);
+                                }
+
+                                // Get Aps list
+                                var aps = apsGetRes.body;
+
+                                // Set assertions
+                                // (aps[0].user._id).should.equal(userId);
+                                (aps.length).should.match(2);
+
+                                (aps[0].name).should.match(ap.items[0].productname);
+                                (aps[0].date).should.match(ap.docdate);
+                                (aps[0].credit).should.match(0);
+                                (aps[0].debit).should.match(ap.items[0].amount);
+
+                                (aps[1].name).should.match(ap.contact);
+                                (aps[1].date).should.match(ap.docdate);
+                                (aps[1].credit).should.match(ap.amount);
+                                (aps[1].debit).should.match(0);
+
+                                // Call the assertion callback
+                                done();
+                            });
+                    });
+            });
     });
 
     afterEach(function(done) {

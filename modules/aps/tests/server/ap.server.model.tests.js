@@ -66,6 +66,44 @@ describe('Ap Model Unit Tests:', function() {
                 done();
             });
         });
+
+        it('should be able to show an error when try to save duplicate docno', function(done) {
+            var ap2 = new Ap(ap);
+            ap.save(function(err) {
+                should.not.exist(err);
+                ap2.save(function(err) {
+                    should.exist(err);
+                    done();
+                });
+            });
+        });
+
+        it('should be able to show an error when try to save without docdate', function(done) {
+            ap.docdate = null;
+
+            return ap.save(function(err) {
+                should.exist(err);
+                done();
+            });
+        });
+
+        it('should be able to show an error when try to save without contact', function(done) {
+            ap.contact = null;
+
+            return ap.save(function(err) {
+                should.exist(err);
+                done();
+            });
+        });
+
+        it('should be able to show an error when try to save without items', function(done) {
+            ap.items = null;
+
+            return ap.save(function(err) {
+                should.exist(err);
+                done();
+            });
+        });
     });
 
     afterEach(function(done) {
