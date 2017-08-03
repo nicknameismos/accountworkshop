@@ -17,6 +17,8 @@ module.exports = function(app) {
     .put(ars.update)
     .delete(ars.delete);
 
+app.route('/api/reportars').all(arsPolicy.isAllowed)
+    .get(ars.readars,ars.cookingreportars, ars.reportars);
 
   // Finish by binding the Ar middleware
   app.param('arId', ars.arByID);

@@ -12,11 +12,11 @@ var path = require('path'),
 /**
  * Create a Ar
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   var ar = new Ar(req.body);
   ar.user = req.user;
 
-  ar.save(function(err) {
+  ar.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -30,7 +30,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Ar
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
   // convert mongoose document to JSON
   var ar = req.ar ? req.ar.toJSON() : {};
 
@@ -44,12 +44,12 @@ exports.read = function(req, res) {
 /**
  * Update a Ar
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
   var ar = req.ar;
 
   ar = _.extend(ar, req.body);
 
-  ar.save(function(err) {
+  ar.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -63,10 +63,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Ar
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
   var ar = req.ar;
 
-  ar.remove(function(err) {
+  ar.remove(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -80,8 +80,8 @@ exports.delete = function(req, res) {
 /**
  * List of Ars
  */
-exports.list = function(req, res) {
-  Ar.find().sort('-created').populate('user', 'displayName').exec(function(err, ars) {
+exports.list = function (req, res) {
+  Ar.find().sort('-created').populate('user', 'displayName').exec(function (err, ars) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 /**
  * Ar middleware
  */
-exports.arByID = function(req, res, next, id) {
+exports.arByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
@@ -114,4 +114,20 @@ exports.arByID = function(req, res, next, id) {
     req.ar = ar;
     next();
   });
+};
+
+exports.readars = function (req, res, next) {
+
+  next();
+
+};
+
+
+exports.cookingreportars = function (req, res, next) {
+  
+  next();
+};
+
+exports.reportars = function (req, res) {
+  res.jsonp([]);
 };
