@@ -20,7 +20,11 @@ exports.invokeRolesPolicies = function () {
     }, {
       resources: '/api/rvs/:rvId',
       permissions: '*'
-    }]
+    }, {
+      resources: '/api/reportrvs',
+      permissions: '*'
+    }
+    ]
   }, {
     roles: ['user'],
     allows: [{
@@ -28,6 +32,9 @@ exports.invokeRolesPolicies = function () {
       permissions: ['get', 'post']
     }, {
       resources: '/api/rvs/:rvId',
+      permissions: ['get']
+    }, {
+      resources: '/api/reportrvs',
       permissions: ['get']
     }]
   }, {

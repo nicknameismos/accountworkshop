@@ -115,3 +115,15 @@ exports.rvByID = function(req, res, next, id) {
     next();
   });
 };
+
+exports.readrvs = function(req, res, next){
+  next();
+};
+
+exports.cookingreportrvs = function (req, res, next) {
+  next();
+};
+
+exports.reportrvs = function (req, res) { 
+  res.jsonp([1]);
+};
