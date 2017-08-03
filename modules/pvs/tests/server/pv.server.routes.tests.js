@@ -246,7 +246,45 @@ describe('Pv CRUD tests', function () {
   });
 
 
+  it('should able to get pvs report', function (done) {
+    agent.post('/api/auth/signin')
+      .send(credentials)
+      .expect(200)
+      .end(function (signinErr, signinRes) {
+        // Handle signin error
+        if (signinErr) {
+          return done(signinErr);
+        }
 
+        agent.post('/api/pvs')
+          .send(pv)
+          .end(function (pvSaveErr, pvSaveRes) {
+            // Call the assertion callback
+            if (pvSaveErr) {
+              return done(pvSaveErr);
+            }
+          });
+
+        // Save a new Pv
+        agent.get('/api/reportpvs')
+          .expect(200)
+          .end(function (pvGetRpErr, pvGetRpRes) {
+            // Handle Pv error
+            if (pvGetRpErr) {
+              return done(pvGetRpErr);
+            }
+
+            // Get Aps list
+            var pvs = pvGetRpRes.body;
+
+            // Set assertions
+            // (aps[0].user._id).should.equal(userId);
+            (pvs.length).should.match(1);
+            // Handle Pv save error
+            done();
+          });
+      });
+  });
 
 
 
