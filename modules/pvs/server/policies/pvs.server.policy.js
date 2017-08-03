@@ -18,6 +18,9 @@ exports.invokeRolesPolicies = function () {
       resources: '/api/pvs',
       permissions: '*'
     }, {
+      resources: '/api/reportpvs',
+      permissions: '*'
+    }, {
       resources: '/api/pvs/:pvId',
       permissions: '*'
     }]
@@ -26,6 +29,9 @@ exports.invokeRolesPolicies = function () {
     allows: [{
       resources: '/api/pvs',
       permissions: ['get', 'post']
+    }, {
+      resources: '/api/reportpvs',
+      permissions: ['get']
     }, {
       resources: '/api/pvs/:pvId',
       permissions: ['get']

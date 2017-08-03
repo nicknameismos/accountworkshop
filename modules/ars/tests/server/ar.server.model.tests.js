@@ -66,15 +66,6 @@ describe('Ar Model Unit Tests:', function () {
         done();
       });
     });
-    // docno duplicate test
-  it('should be able to show an error when try to save duplicate docno', function (done) {
-      ar.docno = '';
-
-      return ar.save(function (err) {
-        should.exist(err);
-        done();
-      });
-    });
 // docdate  save test
  it('should be able to show an error when try to save without docdate', function (done) {
       ar.docdate = Date;

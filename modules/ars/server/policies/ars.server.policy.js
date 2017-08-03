@@ -20,6 +20,9 @@ exports.invokeRolesPolicies = function () {
     }, {
       resources: '/api/ars/:arId',
       permissions: '*'
+    },{
+      resources: '/api/reportars',
+      permissions: '*'
     }]
   }, {
     roles: ['user'],
@@ -28,6 +31,9 @@ exports.invokeRolesPolicies = function () {
       permissions: ['get', 'post']
     }, {
       resources: '/api/ars/:arId',
+      permissions: ['get']
+    },{
+      resources: '/api/reportars',
       permissions: ['get']
     }]
   }, {

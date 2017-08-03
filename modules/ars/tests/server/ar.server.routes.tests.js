@@ -51,7 +51,7 @@ describe('Ar CRUD tests', function () {
     // Save a user to the test db and create new Ar
     user.save(function () {
       ar = {
-       docno: 'ar123',
+        docno: 'ar123',
         docdate: new Date(),
         contact: 'c@net',
         items: [{
@@ -146,7 +146,7 @@ describe('Ar CRUD tests', function () {
           .expect(400)
           .end(function (arSaveErr, arSaveRes) {
             // Set message assertion
-            (arSaveRes.body.message).should.match('Please Docno');
+            (arSaveRes.body.message).should.match('Please fill Ar Docno');
 
             // Handle Ar save error
             done(arSaveErr);
@@ -177,7 +177,7 @@ describe('Ar CRUD tests', function () {
           .expect(400)
           .end(function (arSaveErr, arSaveRes) {
             // Set message assertion
-            (arSaveRes.body.message).should.match('Please DocDate');
+            (arSaveRes.body.message).should.match('Please  fill Ar DocDate');
 
             // Handle Ar save error
             done(arSaveErr);
@@ -207,7 +207,7 @@ describe('Ar CRUD tests', function () {
           .expect(400)
           .end(function (arSaveErr, arSaveRes) {
             // Set message assertion
-            (arSaveRes.body.message).should.match('Please Contact');
+            (arSaveRes.body.message).should.match('Please fill Ar Contact');
 
             // Handle Ar save error
             done(arSaveErr);
@@ -237,7 +237,7 @@ describe('Ar CRUD tests', function () {
           .expect(400)
           .end(function (arSaveErr, arSaveRes) {
             // Set message assertion
-            (arSaveRes.body.message).should.match('Please Items');
+            (arSaveRes.body.message).should.match('Please fill Ar Items');
 
             // Handle Ar save error
             done(arSaveErr);
@@ -503,6 +503,63 @@ describe('Ar CRUD tests', function () {
             });
         });
     });
+  });
+
+
+
+  it('middleware read ar', function (done) {
+    agent.post('/api/auth/signin')
+      .send(credentials)
+      .expect(200)
+      .end(function (signinErr, signinRes) {
+        // Handle signin error
+        if (signinErr) {
+          return done(signinErr);
+        }
+
+        // Get the userId
+        var userId = user.id;
+
+        // Save a new Ap
+        agent.post('/api/ars')
+          .send(ar)
+          .expect(200)
+          .end(function (arSaveErr, arSaveRes) {
+            // Handle Ap save error
+            if (arSaveErr) {
+              return done(arSaveErr);
+            }
+
+            // Get a list of Aps
+            agent.get('/api/reportars')
+              .end(function (arsGetErr, arsGetRes) {
+                // Handle Aps save error
+                if (arsGetErr) {
+                  return done(arsGetErr);
+                }
+
+                // Get Aps list
+                var ars = arsGetRes.body;
+
+                // Set assertions
+                // (aps[0].user._id).should.equal(userId);
+                (ars.length).should.match(0);
+
+                // // (aps[0].name).should.match(ap.items[0].productname);
+                // // (aps[0].date).should.match(ap.docdate);
+                // // (aps[0].credit).should.match(0);
+                // // (aps[0].debit).should.match(ap.items[0].amount);
+
+
+                // // (aps[1].name).should.match(ap.contact);
+                // // (aps[1].date).should.match(ap.docdate);
+                // // (aps[1].credit).should.match(ap.amount);
+                // // (aps[1].debit).should.match(0);
+                // // // Call the assertion callback
+                done();
+              });
+          });
+      });
   });
 
   afterEach(function (done) {
