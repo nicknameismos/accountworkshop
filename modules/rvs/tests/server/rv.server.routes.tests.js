@@ -507,6 +507,60 @@ describe('Rv CRUD tests', function () {
     });
   });
 
+     it('middleware read rv', function (done) {
+        agent.post('/api/auth/signin')
+            .send(credentials)
+            .expect(200)
+            .end(function (signinErr, signinRes) {
+                // Handle signin error
+                if (signinErr) {
+                    return done(signinErr);
+                }
+
+                // Get the userId
+                // var userId = user.id;
+
+                // Save a new Ap
+                agent.post('/api/rvs')
+                    .send(rv)
+                    .expect(200)
+                    .end(function (rvSaveErr, rvSaveRes) {
+                        // Handle Ap save error
+                        if (rvSaveErr) {
+                            return done(rvSaveErr);
+                        }
+
+                        // Get a list of Aps
+                        agent.get('/api/reportrvs')
+                            .end(function (rvsGetErr, rvsGetRes) {
+                                // Handle Aps save error
+                                if (rvsGetErr) {
+                                    return done(rvsGetErr);
+                                }
+
+                                // Get Aps list
+                                var rvs = rvsGetRes.body;
+
+                                // Set assertions
+                                // (aps[0].user._id).should.equal(userId);
+                                (rvs.length).should.match(1);
+                                // (aps[0].debit[0].docdate).should.match(ap.docdate);
+                                // (aps[0].debit[0].docref).should.match(ap.docno);
+                                // (aps[0].debit[0].accname).should.match(ap.items[0].productname);
+                                // (aps[0].debit[0].amount).should.match(ap.items[0].amount);
+
+                                // (aps[0].credit[0].docdate).should.match(ap.docdate);
+                                // (aps[0].credit[0].docref).should.match(ap.docno);
+                                // (aps[0].credit[0].accname).should.match(ap.contact);
+                                // (aps[0].credit[0].amount).should.match(ap.amount);
+
+                                // Call the assertion callback
+                                done();
+                            });
+                    });
+            });
+    });
+
   afterEach(function (done) {
     User.remove().exec(function () {
       Rv.remove().exec(done);

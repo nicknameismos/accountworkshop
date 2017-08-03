@@ -17,6 +17,7 @@ module.exports = function(app) {
     .put(rvs.update)
     .delete(rvs.delete);
 
+  app.route('/api/reportrvs').all(rvsPolicy.isAllowed).get(rvs.readrvs , rvs.cookingreportrvs, rvs.reportrvs);
   // Finish by binding the Rv middleware
   app.param('rvId', rvs.rvByID);
 };
