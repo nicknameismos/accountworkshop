@@ -1,0 +1,22 @@
+<section>
+  <div class="page-header">
+    <h1>Rvs</h1>
+  </div>
+  <div class="list-group">
+    <a ng-repeat="rv in vm.rvs"
+       ui-sref="rvs.view({ rvId: rv._id })"
+       class="list-group-item">
+      <small class="list-group-item-text">
+        Posted on
+        <span ng-bind="rv.created | date:'mediumDate'"></span>
+        by
+        <span ng-if="rv.user" ng-bind="rv.user.displayName"></span>
+        <span ng-if="!rv.user">Deleted User</span>
+      </small>
+      <h4 class="list-group-item-heading" ng-bind="rv.name"></h4>
+    </a>
+  </div>
+  <div class="alert alert-warning text-center" ng-if="vm.rvs.$resolved && !vm.rvs.length">
+    No Rvs yet, why don't you <a ui-sref="rvs.create">create one</a>?
+  </div>
+</section>
