@@ -12,11 +12,11 @@ var path = require('path'),
 /**
  * Create a Pv
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   var pv = new Pv(req.body);
   pv.user = req.user;
 
-  pv.save(function(err) {
+  pv.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -30,7 +30,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Pv
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
   // convert mongoose document to JSON
   var pv = req.pv ? req.pv.toJSON() : {};
 
@@ -44,12 +44,12 @@ exports.read = function(req, res) {
 /**
  * Update a Pv
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
   var pv = req.pv;
 
   pv = _.extend(pv, req.body);
 
-  pv.save(function(err) {
+  pv.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -63,10 +63,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Pv
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
   var pv = req.pv;
 
-  pv.remove(function(err) {
+  pv.remove(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -80,8 +80,8 @@ exports.delete = function(req, res) {
 /**
  * List of Pvs
  */
-exports.list = function(req, res) {
-  Pv.find().sort('-created').populate('user', 'displayName').exec(function(err, pvs) {
+exports.list = function (req, res) {
+  Pv.find().sort('-created').populate('user', 'displayName').exec(function (err, pvs) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 /**
  * Pv middleware
  */
-exports.pvByID = function(req, res, next, id) {
+exports.pvByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
@@ -114,4 +114,13 @@ exports.pvByID = function(req, res, next, id) {
     req.pv = pv;
     next();
   });
+};
+exports.readpvs = function (req, res, next) {
+  next();
+};
+exports.cookingreportpvs = function (req, res, next) {
+  next();
+};
+exports.reportpvs = function (req, res) {
+ res.jsonp([1]);
 };
