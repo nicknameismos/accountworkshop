@@ -152,6 +152,8 @@ exports.cookingreportars = function (req, res, next) {
       accname: ar.contact,
       amount: ar.amount
     });
+
+    
     ar.items.forEach(function (item) {
       cookingdatas.credit.push({
         docref: ar.docno,
