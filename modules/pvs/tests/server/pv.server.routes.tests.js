@@ -547,6 +547,7 @@ describe('Pv CRUD tests', function () {
             (pvs.length).should.match(1);
             (pvs[0].debit[0].docdate).should.match(pv.docdate);
             (pvs[0].debit[0].docref).should.match(pv.docno);
+            // (pvs[0].debit[0].accname).should.match(pv.items[0].productname);
             (pvs[0].debit[0].accname).should.match("รายได้จากการขาย : " + pv.items[0].productname);
             (pvs[0].debit[0].amount).should.match(pv.items[0].amount);
 

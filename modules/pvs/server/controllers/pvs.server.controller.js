@@ -130,7 +130,6 @@ exports.readpvs = function (req, res, next) {
       }
     }
   });
-  next();
 };
 exports.cookingreportpvs = function (req, res, next) {
   var cookingpvs = req.pvs;
@@ -143,15 +142,15 @@ exports.cookingreportpvs = function (req, res, next) {
     };
     pv.items.forEach(function (item) {
       cookingdatas.debit.push({
-        docref: pv.docno,
         docdate: pv.docdate,
-        accname: item.productname,
+        docref: pv.docno,
+        accname: "รายได้จากการขาย : " + item.productname,
         amount: item.amount
       });
     });
     cookingdatas.credit.push({
-      docref: pv.docno,
       docdate: pv.docdate,
+      docref: pv.docno,
       accname: pv.contact,
       amount: pv.amount
     });
