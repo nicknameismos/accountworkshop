@@ -160,6 +160,7 @@ exports.cookingreportars = function (req, res, next) {
         amount: item.amount
       });
     });
+    
 
     datas.push(cookingdatas);
   });
