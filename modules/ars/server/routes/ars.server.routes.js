@@ -17,6 +17,7 @@ module.exports = function(app) {
     .put(ars.update)
     .delete(ars.delete);
 
+    //เพิ่มมาใหม่ไว้เรียก routes
 app.route('/api/reportars').all(arsPolicy.isAllowed)
     .get(ars.readars,ars.cookingreportars, ars.reportars);
 
