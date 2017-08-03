@@ -146,19 +146,19 @@ exports.cookingreportars = function (req, res, next) {
       debit: [],
       credit: []
     };
-    ar.items.forEach(function(item) {
+    cookingdatas.debit.push({
+      docref: ar.docno,
+      docdate: ar.docdate,
+      accname: ar.contact,
+      amount: ar.amount
+    });
+    ar.items.forEach(function (item) {
       cookingdatas.credit.push({
         docref: ar.docno,
         docdate: ar.docdate,
         accname: item.productname,
         amount: item.amount
       });
-    });
-    cookingdatas.debit.push({
-      docref: ar.docno,
-      docdate: ar.docdate,
-      accname: ar.contact,
-      amount: ar.amount
     });
 
     datas.push(cookingdatas);
