@@ -6,18 +6,18 @@
 var should = require('should'),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
-  Ar = mongoose.model('Ar');
+  Rv = mongoose.model('Rv');
 
 /**
  * Globals
  */
 var user,
-  ar;
+  rv;
 
 /**
  * Unit tests
  */
-describe('Ar Model Unit Tests:', function () {
+describe('Rv Model Unit Tests:', function () {
   beforeEach(function (done) {
     user = new User({
       firstName: 'Full',
@@ -29,8 +29,9 @@ describe('Ar Model Unit Tests:', function () {
     });
 
     user.save(function () {
-      ar = new Ar({
-        docno: 'ar123',
+      rv = new Rv({
+        //name: 'Rv Name',
+        docno: 'ap1234',
         docdate: new Date(),
         contact: 'c@net',
         items: [{
@@ -52,63 +53,54 @@ describe('Ar Model Unit Tests:', function () {
   describe('Method Save', function () {
     it('should be able to save without problems', function (done) {
       this.timeout(0);
-      return ar.save(function (err) {
+      return rv.save(function (err) {
         should.not.exist(err);
         done();
       });
     });
-    // docno save test
+
     it('should be able to show an error when try to save without docno', function (done) {
-      ar.docno = '';
+      rv.docno = '';
 
-      return ar.save(function (err) {
+      return rv.save(function (err) {
         should.exist(err);
         done();
       });
     });
-// docdate  save test
- it('should be able to show an error when try to save without docdate', function (done) {
-      ar.docdate = Date;
 
-      return ar.save(function (err) {
+    it('should be able to show an error when try to save without docdate', function (done) {
+      rv.docdate = '';
+
+      return rv.save(function (err) {
         should.exist(err);
         done();
       });
     });
-// contact save test
-it('should be able to show an error when try to save without contact', function (done) {
-      ar.contact = '';
 
-      return ar.save(function (err) {
+
+    it('should be able to show an error when try to save without contact', function (done) {
+      rv.contact = '';
+
+      return rv.save(function (err) {
         should.exist(err);
         done();
       });
     });
-// items save test
-it('should be able to show an error when try to save without items', function (done) {
-      ar.items = [{
-        productname: 'longan',
-        unitprice: 50,
-        qty: 10,
-        amount: 500
-      }];
 
-      return ar.save(function (err) {
-        should.not.exist(err);
+      it('should be able to show an error when try to save without items', function (done) {
+      rv.items = [];
+
+      return rv.save(function (err) {
+        should.exist(err);
         done();
       });
     });
-
-
-
-
-
 
 
   });
 
   afterEach(function (done) {
-    Ar.remove().exec(function () {
+    Rv.remove().exec(function () {
       User.remove().exec(function () {
         done();
       });

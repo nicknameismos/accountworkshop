@@ -13,16 +13,16 @@ var ArSchema = new Schema({
   docno: {
     type: String,
     unique: true,
-    required: 'Please Docno'
+    required: 'Please fill Ar Docno'
 
   },
   docdate: {
     type: Date,
     default: Date.now,
-    required: 'Please DocDate'
+    required: 'Please  fill Ar DocDate'
   },
   items: {
-    required: 'Please Items',
+    required: 'Please fill Ar Items',
     type: [{
       productname: String,
       unitprice: Number,
@@ -35,7 +35,7 @@ var ArSchema = new Schema({
   netamount: Number,
   contact: {
     type: String,
-    required: 'Please Contact'
+    required: 'Please fill Ar Contact'
   },
   created: {
     type: Date,
