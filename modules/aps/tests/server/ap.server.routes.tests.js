@@ -20,9 +20,9 @@ var app,
 /**
  * Ap routes tests
  */
-describe('Ap CRUD tests', function() {
+describe('Ap CRUD tests', function () {
 
-    before(function(done) {
+    before(function (done) {
         // Get application
         app = express.init(mongoose);
         agent = request.agent(app);
@@ -30,7 +30,7 @@ describe('Ap CRUD tests', function() {
         done();
     });
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         // Create user credentials
         credentials = {
             username: 'username',
@@ -49,7 +49,7 @@ describe('Ap CRUD tests', function() {
         });
 
         // Save a user to the test db and create new Ap
-        user.save(function() {
+        user.save(function () {
             ap = {
                 docno: 'ap1234',
                 docdate: new Date(),
@@ -70,11 +70,11 @@ describe('Ap CRUD tests', function() {
         });
     });
 
-    it('should be able to save a Ap if logged in', function(done) {
+    it('should be able to save a Ap if logged in', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -87,7 +87,7 @@ describe('Ap CRUD tests', function() {
                 agent.post('/api/aps')
                     .send(ap)
                     .expect(200)
-                    .end(function(apSaveErr, apSaveRes) {
+                    .end(function (apSaveErr, apSaveRes) {
                         // Handle Ap save error
                         if (apSaveErr) {
                             return done(apSaveErr);
@@ -95,7 +95,7 @@ describe('Ap CRUD tests', function() {
 
                         // Get a list of Aps
                         agent.get('/api/aps')
-                            .end(function(apsGetErr, apsGetRes) {
+                            .end(function (apsGetErr, apsGetRes) {
                                 // Handle Aps save error
                                 if (apsGetErr) {
                                     return done(apsGetErr);
@@ -115,24 +115,24 @@ describe('Ap CRUD tests', function() {
             });
     });
 
-    it('should not be able to save an Ap if not logged in', function(done) {
+    it('should not be able to save an Ap if not logged in', function (done) {
         agent.post('/api/aps')
             .send(ap)
             .expect(403)
-            .end(function(apSaveErr, apSaveRes) {
+            .end(function (apSaveErr, apSaveRes) {
                 // Call the assertion callback
                 done(apSaveErr);
             });
     });
 
-    it('should not be able to save an Ap if no docno is provided', function(done) {
+    it('should not be able to save an Ap if no docno is provided', function (done) {
         // Invalidate name field
         ap.docno = '';
 
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -145,7 +145,7 @@ describe('Ap CRUD tests', function() {
                 agent.post('/api/aps')
                     .send(ap)
                     .expect(400)
-                    .end(function(apSaveErr, apSaveRes) {
+                    .end(function (apSaveErr, apSaveRes) {
                         // Set message assertion
                         (apSaveRes.body.message).should.match('Please fill Ap docno');
 
@@ -155,14 +155,14 @@ describe('Ap CRUD tests', function() {
             });
     });
 
-    it('should not be able to save an Ap if no docdate is provided', function(done) {
+    it('should not be able to save an Ap if no docdate is provided', function (done) {
         // Invalidate name field
         ap.docdate = null;
 
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -175,7 +175,7 @@ describe('Ap CRUD tests', function() {
                 agent.post('/api/aps')
                     .send(ap)
                     .expect(400)
-                    .end(function(apSaveErr, apSaveRes) {
+                    .end(function (apSaveErr, apSaveRes) {
                         // Set message assertion
                         (apSaveRes.body.message).should.match('Please fill Ap docdate');
 
@@ -185,14 +185,14 @@ describe('Ap CRUD tests', function() {
             });
     });
 
-    it('should not be able to save an Ap if no contact is provided', function(done) {
+    it('should not be able to save an Ap if no contact is provided', function (done) {
         // Invalidate name field
         ap.contact = '';
 
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -205,7 +205,7 @@ describe('Ap CRUD tests', function() {
                 agent.post('/api/aps')
                     .send(ap)
                     .expect(400)
-                    .end(function(apSaveErr, apSaveRes) {
+                    .end(function (apSaveErr, apSaveRes) {
                         // Set message assertion
                         (apSaveRes.body.message).should.match('Please fill Ap contact');
 
@@ -215,14 +215,14 @@ describe('Ap CRUD tests', function() {
             });
     });
 
-    it('should not be able to save an Ap if no items is provided', function(done) {
+    it('should not be able to save an Ap if no items is provided', function (done) {
         // Invalidate name field
         ap.items = null;
 
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -235,7 +235,7 @@ describe('Ap CRUD tests', function() {
                 agent.post('/api/aps')
                     .send(ap)
                     .expect(400)
-                    .end(function(apSaveErr, apSaveRes) {
+                    .end(function (apSaveErr, apSaveRes) {
                         // Set message assertion
                         (apSaveRes.body.message).should.match('Please fill Ap items');
 
@@ -245,11 +245,11 @@ describe('Ap CRUD tests', function() {
             });
     });
 
-    it('should be able to update an Ap if signed in', function(done) {
+    it('should be able to update an Ap if signed in', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -262,7 +262,7 @@ describe('Ap CRUD tests', function() {
                 agent.post('/api/aps')
                     .send(ap)
                     .expect(200)
-                    .end(function(apSaveErr, apSaveRes) {
+                    .end(function (apSaveErr, apSaveRes) {
                         // Handle Ap save error
                         if (apSaveErr) {
                             return done(apSaveErr);
@@ -275,7 +275,7 @@ describe('Ap CRUD tests', function() {
                         agent.put('/api/aps/' + apSaveRes.body._id)
                             .send(ap)
                             .expect(200)
-                            .end(function(apUpdateErr, apUpdateRes) {
+                            .end(function (apUpdateErr, apUpdateRes) {
                                 // Handle Ap update error
                                 if (apUpdateErr) {
                                     return done(apUpdateErr);
@@ -292,15 +292,15 @@ describe('Ap CRUD tests', function() {
             });
     });
 
-    it('should be able to get a list of Aps if not signed in', function(done) {
+    it('should be able to get a list of Aps if not signed in', function (done) {
         // Create new Ap model instance
         var apObj = new Ap(ap);
 
         // Save the ap
-        apObj.save(function() {
+        apObj.save(function () {
             // Request Aps
             request(app).get('/api/aps')
-                .end(function(req, res) {
+                .end(function (req, res) {
                     // Set assertion
                     res.body.should.be.instanceof(Array).and.have.lengthOf(1);
 
@@ -311,14 +311,14 @@ describe('Ap CRUD tests', function() {
         });
     });
 
-    it('should be able to get a single Ap if not signed in', function(done) {
+    it('should be able to get a single Ap if not signed in', function (done) {
         // Create new Ap model instance
         var apObj = new Ap(ap);
 
         // Save the Ap
-        apObj.save(function() {
+        apObj.save(function () {
             request(app).get('/api/aps/' + apObj._id)
-                .end(function(req, res) {
+                .end(function (req, res) {
                     // Set assertion
                     res.body.should.be.instanceof(Object).and.have.property('docno', ap.docno);
 
@@ -328,10 +328,10 @@ describe('Ap CRUD tests', function() {
         });
     });
 
-    it('should return proper error for single Ap with an invalid Id, if not signed in', function(done) {
+    it('should return proper error for single Ap with an invalid Id, if not signed in', function (done) {
         // test is not a valid mongoose Id
         request(app).get('/api/aps/test')
-            .end(function(req, res) {
+            .end(function (req, res) {
                 // Set assertion
                 res.body.should.be.instanceof(Object).and.have.property('message', 'Ap is invalid');
 
@@ -340,10 +340,10 @@ describe('Ap CRUD tests', function() {
             });
     });
 
-    it('should return proper error for single Ap which doesnt exist, if not signed in', function(done) {
+    it('should return proper error for single Ap which doesnt exist, if not signed in', function (done) {
         // This is a valid mongoose Id but a non-existent Ap
         request(app).get('/api/aps/559e9cd815f80b4c256a8f41')
-            .end(function(req, res) {
+            .end(function (req, res) {
                 // Set assertion
                 res.body.should.be.instanceof(Object).and.have.property('message', 'No Ap with that identifier has been found');
 
@@ -352,11 +352,11 @@ describe('Ap CRUD tests', function() {
             });
     });
 
-    it('should be able to delete an Ap if signed in', function(done) {
+    it('should be able to delete an Ap if signed in', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -369,7 +369,7 @@ describe('Ap CRUD tests', function() {
                 agent.post('/api/aps')
                     .send(ap)
                     .expect(200)
-                    .end(function(apSaveErr, apSaveRes) {
+                    .end(function (apSaveErr, apSaveRes) {
                         // Handle Ap save error
                         if (apSaveErr) {
                             return done(apSaveErr);
@@ -379,7 +379,7 @@ describe('Ap CRUD tests', function() {
                         agent.delete('/api/aps/' + apSaveRes.body._id)
                             .send(ap)
                             .expect(200)
-                            .end(function(apDeleteErr, apDeleteRes) {
+                            .end(function (apDeleteErr, apDeleteRes) {
                                 // Handle ap error error
                                 if (apDeleteErr) {
                                     return done(apDeleteErr);
@@ -395,7 +395,7 @@ describe('Ap CRUD tests', function() {
             });
     });
 
-    it('should not be able to delete an Ap if not signed in', function(done) {
+    it('should not be able to delete an Ap if not signed in', function (done) {
         // Set Ap user
         ap.user = user;
 
@@ -403,11 +403,11 @@ describe('Ap CRUD tests', function() {
         var apObj = new Ap(ap);
 
         // Save the Ap
-        apObj.save(function() {
+        apObj.save(function () {
             // Try deleting Ap
             request(app).delete('/api/aps/' + apObj._id)
                 .expect(403)
-                .end(function(apDeleteErr, apDeleteRes) {
+                .end(function (apDeleteErr, apDeleteRes) {
                     // Set message assertion
                     (apDeleteRes.body.message).should.match('User is not authorized');
 
@@ -418,7 +418,7 @@ describe('Ap CRUD tests', function() {
         });
     });
 
-    it('should be able to get a single Ap that has an orphaned user reference', function(done) {
+    it('should be able to get a single Ap that has an orphaned user reference', function (done) {
         // Create orphan user creds
         var _creds = {
             username: 'orphan',
@@ -436,7 +436,7 @@ describe('Ap CRUD tests', function() {
             provider: 'local'
         });
 
-        _orphan.save(function(err, orphan) {
+        _orphan.save(function (err, orphan) {
             // Handle save error
             if (err) {
                 return done(err);
@@ -445,7 +445,7 @@ describe('Ap CRUD tests', function() {
             agent.post('/api/auth/signin')
                 .send(_creds)
                 .expect(200)
-                .end(function(signinErr, signinRes) {
+                .end(function (signinErr, signinRes) {
                     // Handle signin error
                     if (signinErr) {
                         return done(signinErr);
@@ -458,7 +458,7 @@ describe('Ap CRUD tests', function() {
                     agent.post('/api/aps')
                         .send(ap)
                         .expect(200)
-                        .end(function(apSaveErr, apSaveRes) {
+                        .end(function (apSaveErr, apSaveRes) {
                             // Handle Ap save error
                             if (apSaveErr) {
                                 return done(apSaveErr);
@@ -470,12 +470,12 @@ describe('Ap CRUD tests', function() {
                             should.equal(apSaveRes.body.user._id, orphanId);
 
                             // force the Ap to have an orphaned user reference
-                            orphan.remove(function() {
+                            orphan.remove(function () {
                                 // now signin with valid user
                                 agent.post('/api/auth/signin')
                                     .send(credentials)
                                     .expect(200)
-                                    .end(function(err, res) {
+                                    .end(function (err, res) {
                                         // Handle signin error
                                         if (err) {
                                             return done(err);
@@ -484,7 +484,7 @@ describe('Ap CRUD tests', function() {
                                         // Get the Ap
                                         agent.get('/api/aps/' + apSaveRes.body._id)
                                             .expect(200)
-                                            .end(function(apInfoErr, apInfoRes) {
+                                            .end(function (apInfoErr, apInfoRes) {
                                                 // Handle Ap error
                                                 if (apInfoErr) {
                                                     return done(apInfoErr);
@@ -505,11 +505,11 @@ describe('Ap CRUD tests', function() {
         });
     });
 
-    it('middleware read ap', function(done) {
+    it('middleware read ap', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -522,7 +522,7 @@ describe('Ap CRUD tests', function() {
                 agent.post('/api/aps')
                     .send(ap)
                     .expect(200)
-                    .end(function(apSaveErr, apSaveRes) {
+                    .end(function (apSaveErr, apSaveRes) {
                         // Handle Ap save error
                         if (apSaveErr) {
                             return done(apSaveErr);
@@ -530,7 +530,7 @@ describe('Ap CRUD tests', function() {
 
                         // Get a list of Aps
                         agent.get('/api/reportaps')
-                            .end(function(apsGetErr, apsGetRes) {
+                            .end(function (apsGetErr, apsGetRes) {
                                 // Handle Aps save error
                                 if (apsGetErr) {
                                     return done(apsGetErr);
@@ -541,18 +541,17 @@ describe('Ap CRUD tests', function() {
 
                                 // Set assertions
                                 // (aps[0].user._id).should.equal(userId);
-                                (aps.length).should.match(2);
+                                (aps.length).should.match(1);
 
-                                (aps[0].name).should.match(ap.items[0].productname);
-                                (aps[0].date).should.match(ap.docdate);
-                                (aps[0].credit).should.match(0);
-                                (aps[0].debit).should.match(ap.items[0].amount);
+                                (aps[0].debit[0].docdate).should.match(ap.docdate);
+                                (aps[0].debit[0].docref).should.match(ap.docno);
+                                (aps[0].debit[0].accname).should.match(ap.items[0].productname);
+                                (aps[0].debit[0].amount).should.match(ap.items[0].amount);
 
-                                (aps[1].name).should.match(ap.contact);
-                                (aps[1].date).should.match(ap.docdate);
-                                (aps[1].credit).should.match(ap.amount);
-                                (aps[1].debit).should.match(0);
-
+                                (aps[0].credit[0].docdate).should.match(ap.docdate);
+                                (aps[0].credit[0].docref).should.match(ap.docno);
+                                (aps[0].credit[0].accname).should.match(ap.contact);
+                                (aps[0].credit[0].amount).should.match(ap.amount);
                                 // Call the assertion callback
                                 done();
                             });
@@ -560,8 +559,8 @@ describe('Ap CRUD tests', function() {
             });
     });
 
-    afterEach(function(done) {
-        User.remove().exec(function() {
+    afterEach(function (done) {
+        User.remove().exec(function () {
             Ap.remove().exec(done);
         });
     });
