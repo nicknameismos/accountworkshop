@@ -117,17 +117,58 @@ exports.arByID = function (req, res, next, id) {
 };
 
 exports.readars = function (req, res, next) {
+  Ar.find().sort('-created').populate('user', 'displayName').exec(function (err, ars) {
+    if (err) {
+      return res.status(400).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      if (ars.length > 0) {
+        req.ars = ars;
+        next();
 
-  next();
-
+      } else {
+        res.jsonp(ars);
+      }
+    }
+  });
 };
+
+
 
 
 exports.cookingreportars = function (req, res, next) {
-  
+  var cookingars = req.ars;
+  var cookingdatas;
+  var datas = [];
+  cookingars.forEach(function (ar) {
+    cookingdatas = {
+      debit: [],
+      credit: []
+    };
+    ar.items.forEach(function(item) {
+      cookingdatas.credit.push({
+        docref: ar.docno,
+        docdate: ar.docdate,
+        accname: item.productname,
+        amount: item.amount
+      });
+    });
+    cookingdatas.debit.push({
+      docref: ar.docno,
+      docdate: ar.docdate,
+      accname: ar.contact,
+      amount: ar.amount
+    });
+
+    datas.push(cookingdatas);
+  });
+  req.cookingapscomplete = datas;
   next();
 };
 
+
+
 exports.reportars = function (req, res) {
-  res.jsonp([]);
+  res.jsonp(req.cookingapscomplete);
 };

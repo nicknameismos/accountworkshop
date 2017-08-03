@@ -543,19 +543,20 @@ describe('Ar CRUD tests', function () {
 
                 // Set assertions
                 // (aps[0].user._id).should.equal(userId);
-                (ars.length).should.match(0);
+                (ars.length).should.match(1);
+                (ars[0].debit[0].docref).should.match(ar.docno);
+                (ars[0].debit[0].docdate).should.match(ar.docdate);
+                (ars[0].debit[0].accname).should.match(ar.contact);
+                (ars[0].debit[0].amount).should.match(ar.amount);
+                
 
-                // // (aps[0].name).should.match(ap.items[0].productname);
-                // // (aps[0].date).should.match(ap.docdate);
-                // // (aps[0].credit).should.match(0);
-                // // (aps[0].debit).should.match(ap.items[0].amount);
+                (ars[0].credit[0].docref).should.match(ar.docno);
+                (ars[0].credit[0].docdate).should.match(ar.docdate);
+                (ars[0].credit[0].accname).should.match(ar.items[0].productname);
+                (ars[0].credit[0].amount).should.match(ar.items[0].amount);
 
 
-                // // (aps[1].name).should.match(ap.contact);
-                // // (aps[1].date).should.match(ap.docdate);
-                // // (aps[1].credit).should.match(ap.amount);
-                // // (aps[1].debit).should.match(0);
-                // // // Call the assertion callback
+                // Call the assertion callback
                 done();
               });
           });
