@@ -146,7 +146,7 @@ describe('Ar CRUD tests', function () {
           .expect(400)
           .end(function (arSaveErr, arSaveRes) {
             // Set message assertion
-            (arSaveRes.body.message).should.match('Please  fill Ar Docno');
+            (arSaveRes.body.message).should.match('Please fill Ar Docno');
 
             // Handle Ar save error
             done(arSaveErr);
@@ -237,7 +237,7 @@ describe('Ar CRUD tests', function () {
           .expect(400)
           .end(function (arSaveErr, arSaveRes) {
             // Set message assertion
-            (arSaveRes.body.message).should.match('Please  fill Ar Items');
+            (arSaveRes.body.message).should.match('Please fill Ar Items');
 
             // Handle Ar save error
             done(arSaveErr);
