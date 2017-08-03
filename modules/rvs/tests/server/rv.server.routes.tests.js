@@ -544,15 +544,17 @@ describe('Rv CRUD tests', function () {
                                 // Set assertions
                                 // (aps[0].user._id).should.equal(userId);
                                 (rvs.length).should.match(1);
-                                // (aps[0].debit[0].docdate).should.match(ap.docdate);
-                                // (aps[0].debit[0].docref).should.match(ap.docno);
-                                // (aps[0].debit[0].accname).should.match(ap.items[0].productname);
-                                // (aps[0].debit[0].amount).should.match(ap.items[0].amount);
-
-                                // (aps[0].credit[0].docdate).should.match(ap.docdate);
-                                // (aps[0].credit[0].docref).should.match(ap.docno);
-                                // (aps[0].credit[0].accname).should.match(ap.contact);
-                                // (aps[0].credit[0].amount).should.match(ap.amount);
+                                //รับเงิน
+                                (rvs[0].debit[0].docdate).should.match(rv.docdate);
+                                (rvs[0].debit[0].docref).should.match(rv.docno);
+                                (rvs[0].debit[0].accname).should.match(rv.contact); //who??
+                                (rvs[0].debit[0].amount).should.match(rv.amount);
+                                
+                                //เสียเงิน
+                                (rvs[0].credit[0].docdate).should.match(rv.docdate);
+                                (rvs[0].credit[0].docref).should.match(rv.docno);
+                                (rvs[0].credit[0].accname).should.match(rv.items[0].productname); //who??
+                                (rvs[0].credit[0].amount).should.match(rv.items[0].amount);
 
                                 // Call the assertion callback
                                 done();
