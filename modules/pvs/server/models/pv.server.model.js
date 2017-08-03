@@ -23,17 +23,19 @@ var PvSchema = new Schema({
     type: String,
     required: 'Please fill Pv contact'
   },
-items:{
+  items: {
     required: 'Please fill Pv items',
     type: [{
-        productname:String,
-        unitprice: Number,
-        qty:Number,
-        amount:Number
+      productname: String,
+      unitprice: Number,
+      qty: Number,
+      amount: Number
     }]
-    
-  },
 
+  },
+  amount: Number,
+  discount: Number,
+  netamount: Number,
 
   created: {
     type: Date,

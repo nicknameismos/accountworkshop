@@ -12,11 +12,11 @@ var path = require('path'),
 /**
  * Create a Rv
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   var rv = new Rv(req.body);
   rv.user = req.user;
 
-  rv.save(function(err) {
+  rv.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -30,7 +30,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Rv
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
   // convert mongoose document to JSON
   var rv = req.rv ? req.rv.toJSON() : {};
 
@@ -44,12 +44,12 @@ exports.read = function(req, res) {
 /**
  * Update a Rv
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
   var rv = req.rv;
 
   rv = _.extend(rv, req.body);
 
-  rv.save(function(err) {
+  rv.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -63,10 +63,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Rv
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
   var rv = req.rv;
 
-  rv.remove(function(err) {
+  rv.remove(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -80,8 +80,8 @@ exports.delete = function(req, res) {
 /**
  * List of Rvs
  */
-exports.list = function(req, res) {
-  Rv.find().sort('-created').populate('user', 'displayName').exec(function(err, rvs) {
+exports.list = function (req, res) {
+  Rv.find().sort('-created').populate('user', 'displayName').exec(function (err, rvs) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 /**
  * Rv middleware
  */
-exports.rvByID = function(req, res, next, id) {
+exports.rvByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
@@ -116,14 +116,57 @@ exports.rvByID = function(req, res, next, id) {
   });
 };
 
-exports.readrvs = function(req, res, next){
-  next();
+exports.readrvs = function (req, res, next) {
+
+  Rv.find().sort('-created').populate('user', 'displayName').exec(function (err, rvs) {
+    if (err) {
+      return res.status(400).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      if (rvs.length > 0) {
+        req.rvs = rvs;
+        next();
+      } else {
+        res.jsonp(rvs);
+      }
+    }
+  });
 };
 
 exports.cookingreportrvs = function (req, res, next) {
+  var cookingrvs = req.rvs;
+  var cookingdatas;
+  var datas = [];
+
+  cookingrvs.forEach(function (rv) {
+    cookingdatas = {
+      debit: [],
+      credit: []
+    };
+
+    cookingdatas.debit.push({
+      docref: rv.docno,
+      docdate: rv.docdate,
+      accname: rv.contact,
+      amount: rv.amount
+    });
+
+    rv.items.forEach(function (item) {
+      cookingdatas.credit.push({
+        docref: rv.docno,
+        docdate: rv.docdate,
+        accname: item.productname,
+        amount: item.amount
+      });
+    });
+
+    datas.push(cookingdatas);
+  });
+  req.cookingrvscomplete = datas;
   next();
 };
 
-exports.reportrvs = function (req, res) { 
-  res.jsonp([1]);
+exports.reportrvs = function (req, res) {
+  res.jsonp(req.cookingrvscomplete);
 };

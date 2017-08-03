@@ -246,45 +246,7 @@ describe('Pv CRUD tests', function () {
   });
 
 
-  it('should able to get pvs report', function (done) {
-    agent.post('/api/auth/signin')
-      .send(credentials)
-      .expect(200)
-      .end(function (signinErr, signinRes) {
-        // Handle signin error
-        if (signinErr) {
-          return done(signinErr);
-        }
 
-        agent.post('/api/pvs')
-          .send(pv)
-          .end(function (pvSaveErr, pvSaveRes) {
-            // Call the assertion callback
-            if (pvSaveErr) {
-              return done(pvSaveErr);
-            }
-          });
-
-        // Save a new Pv
-        agent.get('/api/reportpvs')
-          .expect(200)
-          .end(function (pvGetRpErr, pvGetRpRes) {
-            // Handle Pv error
-            if (pvGetRpErr) {
-              return done(pvGetRpErr);
-            }
-
-            // Get Aps list
-            var pvs = pvGetRpRes.body;
-
-            // Set assertions
-            // (aps[0].user._id).should.equal(userId);
-            (pvs.length).should.match(1);
-            // Handle Pv save error
-            done();
-          });
-      });
-  });
 
 
 
@@ -549,9 +511,66 @@ describe('Pv CRUD tests', function () {
     });
   });
 
-  afterEach(function (done) {
-    User.remove().exec(function () {
-      Pv.remove().exec(done);
-    });
+  it('should get report PVS successfuly', function (done) {
+    agent.post('/api/auth/signin')
+      .send(credentials)
+      .expect(200)
+      .end(function (signinErr, signinRes) {
+        // Handle signin error
+        if (signinErr) {
+          return done(signinErr);
+        }
+
+        agent.post('/api/pvs')
+          .send(pv)
+          .end(function (pvSaveErr, pvSaveRes) {
+            // Call the assertion callback
+            if (pvSaveErr) {
+              return done(pvSaveErr);
+            }
+          });
+
+        // Save a new Pv
+        agent.get('/api/reportpvs')
+          .expect(200)
+          .end(function (pvGetRpErr, pvGetRpRes) {
+            // Handle Pv error
+            if (pvGetRpErr) {
+              return done(pvGetRpErr);
+            }
+
+            // Get Aps list
+            var pvs = pvGetRpRes.body;
+
+            // Set assertions
+            // (aps[0].user._id).should.equal(userId);
+            (pvs.length).should.match(1);
+            (pvs[0].debit[0].docdate).should.match(pv.docdate);
+            (pvs[0].debit[0].docref).should.match(pv.docno);
+            // (pvs[0].debit[0].accname).should.match(pv.items[0].productname);
+            (pvs[0].debit[0].accname).should.match("รายได้จากการขาย : " + pv.items[0].productname);
+            (pvs[0].debit[0].amount).should.match(pv.items[0].amount);
+
+            (pvs[0].credit[0].docdate).should.match(pv.docdate);
+            (pvs[0].credit[0].docref).should.match(pv.docno);
+            (pvs[0].credit[0].accname).should.match(pv.contact);
+            (pvs[0].credit[0].amount).should.match(pv.amount);
+            // Handle Pv save error
+            done();
+          });
+      });
+  });
+
+});
+
+
+
+
+
+
+afterEach(function (done) {
+  User.remove().exec(function () {
+    Pv.remove().exec(done);
   });
 });
+
