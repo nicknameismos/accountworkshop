@@ -17,9 +17,6 @@ module.exports = function(app) {
     .put(ars.update)
     .delete(ars.delete);
 
-// เพิ่มมาใหม่
-    // app.route('/api/reportaps').all(apsPolicy.isAllowed)
-    // .get(aps.readaps, aps.cookingreportaps, aps.reportaps);
 
   // Finish by binding the Ar middleware
   app.param('arId', ars.arByID);
