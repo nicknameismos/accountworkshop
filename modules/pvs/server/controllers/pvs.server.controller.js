@@ -116,11 +116,49 @@ exports.pvByID = function (req, res, next, id) {
   });
 };
 exports.readpvs = function (req, res, next) {
-  next();
+  Pv.find().sort('-created').populate('user', 'displayName').exec(function (err, pvs) {
+    if (err) {
+      return res.status(400).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      if (pvs.length > 0) {
+        req.pvs = pvs;
+        next();
+      } else {
+        res.jsonp(pvs);
+      }
+    }
+  });
 };
 exports.cookingreportpvs = function (req, res, next) {
+  var cookingpvs = req.pvs;
+  var cookingdatas;
+  var datas = [];
+  cookingpvs.forEach(function (pv) {
+    cookingdatas = {
+      debit: [],
+      credit: []
+    };
+    pv.items.forEach(function (item) {
+      cookingdatas.debit.push({
+        docdate: pv.docdate,
+        docref: pv.docno,
+        accname: "รายได้จากการขาย : " + item.productname,
+        amount: item.amount
+      });
+    });
+    cookingdatas.credit.push({
+      docdate: pv.docdate,
+      docref: pv.docno,
+      accname: pv.contact,
+      amount: pv.amount
+    });
+    datas.push(cookingdatas);
+  });
+  req.cookingpvscomplete = datas;
   next();
 };
 exports.reportpvs = function (req, res) {
- res.jsonp([1]);
+  res.jsonp(req.cookingpvscomplete);
 };
