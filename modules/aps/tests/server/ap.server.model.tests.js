@@ -6,12 +6,14 @@
 var should = require('should'),
     mongoose = require('mongoose'),
     User = mongoose.model('User'),
+    Contact = mongoose.model('Contact'),
     Ap = mongoose.model('Ap');
 
 /**
  * Globals
  */
 var user,
+    contact,
     ap;
 
 /**
@@ -28,24 +30,42 @@ describe('Ap Model Unit Tests:', function() {
             password: 'password'
         });
 
+        contact = new Contact({
+            name: 'Contact name',
+            govermentId: '123458999',
+            email: 'account@gmail.com',
+            tel: '0894447208',
+            address: {
+                address: '55/9',
+                subdistrict: 'lumlukka',
+                district: 'lumlukka',
+                province: 'prathumtani',
+                postcode: '12150'
+            }
+        });
+
         user.save(function() {
-            ap = new Ap({
-                docno: 'ap1234',
-                docdate: new Date(),
-                contact: 'c@net',
-                items: [{
-                    productname: 'longan',
-                    unitprice: 50,
-                    qty: 10,
-                    amount: 500
-                }],
-                amount: 500,
-                discount: 100,
-                netamount: 400,
-                user: user
+            contact.save(function() {
+                ap = new Ap({
+                    docno: 'ap1234',
+                    docdate: new Date(),
+                    contact: contact,
+                    items: [{
+                        productname: 'longan',
+                        unitprice: 50,
+                        qty: 10,
+                        amount: 500,
+                        vat: 7
+                    }],
+                    amount: 500,
+                    discount: 100,
+                    netamount: 400,
+                    user: user
+                });
+
+                done();
             });
 
-            done();
         });
     });
 
@@ -107,9 +127,11 @@ describe('Ap Model Unit Tests:', function() {
     });
 
     afterEach(function(done) {
-        Ap.remove().exec(function() {
-            User.remove().exec(function() {
-                done();
+        User.remove().exec(function() {
+            Contact.remove().exec(function() {
+                Ap.remove().exec(function() {
+                    done();
+                });
             });
         });
     });

@@ -22,9 +22,9 @@ var ApSchema = new Schema({
         trim: true
     },
     contact: {
-        type: String,
         required: 'Please fill Ap contact',
-        trim: true
+        type: Schema.ObjectId,
+        ref: 'Contact'
     },
     items: {
         required: 'Please fill Ap items',
@@ -32,10 +32,16 @@ var ApSchema = new Schema({
             productname: String,
             unitprice: Number,
             qty: Number,
-            amount: Number
+            amount: Number,
+            vat: Number
         }]
     },
+    status: {
+        type: String,
+        default: 'wait'
+    },
     amount: Number,
+    totalamount: Number,
     discount: Number,
     netamount: Number,
     created: {
