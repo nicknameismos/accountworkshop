@@ -6,7 +6,7 @@
 var contactsPolicy = require('../policies/contacts.server.policy'),
   contacts = require('../controllers/contacts.server.controller');
 
-module.exports = function(app) {
+module.exports = function (app) {
   // Contacts Routes
   app.route('/api/contacts').all(contactsPolicy.isAllowed)
     .get(contacts.list)
@@ -16,6 +16,9 @@ module.exports = function(app) {
     .get(contacts.read)
     .put(contacts.update)
     .delete(contacts.delete);
+
+  app.route('/api/save/contacts')
+    .post(contacts.createContact);
 
   // Finish by binding the Contact middleware
   app.param('contactId', contacts.contactByID);

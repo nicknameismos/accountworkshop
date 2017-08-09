@@ -12,11 +12,11 @@ var path = require('path'),
 /**
  * Create a Contact
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   var contact = new Contact(req.body);
   contact.user = req.user;
 
-  contact.save(function(err) {
+  contact.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -30,7 +30,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Contact
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
   // convert mongoose document to JSON
   var contact = req.contact ? req.contact.toJSON() : {};
 
@@ -44,12 +44,12 @@ exports.read = function(req, res) {
 /**
  * Update a Contact
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
   var contact = req.contact;
 
   contact = _.extend(contact, req.body);
 
-  contact.save(function(err) {
+  contact.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -63,10 +63,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Contact
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
   var contact = req.contact;
 
-  contact.remove(function(err) {
+  contact.remove(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -80,8 +80,8 @@ exports.delete = function(req, res) {
 /**
  * List of Contacts
  */
-exports.list = function(req, res) {
-  Contact.find().sort('-created').populate('user', 'displayName').exec(function(err, contacts) {
+exports.list = function (req, res) {
+  Contact.find().sort('-created').populate('user', 'displayName').exec(function (err, contacts) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 /**
  * Contact middleware
  */
-exports.contactByID = function(req, res, next, id) {
+exports.contactByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
@@ -113,5 +113,19 @@ exports.contactByID = function(req, res, next, id) {
     }
     req.contact = contact;
     next();
+  });
+};
+
+exports.createContact = function (req, res) {
+  var contact = new Contact(req.body);
+
+  contact.save(function (err) {
+    if (err) {
+      return res.status(400).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      res.jsonp(contact);
+    }
   });
 };
