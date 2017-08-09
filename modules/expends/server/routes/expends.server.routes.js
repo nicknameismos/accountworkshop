@@ -6,13 +6,21 @@
 var expendsPolicy = require('../policies/expends.server.policy'),
   expends = require('../controllers/expends.server.controller');
 
-module.exports = function(app) {
+module.exports = function (app) {
   // Expends Routes
   app.route('/api/expends').all(expendsPolicy.isAllowed)
     .get(expends.list)
     .post(expends.create);
 
   app.route('/api/expends/:expendId').all(expendsPolicy.isAllowed)
+    .get(expends.read)
+    .put(expends.update)
+    .delete(expends.delete);
+
+  app.route('/api/orther/expends')
+    .post(expends.createExpends);
+
+  app.route('/api/orther/expends/:expendId')
     .get(expends.read)
     .put(expends.update)
     .delete(expends.delete);
