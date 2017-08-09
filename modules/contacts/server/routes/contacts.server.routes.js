@@ -22,6 +22,7 @@ module.exports = function (app) {
   app.route('/api/orther/contacts/:contactId')
     .get(contacts.read)
     .put(contacts.update)
+    .delete(contacts.delete);
 
   // Finish by binding the Contact middleware
   app.param('contactId', contacts.contactByID);
