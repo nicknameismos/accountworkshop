@@ -2,12 +2,12 @@
 var multer = require('multer');
 module.exports = {
     app: {
-        title: 'Admin-template',
+        title: 'Account',
         description: 'Full-Stack JavaScript with MongoDB, Express, AngularJS, and Node.js by Secret',
         keywords: 'Admin-template',
         googleAnalyticsTrackingID: process.env.GOOGLE_ANALYTICS_TRACKING_ID || 'GOOGLE_ANALYTICS_TRACKING_ID'
     },
-    port: process.env.PORT || 3000,
+    port: process.env.PORT || process.env.MONGODB_URI || 3000,
     templateEngine: 'swig',
     // Session Cookie settings
     sessionCookie: {
