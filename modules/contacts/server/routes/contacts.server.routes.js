@@ -17,8 +17,11 @@ module.exports = function (app) {
     .put(contacts.update)
     .delete(contacts.delete);
 
-  app.route('/api/save/contacts')
+  app.route('/api/orther/contacts')
     .post(contacts.createContact);
+  app.route('/api/orther/contacts/:contactId')
+    .get(contacts.read)
+    .put(contacts.update)
 
   // Finish by binding the Contact middleware
   app.param('contactId', contacts.contactByID);

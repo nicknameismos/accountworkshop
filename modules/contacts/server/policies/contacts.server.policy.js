@@ -39,8 +39,11 @@ exports.invokeRolesPolicies = function () {
       resources: '/api/contacts/:contactId',
       permissions: ['get']
     }, {
-      resources: '/api/save/contacts',
+      resources: '/api/orther/contacts',
       permissions: ['post']
+    }, {
+      resources: '/api/orther/contacts/:contactId',
+      permissions: ['get']
     }]
   }]);
 };
