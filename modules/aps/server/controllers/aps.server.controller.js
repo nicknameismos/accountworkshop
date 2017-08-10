@@ -45,11 +45,11 @@ exports.create = function (req, res) {
 exports.createAps = function (req, res) {
     var ap = new Ap(req.body);
 
-    console.log(ap);
     ap.amount = 0;
     ap.totalamount = 0;
     ap.netamount = 0;
 
+    console.log(ap);
     if (ap.items && ap.items.length > 0) {
         ap.items.forEach(function (itm) {
             ap.amount += itm.amount;
@@ -57,6 +57,8 @@ exports.createAps = function (req, res) {
             ap.totalamount += itm.amount + vat;
         });
     }
+    
+    console.log(ap);
     ap.netamount = ap.totalamount - ap.discount;
     if (ap.netamount <= 0) {
         ap.netamount = 0;
