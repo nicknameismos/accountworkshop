@@ -32,8 +32,10 @@ var ApSchema = new Schema({
             name: String,
             unitprice: Number,
             qty: Number,
+            price: Number,
             amount: Number,
-            vat: Number
+            vat: Number,
+            vatamount: Number
         }]
     },
     status: {

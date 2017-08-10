@@ -51,20 +51,17 @@ exports.createAps = function (req, res) {
 
     if (ap.items && ap.items.length > 0) {
         ap.items.forEach(function (itm) {
-            ap.amount += itm.amount;
+            ap.amount += itm.price;
             var vat = itm.amount * itm.vat / 100;
-            ap.totalamount += itm.amount + vat;
+            ap.totalamount += itm.price + vat;
         });
     }
 
-    console.log('111111' + ap);
     ap.netamount = ap.totalamount - ap.discount;
-    console.log('222222' + ap);
 
     if (ap.netamount <= 0) {
         ap.netamount = 0;
     }
-    console.log('333333' + ap);
 
     ap.save(function (err) {
         if (err) {
