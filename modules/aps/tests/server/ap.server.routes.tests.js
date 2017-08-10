@@ -74,7 +74,7 @@ describe('Ap CRUD tests', function() {
                     docdate: new Date(),
                     contact: contact,
                     items: [{
-                        productname: 'longan',
+                        name: 'longan',
                         unitprice: 50,
                         qty: 10,
                         amount: 500,
@@ -90,7 +90,7 @@ describe('Ap CRUD tests', function() {
                     docdate: new Date(),
                     contact: contact,
                     items: [{
-                        productname: 'longaning',
+                        name: 'longaning',
                         unitprice: 50,
                         qty: 10,
                         amount: 500,
@@ -583,7 +583,7 @@ describe('Ap CRUD tests', function() {
 
                                 (aps[0].debit[0].docdate).should.match(ap.docdate);
                                 (aps[0].debit[0].docref).should.match(ap.docno);
-                                (aps[0].debit[0].accname).should.match(ap.items[0].productname);
+                                (aps[0].debit[0].accname).should.match(ap.items[0].name);
                                 (aps[0].debit[0].amount).should.match(ap.items[0].amount);
 
                                 (aps[0].debit[1].docdate).should.match(ap.docdate);

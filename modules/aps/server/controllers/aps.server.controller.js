@@ -198,7 +198,7 @@ exports.cookingreportaps = function (req, res, next) {
             cookingdatas.debit.push({
                 docref: ap.docno,
                 docdate: ap.docdate,
-                accname: item.productname,
+                accname: item.name,
                 amount: item.amount
             });
             vat = item.amount * (item.vat / 100);
