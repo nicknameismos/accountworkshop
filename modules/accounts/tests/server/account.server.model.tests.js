@@ -57,39 +57,6 @@ describe('Account Model Unit Tests:', function() {
                 done();
             });
         });
-
-        it('should be able to show an error when try to save duplicate name', function(done) {
-            var account2 = new Account(account);
-
-            return account.save(function(err) {
-                should.not.exist(err);
-                account2.save(function(err) {
-                    should.exist(err);
-                    done();
-                });
-            });
-        });
-
-        it('should be able to show an error when try to save without accountno', function(done) {
-            account.accountno = '';
-
-            return account.save(function(err) {
-                should.exist(err);
-                done();
-            });
-        });
-
-        it('should be able to show an error when try to save duplicate accountno', function(done) {
-            var account2 = new Account(account);
-
-            return account.save(function(err) {
-                should.not.exist(err);
-                account2.save(function(err) {
-                    should.exist(err);
-                    done();
-                });
-            });
-        });
     });
 
     afterEach(function(done) {

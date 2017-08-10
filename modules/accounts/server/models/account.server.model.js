@@ -14,21 +14,8 @@ var AccountSchema = new Schema({
         type: String,
         default: '',
         required: 'Please fill Account name',
-        unique: true,
         trim: true
     },
-    accountno: {
-        type: String,
-        default: '',
-        required: 'Please fill Account no',
-        unique: true,
-        trim: true
-    },
-    status: {
-        type: String,
-        default: 'active'
-    },
-    parent: Number,
     created: {
         type: Date,
         default: Date.now

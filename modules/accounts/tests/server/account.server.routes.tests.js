@@ -51,9 +51,7 @@ describe('Account CRUD tests', function() {
         // Save a user to the test db and create new Account
         user.save(function() {
             account = {
-                name: 'Account name',
-                accountno: '10000',
-                parent: 0,
+                name: 'Account Name',
                 user: user
             };
 
@@ -97,9 +95,7 @@ describe('Account CRUD tests', function() {
 
                                 // Set assertions
                                 (accounts[0].user._id).should.equal(userId);
-                                (accounts[0].name).should.match('Account name');
-                                (accounts[0].accountno).should.match('10000');
-                                (accounts[0].parent).should.match(0);
+                                (accounts[0].name).should.match('Account Name');
 
                                 // Call the assertion callback
                                 done();
@@ -141,36 +137,6 @@ describe('Account CRUD tests', function() {
                     .end(function(accountSaveErr, accountSaveRes) {
                         // Set message assertion
                         (accountSaveRes.body.message).should.match('Please fill Account name');
-
-                        // Handle Account save error
-                        done(accountSaveErr);
-                    });
-            });
-    });
-
-    it('should not be able to save an Account if no accountno is provided', function(done) {
-        // Invalidate name field
-        account.accountno = '';
-
-        agent.post('/api/auth/signin')
-            .send(credentials)
-            .expect(200)
-            .end(function(signinErr, signinRes) {
-                // Handle signin error
-                if (signinErr) {
-                    return done(signinErr);
-                }
-
-                // Get the userId
-                var userId = user.id;
-
-                // Save a new Account
-                agent.post('/api/accounts')
-                    .send(account)
-                    .expect(400)
-                    .end(function(accountSaveErr, accountSaveRes) {
-                        // Set message assertion
-                        (accountSaveRes.body.message).should.match('Please fill Account no');
 
                         // Handle Account save error
                         done(accountSaveErr);
