@@ -49,7 +49,6 @@ exports.createAps = function (req, res) {
     ap.totalamount = 0;
     ap.netamount = 0;
 
-    console.log(ap);
     if (ap.items && ap.items.length > 0) {
         ap.items.forEach(function (itm) {
             ap.amount += itm.amount;
@@ -57,12 +56,16 @@ exports.createAps = function (req, res) {
             ap.totalamount += itm.amount + vat;
         });
     }
-    
-    console.log(ap);
+
+    console.log('111111' + ap);
     ap.netamount = ap.totalamount - ap.discount;
+    console.log('222222' + ap);
+
     if (ap.netamount <= 0) {
         ap.netamount = 0;
     }
+    console.log('333333' + ap);
+
     ap.save(function (err) {
         if (err) {
             return res.status(400).send({
