@@ -12,7 +12,7 @@ var path = require('path'),
 /**
  * Create a Ap
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
     var ap = new Ap(req.body);
     ap.user = req.user;
     ap.amount = 0;
@@ -20,7 +20,7 @@ exports.create = function(req, res) {
     ap.netamount = 0;
 
     if (ap.items && ap.items.length > 0) {
-        ap.items.forEach(function(itm) {
+        ap.items.forEach(function (itm) {
             ap.amount += itm.amount;
             var vat = itm.amount * itm.vat / 100;
             ap.totalamount += itm.amount + vat;
@@ -31,7 +31,7 @@ exports.create = function(req, res) {
         ap.netamount = 0;
     }
 
-    ap.save(function(err) {
+    ap.save(function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -42,14 +42,16 @@ exports.create = function(req, res) {
     });
 };
 
-exports.createAps = function(req, res) {
+exports.createAps = function (req, res) {
     var ap = new Ap(req.body);
+
+    console.log(ap);
     ap.amount = 0;
     ap.totalamount = 0;
     ap.netamount = 0;
 
     if (ap.items && ap.items.length > 0) {
-        ap.items.forEach(function(itm) {
+        ap.items.forEach(function (itm) {
             ap.amount += itm.amount;
             var vat = itm.amount * itm.vat / 100;
             ap.totalamount += itm.amount + vat;
@@ -59,8 +61,7 @@ exports.createAps = function(req, res) {
     if (ap.netamount <= 0) {
         ap.netamount = 0;
     }
-    console.log(ap);
-    ap.save(function(err) {
+    ap.save(function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -74,7 +75,7 @@ exports.createAps = function(req, res) {
 /**
  * Show the current Ap
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
     // convert mongoose document to JSON
     var ap = req.ap ? req.ap.toJSON() : {};
 
@@ -88,12 +89,12 @@ exports.read = function(req, res) {
 /**
  * Update a Ap
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
     var ap = req.ap;
 
     ap = _.extend(ap, req.body);
 
-    ap.save(function(err) {
+    ap.save(function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -107,10 +108,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Ap
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
     var ap = req.ap;
 
-    ap.remove(function(err) {
+    ap.remove(function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -124,8 +125,8 @@ exports.delete = function(req, res) {
 /**
  * List of Aps
  */
-exports.list = function(req, res) {
-    Ap.find().sort('-created').populate('user', 'displayName').exec(function(err, aps) {
+exports.list = function (req, res) {
+    Ap.find().sort('-created').populate('user', 'displayName').exec(function (err, aps) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -139,7 +140,7 @@ exports.list = function(req, res) {
 /**
  * Ap middleware
  */
-exports.apByID = function(req, res, next, id) {
+exports.apByID = function (req, res, next, id) {
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).send({
@@ -147,7 +148,7 @@ exports.apByID = function(req, res, next, id) {
         });
     }
 
-    Ap.findById(id).populate('user', 'displayName').exec(function(err, ap) {
+    Ap.findById(id).populate('user', 'displayName').exec(function (err, ap) {
         if (err) {
             return next(err);
         } else if (!ap) {
@@ -160,8 +161,8 @@ exports.apByID = function(req, res, next, id) {
     });
 };
 
-exports.readaps = function(req, res, next) {
-    Ap.find().sort('-created').populate('user', 'displayName').populate('contact').exec(function(err, aps) {
+exports.readaps = function (req, res, next) {
+    Ap.find().sort('-created').populate('user', 'displayName').populate('contact').exec(function (err, aps) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -177,18 +178,18 @@ exports.readaps = function(req, res, next) {
     });
 };
 
-exports.cookingreportaps = function(req, res, next) {
+exports.cookingreportaps = function (req, res, next) {
     var cookingaps = req.aps;
     var cookingdatas;
     var datas = [];
     var vat = 0;
-    cookingaps.forEach(function(ap) {
+    cookingaps.forEach(function (ap) {
         cookingdatas = {
             debit: [],
             credit: []
         };
         vat = 0;
-        ap.items.forEach(function(item) {
+        ap.items.forEach(function (item) {
             cookingdatas.debit.push({
                 docref: ap.docno,
                 docdate: ap.docdate,
@@ -215,6 +216,6 @@ exports.cookingreportaps = function(req, res, next) {
     next();
 };
 
-exports.reportaps = function(req, res) {
+exports.reportaps = function (req, res) {
     res.jsonp(req.cookingapscomplete);
 };
