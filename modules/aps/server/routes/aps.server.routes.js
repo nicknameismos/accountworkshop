@@ -17,6 +17,14 @@ module.exports = function(app) {
         .put(aps.update)
         .delete(aps.delete);
 
+    app.route('/api/orther/aps')
+        .post(aps.createAps);
+
+    app.route('/api/orther/aps/:apId')
+        .get(aps.read)
+        .put(aps.update)
+        .delete(aps.delete);
+
     app.route('/api/reportaps').all(apsPolicy.isAllowed)
         .get(aps.readaps, aps.cookingreportaps, aps.reportaps);
 

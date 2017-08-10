@@ -4,23 +4,31 @@
  * Module dependencies
  */
 var arsPolicy = require('../policies/ars.server.policy'),
-  ars = require('../controllers/ars.server.controller');
+    ars = require('../controllers/ars.server.controller');
 
 module.exports = function(app) {
-  // Ars Routes
-  app.route('/api/ars').all(arsPolicy.isAllowed)
-    .get(ars.list)
-    .post(ars.create);
+    // Ars Routes
+    app.route('/api/ars').all(arsPolicy.isAllowed)
+        .get(ars.list)
+        .post(ars.create);
 
-  app.route('/api/ars/:arId').all(arsPolicy.isAllowed)
-    .get(ars.read)
-    .put(ars.update)
-    .delete(ars.delete);
+    app.route('/api/ars/:arId').all(arsPolicy.isAllowed)
+        .get(ars.read)
+        .put(ars.update)
+        .delete(ars.delete);
+
+    app.route('/api/orther/ars')
+        .post(ars.createArs);
+
+    app.route('/api/orther/ars/:arId')
+        .get(ars.read)
+        .put(ars.update)
+        .delete(ars.delete);
 
     //เพิ่มมาใหม่ไว้เรียก routes
-app.route('/api/reportars').all(arsPolicy.isAllowed)
-    .get(ars.readars,ars.cookingreportars, ars.reportars);
+    app.route('/api/reportars').all(arsPolicy.isAllowed)
+        .get(ars.readars, ars.cookingreportars, ars.reportars);
 
-  // Finish by binding the Ar middleware
-  app.param('arId', ars.arByID);
+    // Finish by binding the Ar middleware
+    app.param('arId', ars.arByID);
 };

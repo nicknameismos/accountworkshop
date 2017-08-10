@@ -42,6 +42,35 @@ exports.create = function(req, res) {
     });
 };
 
+exports.createArs = function(req, res) {
+    var ar = new Ar(req.body);
+    ar.amount = 0;
+    ar.totalamount = 0;
+    ar.netamount = 0;
+
+    if (ar.items && ar.items.length > 0) {
+        ar.items.forEach(function(itm) {
+            ar.amount += itm.amount;
+            var vat = itm.amount * itm.vat / 100;
+            ar.totalamount += itm.amount + vat;
+        });
+    }
+    ar.netamount = ar.totalamount - ar.discount;
+    if (ar.netamount <= 0) {
+        ar.netamount = 0;
+    }
+
+    ar.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(ar);
+        }
+    });
+};
+
 /**
  * Show the current Ar
  */

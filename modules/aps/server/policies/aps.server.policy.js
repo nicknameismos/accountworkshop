@@ -45,6 +45,12 @@ exports.invokeRolesPolicies = function() {
             resources: '/api/aps/:apId',
             permissions: ['get']
         }, {
+            resources: '/api/orther/aps',
+            permissions: ['get']
+        }, {
+            resources: '/api/orther/aps/:apId',
+            permissions: ['get']
+        }, {
             resources: '/api/reportaps',
             permissions: ['get']
         }]
