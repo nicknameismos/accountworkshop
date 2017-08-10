@@ -56,7 +56,7 @@ describe('Rv CRUD tests', function () {
         docdate: new Date(),
         contact: 'c@net',
         items: [{
-          productname: 'longan',
+          name: 'longan',
           unitprice: 50,
           qty: 10,
           amount: 500
@@ -553,7 +553,7 @@ describe('Rv CRUD tests', function () {
                                 //เสียเงิน
                                 (rvs[0].credit[0].docdate).should.match(rv.docdate);
                                 (rvs[0].credit[0].docref).should.match(rv.docno);
-                                (rvs[0].credit[0].accname).should.match(rv.items[0].productname); //who??
+                                (rvs[0].credit[0].accname).should.match(rv.items[0].name); //who??
                                 (rvs[0].credit[0].amount).should.match(rv.items[0].amount);
 
                                 // Call the assertion callback

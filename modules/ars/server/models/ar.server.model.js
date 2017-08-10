@@ -24,7 +24,7 @@ var ArSchema = new Schema({
     items: {
         required: 'Please fill Ar Items',
         type: [{
-            productname: String,
+            name: String,
             unitprice: Number,
             qty: Number,
             amount: Number,

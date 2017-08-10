@@ -29,7 +29,7 @@ var RvSchema = new Schema({
      items: {
         required: 'Please fill Rv items',
         type: [{
-            productname: String,
+            name: String,
             unitprice: Number,
             qty: Number,
             amount: Number

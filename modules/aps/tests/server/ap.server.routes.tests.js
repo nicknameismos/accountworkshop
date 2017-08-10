@@ -18,8 +18,7 @@ var app,
     credentials,
     user,
     contact,
-    ap,
-    ap2;
+    ap;
 
 /**
  * Ap routes tests
@@ -78,22 +77,6 @@ describe('Ap CRUD tests', function () {
                         unitprice: 50,
                         qty: 10,
                         amount: 500,
-                        vat: 7
-                    }],
-                    status: 'wait',
-                    discount: 100,
-                    user: user
-                };
-
-                ap2 = {
-                    docno: 'ap12345',
-                    docdate: new Date(),
-                    contact: contact,
-                    items: [{
-                        name: 'longaning',
-                        unitprice: 50,
-                        qty: 10,
-                        price: 500,
                         vat: 7
                     }],
                     status: 'wait',
@@ -605,7 +588,9 @@ describe('Ap CRUD tests', function () {
     afterEach(function (done) {
         User.remove().exec(function () {
             Contact.remove().exec(function () {
-                Ap.remove().exec(done);
+                Ap.remove().exec(function () {
+                    done();
+                });
             });
         });
     });

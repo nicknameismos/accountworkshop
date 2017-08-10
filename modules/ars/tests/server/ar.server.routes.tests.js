@@ -72,7 +72,7 @@ describe('Ar CRUD tests', function() {
                     docdate: new Date(),
                     contact: contact,
                     items: [{
-                        productname: 'longan',
+                        name: 'longan',
                         unitprice: 50,
                         qty: 10,
                         amount: 500,
@@ -576,7 +576,7 @@ describe('Ar CRUD tests', function() {
 
                                 (ars[0].credit[0].docref).should.match(ar.docno);
                                 (ars[0].credit[0].docdate).should.match(ar.docdate);
-                                (ars[0].credit[0].accname).should.match(ar.items[0].productname);
+                                (ars[0].credit[0].accname).should.match(ar.items[0].name);
                                 (ars[0].credit[0].amount).should.match(ar.items[0].amount);
 
                                 // Call the assertion callback

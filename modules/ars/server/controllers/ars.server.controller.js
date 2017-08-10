@@ -205,7 +205,7 @@ exports.cookingreportars = function(req, res, next) {
             cookingdatas.credit.push({
                 docref: ar.docno,
                 docdate: ar.docdate,
-                accname: item.productname,
+                accname: item.name,
                 amount: item.amount
             });
             vat = item.amount * (item.vat / 100);

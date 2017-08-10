@@ -19,8 +19,8 @@ var user,
 /**
  * Unit tests
  */
-describe('Ap Model Unit Tests:', function() {
-    beforeEach(function(done) {
+describe('Ap Model Unit Tests:', function () {
+    beforeEach(function (done) {
         user = new User({
             firstName: 'Full',
             lastName: 'Name',
@@ -44,10 +44,10 @@ describe('Ap Model Unit Tests:', function() {
             }
         });
 
-        user.save(function() {
-            contact.save(function() {
+        user.save(function () {
+            contact.save(function () {
                 ap = new Ap({
-                    docno: 'ap1234',
+                    docno: 'ap1',
                     docdate: new Date(),
                     contact: contact,
                     items: [{
@@ -69,67 +69,67 @@ describe('Ap Model Unit Tests:', function() {
         });
     });
 
-    describe('Method Save', function() {
-        it('should be able to save without problems', function(done) {
+    describe('Method Save', function () {
+        it('should be able to save without problems', function (done) {
             this.timeout(0);
-            return ap.save(function(err) {
+            return ap.save(function (err) {
                 should.not.exist(err);
                 done();
             });
         });
 
-        it('should be able to show an error when try to save without docno', function(done) {
+        it('should be able to show an error when try to save without docno', function (done) {
             ap.docno = '';
 
-            return ap.save(function(err) {
+            return ap.save(function (err) {
                 should.exist(err);
                 done();
             });
         });
 
-        it('should be able to show an error when try to save duplicate docno', function(done) {
+        it('should be able to show an error when try to save duplicate docno', function (done) {
             var ap2 = new Ap(ap);
-            ap.save(function(err) {
+            ap.save(function (err) {
                 should.not.exist(err);
-                ap2.save(function(err) {
+                ap2.save(function (err) {
                     should.exist(err);
                     done();
                 });
             });
         });
 
-        it('should be able to show an error when try to save without docdate', function(done) {
+        it('should be able to show an error when try to save without docdate', function (done) {
             ap.docdate = null;
 
-            return ap.save(function(err) {
+            return ap.save(function (err) {
                 should.exist(err);
                 done();
             });
         });
 
-        it('should be able to show an error when try to save without contact', function(done) {
+        it('should be able to show an error when try to save without contact', function (done) {
             ap.contact = null;
 
-            return ap.save(function(err) {
+            return ap.save(function (err) {
                 should.exist(err);
                 done();
             });
         });
 
-        it('should be able to show an error when try to save without items', function(done) {
+        it('should be able to show an error when try to save without items', function (done) {
             ap.items = null;
 
-            return ap.save(function(err) {
+            return ap.save(function (err) {
                 should.exist(err);
                 done();
             });
         });
     });
 
-    afterEach(function(done) {
-        User.remove().exec(function() {
-            Contact.remove().exec(function() {
-                Ap.remove().exec(function() {
+    afterEach(function (done) {
+        Ap.remove().exec(function () {
+            Contact.remove().exec(function () {
+                User.remove().exec(function () {
                     done();
                 });
             });

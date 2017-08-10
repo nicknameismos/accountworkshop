@@ -543,7 +543,7 @@ describe('Jv CRUD tests', function () {
 
                 // Set assertions
                 // (jvs).should.match('');
-                
+
                 // (jvs[0].user._id).should.equal(userId);
                 (jvs[0].debit[0].docdate).should.match(jv.docdate);
                 (jvs[0].debit[0].docref).should.match(jv.docno);

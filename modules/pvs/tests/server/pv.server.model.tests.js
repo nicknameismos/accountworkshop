@@ -21,8 +21,8 @@ var user,
 /**
  * Unit tests
  */
-describe('Pv Model Unit Tests:', function() {
-    beforeEach(function(done) {
+describe('Pv Model Unit Tests:', function () {
+    beforeEach(function (done) {
         user = new User({
             firstName: 'Full',
             lastName: 'Name',
@@ -51,7 +51,7 @@ describe('Pv Model Unit Tests:', function() {
             docdate: new Date(),
             contact: contact,
             items: [{
-                productname: 'longan',
+                name: 'longan',
                 unitprice: 50,
                 qty: 10,
                 amount: 500,
@@ -63,14 +63,16 @@ describe('Pv Model Unit Tests:', function() {
             netamount: 435
         });
 
-        user.save(function() {
-            contact.save(function() {
-                ap.save(function() {
+        user.save(function () {
+            contact.save(function () {
+                ap.save(function () {
                     pv = new Pv({
                         docno: 'ap1234',
                         docdate: new Date(),
                         contact: contact,
-                        items: [{ aps: ap }],
+                        items: [{
+                            aps: ap
+                        }],
                         amount: 500,
                         discount: 100,
                         netamount: 400,
@@ -82,53 +84,53 @@ describe('Pv Model Unit Tests:', function() {
         });
     });
 
-    describe('Method Save', function() {
-        it('should be able to save without problems', function(done) {
+    describe('Method Save', function () {
+        it('should be able to save without problems', function (done) {
             this.timeout(0);
-            return pv.save(function(err) {
+            return pv.save(function (err) {
                 should.not.exist(err);
                 done();
             });
         });
 
-        it('should be able to show an error when try to save without docno', function(done) {
+        it('should be able to show an error when try to save without docno', function (done) {
             pv.docno = '';
 
-            return pv.save(function(err) {
+            return pv.save(function (err) {
                 should.exist(err);
                 done();
             });
         });
 
-        it('should be able to show an error when try to save without docdate', function(done) {
+        it('should be able to show an error when try to save without docdate', function (done) {
             pv.docdate = '';
-            return pv.save(function(err) {
+            return pv.save(function (err) {
                 should.exist(err);
                 done();
             });
         });
 
-        it('should be able to show an error when try to save without contact', function(done) {
+        it('should be able to show an error when try to save without contact', function (done) {
             pv.contact = null;
-            return pv.save(function(err) {
+            return pv.save(function (err) {
                 should.exist(err);
                 done();
             });
         });
 
-        it('should be able to show an error when try to save without items', function(done) {
+        it('should be able to show an error when try to save without items', function (done) {
             pv.items = [];
-            return pv.save(function(err) {
+            return pv.save(function (err) {
                 should.exist(err);
                 done();
             });
         });
 
-        it('should be able to show an error when try to save duplicate docno', function(done) {
+        it('should be able to show an error when try to save duplicate docno', function (done) {
             var pv2 = new Pv(pv);
-            pv.save(function(err) {
+            pv.save(function (err) {
                 should.not.exist(err);
-                pv2.save(function(err) {
+                pv2.save(function (err) {
                     should.exist(err);
                     done();
                 });
@@ -136,11 +138,13 @@ describe('Pv Model Unit Tests:', function() {
         });
     });
 
-    afterEach(function(done) {
-        Ap.remove().exec(function() {
-            Pv.remove().exec(function() {
-                User.remove().exec(function() {
-                    done();
+    afterEach(function (done) {
+        Pv.remove().exec(function () {
+            Ap.remove().exec(function () {
+                Contact.remove().exec(function () {
+                    User.remove().exec(function () {
+                        done();
+                    });
                 });
             });
         });

@@ -44,6 +44,12 @@ exports.invokeRolesPolicies = function () {
     }, {
       resources: '/api/pvs/:pvId',
       permissions: ['get']
+    }, {
+      resources: '/api/orther/pvs',
+      permissions: ['post']
+    }, {
+      resources: '/api/orther/pvs/:pvId',
+      permissions: ['get']
     }]
   }]);
 };

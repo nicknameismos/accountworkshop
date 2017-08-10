@@ -24,9 +24,9 @@ var app,
 /**
  * Pv routes tests
  */
-describe('Pv CRUD tests', function() {
+describe('Pv CRUD tests', function () {
 
-    before(function(done) {
+    before(function (done) {
         // Get application
         app = express.init(mongoose);
         agent = request.agent(app);
@@ -34,7 +34,7 @@ describe('Pv CRUD tests', function() {
         done();
     });
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         // Create user credentials
         credentials = {
             username: 'username',
@@ -71,7 +71,7 @@ describe('Pv CRUD tests', function() {
             docdate: new Date(),
             contact: contact,
             items: [{
-                productname: 'longan',
+                name: 'longan',
                 unitprice: 50,
                 qty: 10,
                 amount: 500,
@@ -84,9 +84,9 @@ describe('Pv CRUD tests', function() {
         });
 
         // Save a user to the test db and create new Pv
-        user.save(function() {
-            contact.save(function() {
-                ap.save(function() {
+        user.save(function () {
+            contact.save(function () {
+                ap.save(function () {
                     pv = {
                         docno: 'ap1234',
                         docdate: new Date(),
@@ -104,11 +104,11 @@ describe('Pv CRUD tests', function() {
         });
     });
 
-    it('should be able to save a Pv if logged in', function(done) {
+    it('should be able to save a Pv if logged in', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -121,7 +121,7 @@ describe('Pv CRUD tests', function() {
                 agent.post('/api/pvs')
                     .send(pv)
                     .expect(200)
-                    .end(function(pvSaveErr, pvSaveRes) {
+                    .end(function (pvSaveErr, pvSaveRes) {
                         // Handle Pv save error
                         if (pvSaveErr) {
                             return done(pvSaveErr);
@@ -129,7 +129,7 @@ describe('Pv CRUD tests', function() {
 
                         // Get a list of Pvs
                         agent.get('/api/pvs')
-                            .end(function(pvsGetErr, pvsGetRes) {
+                            .end(function (pvsGetErr, pvsGetRes) {
                                 // Handle Pvs save error
                                 if (pvsGetErr) {
                                     return done(pvsGetErr);
@@ -151,24 +151,24 @@ describe('Pv CRUD tests', function() {
             });
     });
 
-    it('should not be able to save an Pv if not logged in', function(done) {
+    it('should not be able to save an Pv if not logged in', function (done) {
         agent.post('/api/pvs')
             .send(pv)
             .expect(403)
-            .end(function(pvSaveErr, pvSaveRes) {
+            .end(function (pvSaveErr, pvSaveRes) {
                 // Call the assertion callback
                 done(pvSaveErr);
             });
     });
 
-    it('should not be able to save an Pv if no docno is provided', function(done) {
+    it('should not be able to save an Pv if no docno is provided', function (done) {
         // Invalidate name field
         pv.docno = '';
 
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -181,7 +181,7 @@ describe('Pv CRUD tests', function() {
                 agent.post('/api/pvs')
                     .send(pv)
                     .expect(400)
-                    .end(function(pvSaveErr, pvSaveRes) {
+                    .end(function (pvSaveErr, pvSaveRes) {
                         // Set message assertion
                         (pvSaveRes.body.message).should.match('Please fill Pv docno');
 
@@ -191,14 +191,14 @@ describe('Pv CRUD tests', function() {
             });
     });
 
-    it('should not be able to save an Pv if no docdate is provided', function(done) {
+    it('should not be able to save an Pv if no docdate is provided', function (done) {
         // Invalidate name field
         pv.docdate = '';
 
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -211,7 +211,7 @@ describe('Pv CRUD tests', function() {
                 agent.post('/api/pvs')
                     .send(pv)
                     .expect(400)
-                    .end(function(pvSaveErr, pvSaveRes) {
+                    .end(function (pvSaveErr, pvSaveRes) {
                         // Set message assertion
                         (pvSaveRes.body.message).should.match('Please fill Pv docdate');
 
@@ -221,14 +221,14 @@ describe('Pv CRUD tests', function() {
             });
     });
 
-    it('should not be able to save an Pv if no contact is provided', function(done) {
+    it('should not be able to save an Pv if no contact is provided', function (done) {
         // Invalidate name field
         pv.contact = null;
 
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -241,7 +241,7 @@ describe('Pv CRUD tests', function() {
                 agent.post('/api/pvs')
                     .send(pv)
                     .expect(400)
-                    .end(function(pvSaveErr, pvSaveRes) {
+                    .end(function (pvSaveErr, pvSaveRes) {
                         // Set message assertion
                         (pvSaveRes.body.message).should.match('Please fill Pv contact');
 
@@ -251,27 +251,25 @@ describe('Pv CRUD tests', function() {
             });
     });
 
-    it('should not be able to save an Pv if no items is provided', function(done) {
+    it('should not be able to save an Pv if no items is provided', function (done) {
         // Invalidate name field
-        pv.items = null;
+        pv.items = [];
 
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
                 }
-
                 // Get the userId
                 var userId = user.id;
-
                 // Save a new Pv
                 agent.post('/api/pvs')
                     .send(pv)
                     .expect(400)
-                    .end(function(pvSaveErr, pvSaveRes) {
+                    .end(function (pvSaveErr, pvSaveRes) {
                         // Set message assertion
                         (pvSaveRes.body.message).should.match('Please fill Pv items');
 
@@ -281,12 +279,11 @@ describe('Pv CRUD tests', function() {
             });
     });
 
-
-    it('should be able to update an Pv if signed in', function(done) {
+    it('should be able to update an Pv if signed in', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -299,7 +296,7 @@ describe('Pv CRUD tests', function() {
                 agent.post('/api/pvs')
                     .send(pv)
                     .expect(200)
-                    .end(function(pvSaveErr, pvSaveRes) {
+                    .end(function (pvSaveErr, pvSaveRes) {
                         // Handle Pv save error
                         if (pvSaveErr) {
                             return done(pvSaveErr);
@@ -312,7 +309,7 @@ describe('Pv CRUD tests', function() {
                         agent.put('/api/pvs/' + pvSaveRes.body._id)
                             .send(pv)
                             .expect(200)
-                            .end(function(pvUpdateErr, pvUpdateRes) {
+                            .end(function (pvUpdateErr, pvUpdateRes) {
                                 // Handle Pv update error
                                 if (pvUpdateErr) {
                                     return done(pvUpdateErr);
@@ -329,15 +326,15 @@ describe('Pv CRUD tests', function() {
             });
     });
 
-    it('should be able to get a list of Pvs if not signed in', function(done) {
+    it('should be able to get a list of Pvs if not signed in', function (done) {
         // Create new Pv model instance
         var pvObj = new Pv(pv);
 
         // Save the pv
-        pvObj.save(function() {
+        pvObj.save(function () {
             // Request Pvs
             request(app).get('/api/pvs')
-                .end(function(req, res) {
+                .end(function (req, res) {
                     // Set assertion
                     res.body.should.be.instanceof(Array).and.have.lengthOf(1);
 
@@ -348,14 +345,14 @@ describe('Pv CRUD tests', function() {
         });
     });
 
-    it('should be able to get a single Pv if not signed in', function(done) {
+    it('should be able to get a single Pv if not signed in', function (done) {
         // Create new Pv model instance
         var pvObj = new Pv(pv);
 
         // Save the Pv
-        pvObj.save(function() {
+        pvObj.save(function () {
             request(app).get('/api/pvs/' + pvObj._id)
-                .end(function(req, res) {
+                .end(function (req, res) {
                     // Set assertion
                     res.body.should.be.instanceof(Object).and.have.property('docno', pv.docno);
 
@@ -365,10 +362,10 @@ describe('Pv CRUD tests', function() {
         });
     });
 
-    it('should return proper error for single Pv with an invalid Id, if not signed in', function(done) {
+    it('should return proper error for single Pv with an invalid Id, if not signed in', function (done) {
         // test is not a valid mongoose Id
         request(app).get('/api/pvs/test')
-            .end(function(req, res) {
+            .end(function (req, res) {
                 // Set assertion
                 res.body.should.be.instanceof(Object).and.have.property('message', 'Pv is invalid');
 
@@ -377,10 +374,10 @@ describe('Pv CRUD tests', function() {
             });
     });
 
-    it('should return proper error for single Pv which doesnt exist, if not signed in', function(done) {
+    it('should return proper error for single Pv which doesnt exist, if not signed in', function (done) {
         // This is a valid mongoose Id but a non-existent Pv
         request(app).get('/api/pvs/559e9cd815f80b4c256a8f41')
-            .end(function(req, res) {
+            .end(function (req, res) {
                 // Set assertion
                 res.body.should.be.instanceof(Object).and.have.property('message', 'No Pv with that identifier has been found');
 
@@ -389,11 +386,11 @@ describe('Pv CRUD tests', function() {
             });
     });
 
-    it('should be able to delete an Pv if signed in', function(done) {
+    it('should be able to delete an Pv if signed in', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -406,7 +403,7 @@ describe('Pv CRUD tests', function() {
                 agent.post('/api/pvs')
                     .send(pv)
                     .expect(200)
-                    .end(function(pvSaveErr, pvSaveRes) {
+                    .end(function (pvSaveErr, pvSaveRes) {
                         // Handle Pv save error
                         if (pvSaveErr) {
                             return done(pvSaveErr);
@@ -416,7 +413,7 @@ describe('Pv CRUD tests', function() {
                         agent.delete('/api/pvs/' + pvSaveRes.body._id)
                             .send(pv)
                             .expect(200)
-                            .end(function(pvDeleteErr, pvDeleteRes) {
+                            .end(function (pvDeleteErr, pvDeleteRes) {
                                 // Handle pv error error
                                 if (pvDeleteErr) {
                                     return done(pvDeleteErr);
@@ -432,7 +429,7 @@ describe('Pv CRUD tests', function() {
             });
     });
 
-    it('should not be able to delete an Pv if not signed in', function(done) {
+    it('should not be able to delete an Pv if not signed in', function (done) {
         // Set Pv user
         pv.user = user;
 
@@ -440,11 +437,11 @@ describe('Pv CRUD tests', function() {
         var pvObj = new Pv(pv);
 
         // Save the Pv
-        pvObj.save(function() {
+        pvObj.save(function () {
             // Try deleting Pv
             request(app).delete('/api/pvs/' + pvObj._id)
                 .expect(403)
-                .end(function(pvDeleteErr, pvDeleteRes) {
+                .end(function (pvDeleteErr, pvDeleteRes) {
                     // Set message assertion
                     (pvDeleteRes.body.message).should.match('User is not authorized');
 
@@ -455,7 +452,7 @@ describe('Pv CRUD tests', function() {
         });
     });
 
-    it('should be able to get a single Pv that has an orphaned user reference', function(done) {
+    it('should be able to get a single Pv that has an orphaned user reference', function (done) {
         // Create orphan user creds
         var _creds = {
             username: 'orphan',
@@ -473,7 +470,7 @@ describe('Pv CRUD tests', function() {
             provider: 'local'
         });
 
-        _orphan.save(function(err, orphan) {
+        _orphan.save(function (err, orphan) {
             // Handle save error
             if (err) {
                 return done(err);
@@ -482,7 +479,7 @@ describe('Pv CRUD tests', function() {
             agent.post('/api/auth/signin')
                 .send(_creds)
                 .expect(200)
-                .end(function(signinErr, signinRes) {
+                .end(function (signinErr, signinRes) {
                     // Handle signin error
                     if (signinErr) {
                         return done(signinErr);
@@ -495,7 +492,7 @@ describe('Pv CRUD tests', function() {
                     agent.post('/api/pvs')
                         .send(pv)
                         .expect(200)
-                        .end(function(pvSaveErr, pvSaveRes) {
+                        .end(function (pvSaveErr, pvSaveRes) {
                             // Handle Pv save error
                             if (pvSaveErr) {
                                 return done(pvSaveErr);
@@ -507,12 +504,12 @@ describe('Pv CRUD tests', function() {
                             should.equal(pvSaveRes.body.user._id, orphanId);
 
                             // force the Pv to have an orphaned user reference
-                            orphan.remove(function() {
+                            orphan.remove(function () {
                                 // now signin with valid user
                                 agent.post('/api/auth/signin')
                                     .send(credentials)
                                     .expect(200)
-                                    .end(function(err, res) {
+                                    .end(function (err, res) {
                                         // Handle signin error
                                         if (err) {
                                             return done(err);
@@ -521,7 +518,7 @@ describe('Pv CRUD tests', function() {
                                         // Get the Pv
                                         agent.get('/api/pvs/' + pvSaveRes.body._id)
                                             .expect(200)
-                                            .end(function(pvInfoErr, pvInfoRes) {
+                                            .end(function (pvInfoErr, pvInfoRes) {
                                                 // Handle Pv error
                                                 if (pvInfoErr) {
                                                     return done(pvInfoErr);
@@ -542,11 +539,11 @@ describe('Pv CRUD tests', function() {
         });
     });
 
-    it('should get report PVS successfuly', function(done) {
+    it('should get report PVS successfuly', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -554,75 +551,68 @@ describe('Pv CRUD tests', function() {
 
                 agent.post('/api/pvs')
                     .send(pv)
-                    .end(function(pvSaveErr, pvSaveRes) {
+                    .end(function (pvSaveErr, pvSaveRes) {
                         // Call the assertion callback
                         if (pvSaveErr) {
                             return done(pvSaveErr);
                         }
+
+                        // Save a new Pv
+                        agent.get('/api/reportpvs')
+                            .expect(200)
+                            .end(function (pvGetRpErr, pvGetRpRes) {
+                                // Handle Pv error
+                                if (pvGetRpErr) {
+                                    return done(pvGetRpErr);
+                                }
+
+                                // Get Aps list
+                                var pvs = pvGetRpRes.body;
+
+                                // Set assertions
+                                // (aps[0].user._id).should.equal(userId);
+                                (pvs.length).should.match(1);
+                                (pvs[0].debit[0].docref).should.match(pv.docno);
+                                (pvs[0].debit[0].docdate).should.match(pv.docdate);
+                                (pvs[0].debit[0].accname).should.match(pv.contact.name);
+                                (pvs[0].debit[0].amount).should.match(335);
+
+                                (pvs[0].credit[0].docref).should.match(pv.docno);
+                                (pvs[0].credit[0].apref).should.match(ap.docno);
+                                (pvs[0].credit[0].docdate).should.match(pv.docdate);
+                                (pvs[0].credit[0].accname).should.match(ap.items[0].name);
+                                (pvs[0].credit[0].amount).should.match(500);
+
+                                (pvs[0].credit[1].docref).should.match(pv.docno);
+                                (pvs[0].credit[1].apref).should.match(ap.docno);
+                                (pvs[0].credit[1].docdate).should.match(pv.docdate);
+                                (pvs[0].credit[1].accname).should.match('ส่วนลดในบิล');
+                                (pvs[0].credit[1].amount).should.match(100);
+
+                                (pvs[0].credit[2].docref).should.match(pv.docno);
+                                (pvs[0].credit[2].apref).should.match(ap.docno);
+                                (pvs[0].credit[2].docdate).should.match(pv.docdate);
+                                (pvs[0].credit[2].accname).should.match('ภาษีจ่าย');
+                                (pvs[0].credit[2].amount).should.match(35);
+
+                                (pvs[0].credit[3].docref).should.match(pv.docno);
+                                (pvs[0].credit[3].docdate).should.match(pv.docdate);
+                                (pvs[0].credit[3].accname).should.match('ส่วนลด');
+                                (pvs[0].credit[3].amount).should.match(100);
+                                // Handle Pv save error
+                                done();
+                            });
                     });
 
-                // Save a new Pv
-                agent.get('/api/reportpvs')
-                    .expect(200)
-                    .end(function(pvGetRpErr, pvGetRpRes) {
-                        // Handle Pv error
-                        if (pvGetRpErr) {
-                            return done(pvGetRpErr);
-                        }
-
-                        // Get Aps list
-                        var pvs = pvGetRpRes.body;
-
-                        // Set assertions
-                        // (aps[0].user._id).should.equal(userId);
-                        (pvs.length).should.match(1);
-                        (pvs[0].debit[0].docref).should.match(pv.docno);
-                        (pvs[0].debit[0].docdate).should.match(pv.docdate);
-                        (pvs[0].debit[0].accname).should.match(pv.contact.name);
-                        (pvs[0].debit[0].amount).should.match(335);
-
-                        (pvs[0].credit[0].docref).should.match(pv.docno);
-                        (pvs[0].credit[0].apref).should.match(ap.docno);
-                        (pvs[0].credit[0].docdate).should.match(pv.docdate);
-                        (pvs[0].credit[0].accname).should.match(ap.items[0].productname);
-                        (pvs[0].credit[0].amount).should.match(500);
-
-                        (pvs[0].credit[1].docref).should.match(pv.docno);
-                        (pvs[0].credit[1].apref).should.match(ap.docno);
-                        (pvs[0].credit[1].docdate).should.match(pv.docdate);
-                        (pvs[0].credit[1].accname).should.match('ส่วนลดในบิล');
-                        (pvs[0].credit[1].amount).should.match(100);
-
-                        (pvs[0].credit[2].docref).should.match(pv.docno);
-                        (pvs[0].credit[2].apref).should.match(ap.docno);
-                        (pvs[0].credit[2].docdate).should.match(pv.docdate);
-                        (pvs[0].credit[2].accname).should.match('ภาษีจ่าย');
-                        (pvs[0].credit[2].amount).should.match(35);
-
-                        (pvs[0].credit[3].docref).should.match(pv.docno);
-                        (pvs[0].credit[3].docdate).should.match(pv.docdate);
-                        (pvs[0].credit[3].accname).should.match('ส่วนลด');
-                        (pvs[0].credit[3].amount).should.match(100);
-
-
-                        // Handle Pv save error
-                        done();
-                    });
             });
     });
 
-});
-
-
-
-
-
-
-afterEach(function(done) {
-    User.remove().exec(function() {
-        Contact.remove().exec(function() {
-            Ap.remove().exec(function() {
-                Pv.remove().exec(done);
+    afterEach(function (done) {
+        User.remove().exec(function () {
+            Contact.remove().exec(function () {
+                Ap.remove().exec(function () {
+                    Pv.remove().exec(done);
+                });
             });
         });
     });

@@ -51,7 +51,7 @@ describe('Ar Model Unit Tests:', function() {
                     docdate: new Date(),
                     contact: contact,
                     items: [{
-                        productname: 'longan',
+                        name: 'longan',
                         unitprice: 50,
                         qty: 10,
                         amount: 500,
@@ -115,7 +115,7 @@ describe('Ar Model Unit Tests:', function() {
         // items save test
         it('should be able to show an error when try to save without items', function(done) {
             ar.items = [{
-                productname: 'longan',
+                name: 'longan',
                 unitprice: 50,
                 qty: 10,
                 amount: 500

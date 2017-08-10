@@ -156,7 +156,7 @@ exports.cookingreportrvs = function (req, res, next) {
       cookingdatas.credit.push({
         docref: rv.docno,
         docdate: rv.docdate,
-        accname: item.productname,
+        accname: item.name,
         amount: item.amount
       });
     });
