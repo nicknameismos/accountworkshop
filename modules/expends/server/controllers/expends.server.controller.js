@@ -12,11 +12,11 @@ var path = require('path'),
 /**
  * Create a Expend
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   var expend = new Expend(req.body);
   expend.user = req.user;
 
-  expend.save(function(err) {
+  expend.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -30,7 +30,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Expend
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
   // convert mongoose document to JSON
   var expend = req.expend ? req.expend.toJSON() : {};
 
@@ -44,12 +44,12 @@ exports.read = function(req, res) {
 /**
  * Update a Expend
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
   var expend = req.expend;
 
   expend = _.extend(expend, req.body);
 
-  expend.save(function(err) {
+  expend.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -63,10 +63,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Expend
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
   var expend = req.expend;
 
-  expend.remove(function(err) {
+  expend.remove(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -80,8 +80,8 @@ exports.delete = function(req, res) {
 /**
  * List of Expends
  */
-exports.list = function(req, res) {
-  Expend.find().sort('-created').populate('user', 'displayName').exec(function(err, expends) {
+exports.list = function (req, res) {
+  Expend.find().sort('-created').populate('user', 'displayName').exec(function (err, expends) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 /**
  * Expend middleware
  */
-exports.expendByID = function(req, res, next, id) {
+exports.expendByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
@@ -113,5 +113,19 @@ exports.expendByID = function(req, res, next, id) {
     }
     req.expend = expend;
     next();
+  });
+};
+
+exports.createExpends = function (req, res) {
+  var expend = new Expend(req.body);
+
+  expend.save(function (err) {
+    if (err) {
+      return res.status(400).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      res.jsonp(expend);
+    }
   });
 };

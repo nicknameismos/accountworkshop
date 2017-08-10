@@ -38,6 +38,12 @@ exports.invokeRolesPolicies = function () {
     }, {
       resources: '/api/expends/:expendId',
       permissions: ['get']
+    }, {
+      resources: '/api/orther/expends',
+      permissions: ['get']
+    }, {
+      resources: '/api/orther/expends/:expendId',
+      permissions: ['get']
     }]
   }]);
 };
