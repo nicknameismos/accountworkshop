@@ -59,7 +59,7 @@ exports.createAps = function(req, res) {
     if (ap.netamount <= 0) {
         ap.netamount = 0;
     }
-
+    console.log(ap);
     ap.save(function(err) {
         if (err) {
             return res.status(400).send({
