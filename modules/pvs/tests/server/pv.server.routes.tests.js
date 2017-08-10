@@ -575,21 +575,36 @@ describe('Pv CRUD tests', function() {
 
                         // Set assertions
                         // (aps[0].user._id).should.equal(userId);
-                        (pvs).should.match('');
-                        // (pvs[0].debit[0].docref).should.match(pv.docno);
-                        // (pvs[0].debit[0].docdate).should.match(pv.docdate);
-                        // (pvs[0].debit[0].accname).should.match(pv.contact.name);
-                        // (pvs[0].debit[0].amount).should.match(435);
+                        (pvs.length).should.match(1);
+                        (pvs[0].debit[0].docref).should.match(pv.docno);
+                        (pvs[0].debit[0].docdate).should.match(pv.docdate);
+                        (pvs[0].debit[0].accname).should.match(pv.contact.name);
+                        (pvs[0].debit[0].amount).should.match(335);
+
+                        (pvs[0].credit[0].docref).should.match(pv.docno);
+                        (pvs[0].credit[0].apref).should.match(ap.docno);
+                        (pvs[0].credit[0].docdate).should.match(pv.docdate);
+                        (pvs[0].credit[0].accname).should.match(ap.items[0].productname);
+                        (pvs[0].credit[0].amount).should.match(500);
+
+                        (pvs[0].credit[1].docref).should.match(pv.docno);
+                        (pvs[0].credit[1].apref).should.match(ap.docno);
+                        (pvs[0].credit[1].docdate).should.match(pv.docdate);
+                        (pvs[0].credit[1].accname).should.match('ส่วนลดในบิล');
+                        (pvs[0].credit[1].amount).should.match(100);
+
+                        (pvs[0].credit[2].docref).should.match(pv.docno);
+                        (pvs[0].credit[2].apref).should.match(ap.docno);
+                        (pvs[0].credit[2].docdate).should.match(pv.docdate);
+                        (pvs[0].credit[2].accname).should.match('ภาษีจ่าย');
+                        (pvs[0].credit[2].amount).should.match(35);
+
+                        (pvs[0].credit[3].docref).should.match(pv.docno);
+                        (pvs[0].credit[3].docdate).should.match(pv.docdate);
+                        (pvs[0].credit[3].accname).should.match('ส่วนลด');
+                        (pvs[0].credit[3].amount).should.match(100);
 
 
-                        // // (pvs[0].debit[0].accname).should.match(pv.items[0].productname);
-                        // (pvs[0].debit[0].accname).should.match("รายได้จากการขาย : " + pv.items[0].productname);
-                        // (pvs[0].debit[0].amount).should.match(pv.items[0].aps.amount);
-
-                        // (pvs[0].credit[0].docdate).should.match(pv.docdate);
-                        // (pvs[0].credit[0].docref).should.match(pv.docno);
-                        // (pvs[0].credit[0].accname).should.match(pv.contact.name);
-                        // (pvs[0].credit[0].amount).should.match(pv.amount);
                         // Handle Pv save error
                         done();
                     });

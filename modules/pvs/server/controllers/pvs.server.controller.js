@@ -158,13 +158,19 @@ exports.pvByID = function(req, res, next, id) {
     });
 };
 exports.readpvs = function(req, res, next) {
-    Pv.find().sort('-created').populate('user', 'displayName').populate('contact').exec(function(err, pvs) {
+    Pv.find().sort('-created').populate('user', 'displayName').populate('contact').populate({
+        path: 'items',
+        populate: {
+            path: 'aps',
+            model: 'Ap'
+        }
+    }).exec(function(err, pvs) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            if (pvs.length > 0) {
+            if (pvs && pvs.length > 0) {
                 req.pvs = pvs;
                 next();
             } else {
@@ -173,28 +179,57 @@ exports.readpvs = function(req, res, next) {
         }
     });
 };
+
 exports.cookingreportpvs = function(req, res, next) {
     var cookingpvs = req.pvs;
     var cookingdatas;
     var datas = [];
+    var vat = 0;
     cookingpvs.forEach(function(pv) {
         cookingdatas = {
             debit: [],
             credit: []
         };
-        pv.items.forEach(function(item) {
-            cookingdatas.debit.push({
+        cookingdatas.debit.push({
+            docref: pv.docno,
+            docdate: pv.docdate,
+            accname: pv.contact.name,
+            amount: pv.netamount
+        });
+        pv.items.forEach(function(ap) {
+            vat = 0;
+            // console.log(ap.aps.items);
+            ap.aps.items.forEach(function(item) {
+                cookingdatas.credit.push({
+                    docdate: pv.docdate,
+                    docref: pv.docno,
+                    apref: ap.aps.docno,
+                    accname: item.productname,
+                    amount: item.amount
+                });
+                vat += item.amount * (item.vat / 100);
+            });
+            cookingdatas.credit.push({
                 docdate: pv.docdate,
                 docref: pv.docno,
-                accname: "รายได้จากการขาย : " + item.productname,
-                amount: item.amount
+                apref: ap.aps.docno,
+                accname: 'ส่วนลดในบิล',
+                amount: ap.aps.discount
+            });
+            cookingdatas.credit.push({
+                docdate: pv.docdate,
+                docref: pv.docno,
+                apref: ap.aps.docno,
+                accname: 'ภาษีจ่าย',
+                amount: vat
             });
         });
+
         cookingdatas.credit.push({
             docdate: pv.docdate,
             docref: pv.docno,
-            accname: pv.contact,
-            amount: pv.amount
+            accname: 'ส่วนลด',
+            amount: pv.discount
         });
         datas.push(cookingdatas);
     });
