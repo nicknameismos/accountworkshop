@@ -29,7 +29,7 @@ var ApSchema = new Schema({
     items: {
         required: 'Please fill Ap items',
         type: [{
-            productname: String,
+            name: String,
             unitprice: Number,
             qty: Number,
             amount: Number,

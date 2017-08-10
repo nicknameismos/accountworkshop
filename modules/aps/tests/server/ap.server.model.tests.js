@@ -51,7 +51,7 @@ describe('Ap Model Unit Tests:', function() {
                     docdate: new Date(),
                     contact: contact,
                     items: [{
-                        productname: 'longan',
+                        name: 'longan',
                         unitprice: 50,
                         qty: 10,
                         amount: 500,
