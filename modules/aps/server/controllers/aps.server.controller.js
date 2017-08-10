@@ -51,8 +51,9 @@ exports.createAps = function (req, res) {
 
     if (ap.items && ap.items.length > 0) {
         ap.items.forEach(function (itm) {
-            ap.amount += itm.price;
-            ap.vatamount = itm.amount * (itm.vat / 100);
+            itm.amount = itm.price * itm.qty
+            ap.amount += itm.amount;
+            ap.vatamount = (itm.amount * itm.vat) / 100;
             ap.totalamount += itm.price + ap.vatamount;
         });
     }
