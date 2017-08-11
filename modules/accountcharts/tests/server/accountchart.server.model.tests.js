@@ -32,7 +32,7 @@ describe('Accountchart Model Unit Tests:', function() {
             accountchart = new Accountchart({
                 name: 'Account name',
                 accountno: '10000',
-                parent: 0,
+                parent: '0',
                 user: user
             });
 
