@@ -38,10 +38,15 @@ exports.invokeRolesPolicies = function () {
     }, {
       resources: '/api/accountcharts/:accountchartId',
       permissions: ['get']
+    }, {
+      resources: '/api/orther/accountcharts',
+      permissions: ['post']
+    }, {
+      resources: '/api/orther/accountcharts/:accountchartId',
+      permissions: ['get']
     }]
   }]);
 };
-
 /**
  * Check If Accountcharts Policy Allows
  */
