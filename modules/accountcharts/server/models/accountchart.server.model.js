@@ -28,7 +28,7 @@ var AccountchartSchema = new Schema({
         type: String,
         default: 'active'
     },
-    parent: Number,
+    parent: String,
     created: {
         type: Date,
         default: Date.now

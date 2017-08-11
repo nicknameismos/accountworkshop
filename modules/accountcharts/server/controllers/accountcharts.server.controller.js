@@ -12,11 +12,11 @@ var path = require('path'),
 /**
  * Create a Accountchart
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   var accountchart = new Accountchart(req.body);
   accountchart.user = req.user;
 
-  accountchart.save(function(err) {
+  accountchart.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -30,7 +30,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Accountchart
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
   // convert mongoose document to JSON
   var accountchart = req.accountchart ? req.accountchart.toJSON() : {};
 
@@ -44,12 +44,12 @@ exports.read = function(req, res) {
 /**
  * Update a Accountchart
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
   var accountchart = req.accountchart;
 
   accountchart = _.extend(accountchart, req.body);
 
-  accountchart.save(function(err) {
+  accountchart.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -63,10 +63,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Accountchart
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
   var accountchart = req.accountchart;
 
-  accountchart.remove(function(err) {
+  accountchart.remove(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -80,8 +80,8 @@ exports.delete = function(req, res) {
 /**
  * List of Accountcharts
  */
-exports.list = function(req, res) {
-  Accountchart.find().sort('-created').populate('user', 'displayName').exec(function(err, accountcharts) {
+exports.list = function (req, res) {
+  Accountchart.find().sort('-created').populate('user', 'displayName').exec(function (err, accountcharts) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 /**
  * Accountchart middleware
  */
-exports.accountchartByID = function(req, res, next, id) {
+exports.accountchartByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
@@ -113,5 +113,19 @@ exports.accountchartByID = function(req, res, next, id) {
     }
     req.accountchart = accountchart;
     next();
+  });
+};
+
+exports.createCccountcharts = function (req, res) {
+  var accountchart = new Accountchart(req.body);
+
+  accountchart.save(function (err) {
+    if (err) {
+      return res.status(400).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      res.jsonp(accountchart);
+    }
   });
 };

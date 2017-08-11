@@ -6,7 +6,7 @@
 var accountchartsPolicy = require('../policies/accountcharts.server.policy'),
   accountcharts = require('../controllers/accountcharts.server.controller');
 
-module.exports = function(app) {
+module.exports = function (app) {
   // Accountcharts Routes
   app.route('/api/accountcharts').all(accountchartsPolicy.isAllowed)
     .get(accountcharts.list)
@@ -17,6 +17,13 @@ module.exports = function(app) {
     .put(accountcharts.update)
     .delete(accountcharts.delete);
 
+  app.route('/api/orther/accountcharts')
+    .post(accountcharts.createCccountcharts);
+
+  app.route('/api/orther/accountcharts/:accountchartId')
+    .get(accountcharts.read)
+    .put(accountcharts.update)
+    .delete(accountcharts.delete);
   // Finish by binding the Accountchart middleware
   app.param('accountchartId', accountcharts.accountchartByID);
 };

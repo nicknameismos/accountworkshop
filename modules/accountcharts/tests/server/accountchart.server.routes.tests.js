@@ -53,7 +53,7 @@ describe('Accountchart CRUD tests', function() {
             accountchart = {
                 name: 'Account name',
                 accountno: '10000',
-                parent: 0,
+                parent: '0',
                 user: user
             };
             done();
@@ -98,7 +98,7 @@ describe('Accountchart CRUD tests', function() {
                                 (accountcharts[0].user._id).should.equal(userId);
                                 (accountcharts[0].name).should.match('Account name');
                                 (accountcharts[0].accountno).should.match('10000');
-                                (accountcharts[0].parent).should.match(0);
+                                (accountcharts[0].parent).should.match('0');
 
                                 // Call the assertion callback
                                 done();
