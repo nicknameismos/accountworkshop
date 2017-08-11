@@ -6,6 +6,7 @@ var should = require('should'),
     mongoose = require('mongoose'),
     User = mongoose.model('User'),
     Account = mongoose.model('Account'),
+    Accountchart = mongoose.model('Accountchart'),
     express = require(path.resolve('./config/lib/express'));
 
 /**
@@ -15,6 +16,8 @@ var app,
     agent,
     credentials,
     user,
+    accountchart,
+    account3,
     account;
 
 /**
@@ -48,14 +51,38 @@ describe('Account CRUD tests', function() {
             provider: 'local'
         });
 
+        accountchart = new Accountchart({
+            name: ' name',
+            accountno: 'Account0000',
+            parent: 0,
+            user: user
+        });
+
         // Save a user to the test db and create new Account
         user.save(function() {
-            account = {
-                name: 'Account Name',
-                user: user
-            };
-
-            done();
+            accountchart.save(function() {
+                account = {
+                    // docno: 'JV20170800001',
+                    docdate: new Date(),
+                    debits: [{
+                        account: accountchart,
+                        description: 'ค่าข้าว',
+                        amount: 50
+                    }],
+                    credits: [{
+                        account: accountchart,
+                        description: 'ค่าข้าว',
+                        amount: 50
+                    }],
+                    remark: 'JV',
+                    totaldebit: 50,
+                    totalcredit: 50,
+                    gltype: 'JV',
+                    status: 'Open',
+                    user: user
+                };
+                done();
+            });
         });
     });
 
@@ -95,7 +122,8 @@ describe('Account CRUD tests', function() {
 
                                 // Set assertions
                                 (accounts[0].user._id).should.equal(userId);
-                                (accounts[0].name).should.match('Account Name');
+                                (accounts[0].docno).should.match('JV20170800001');
+                                (accounts[0].docdate).should.match(new Date());
 
                                 // Call the assertion callback
                                 done();
@@ -114,9 +142,9 @@ describe('Account CRUD tests', function() {
             });
     });
 
-    it('should not be able to save an Account if no name is provided', function(done) {
+    it('should not be able to save an Account if no docdate is provided', function(done) {
         // Invalidate name field
-        account.name = '';
+        account.docdate = null;
 
         agent.post('/api/auth/signin')
             .send(credentials)
@@ -136,7 +164,7 @@ describe('Account CRUD tests', function() {
                     .expect(400)
                     .end(function(accountSaveErr, accountSaveRes) {
                         // Set message assertion
-                        (accountSaveRes.body.message).should.match('Please fill Account name');
+                        (accountSaveRes.body.message).should.match('Please fill Account docdate');
 
                         // Handle Account save error
                         done(accountSaveErr);
@@ -167,8 +195,8 @@ describe('Account CRUD tests', function() {
                             return done(accountSaveErr);
                         }
 
-                        // Update Account name
-                        account.name = 'WHY YOU GOTTA BE SO MEAN?';
+                        // Update Account docno
+                        account.docno = 'WHY YOU GOTTA BE SO MEAN?';
 
                         // Update an existing Account
                         agent.put('/api/accounts/' + accountSaveRes.body._id)
@@ -182,7 +210,7 @@ describe('Account CRUD tests', function() {
 
                                 // Set assertions
                                 (accountUpdateRes.body._id).should.equal(accountSaveRes.body._id);
-                                (accountUpdateRes.body.name).should.match('WHY YOU GOTTA BE SO MEAN?');
+                                (accountUpdateRes.body.docno).should.match('WHY YOU GOTTA BE SO MEAN?');
 
                                 // Call the assertion callback
                                 done();
@@ -194,7 +222,7 @@ describe('Account CRUD tests', function() {
     it('should be able to get a list of Accounts if not signed in', function(done) {
         // Create new Account model instance
         var accountObj = new Account(account);
-
+        accountObj.docno = '13';
         // Save the account
         accountObj.save(function() {
             // Request Accounts
@@ -213,13 +241,13 @@ describe('Account CRUD tests', function() {
     it('should be able to get a single Account if not signed in', function(done) {
         // Create new Account model instance
         var accountObj = new Account(account);
-
+        accountObj.docno = '12313';
         // Save the Account
         accountObj.save(function() {
             request(app).get('/api/accounts/' + accountObj._id)
                 .end(function(req, res) {
                     // Set assertion
-                    res.body.should.be.instanceof(Object).and.have.property('name', account.name);
+                    res.body.should.be.instanceof(Object).and.have.property('docno', '12313');
 
                     // Call the assertion callback
                     done();
@@ -300,7 +328,7 @@ describe('Account CRUD tests', function() {
 
         // Create new Account model instance
         var accountObj = new Account(account);
-
+        accountObj.docno = 'adfaffa';
         // Save the Account
         accountObj.save(function() {
             // Try deleting Account
@@ -364,7 +392,7 @@ describe('Account CRUD tests', function() {
                             }
 
                             // Set assertions on new Account
-                            (accountSaveRes.body.name).should.equal(account.name);
+                            (accountSaveRes.body.docno).should.equal('JV20170800001');
                             should.exist(accountSaveRes.body.user);
                             should.equal(accountSaveRes.body.user._id, orphanId);
 
@@ -391,7 +419,7 @@ describe('Account CRUD tests', function() {
 
                                                 // Set assertions
                                                 (accountInfoRes.body._id).should.equal(accountSaveRes.body._id);
-                                                (accountInfoRes.body.name).should.equal(account.name);
+                                                (accountInfoRes.body.docno).should.equal('JV20170800001');
                                                 should.equal(accountInfoRes.body.user, undefined);
 
                                                 // Call the assertion callback
@@ -406,7 +434,9 @@ describe('Account CRUD tests', function() {
 
     afterEach(function(done) {
         User.remove().exec(function() {
-            Account.remove().exec(done);
+            Accountchart.remove().exec(function() {
+                Account.remove().exec(done);
+            });
         });
     });
 });

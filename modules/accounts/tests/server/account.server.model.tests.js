@@ -6,12 +6,14 @@
 var should = require('should'),
     mongoose = require('mongoose'),
     User = mongoose.model('User'),
+    Accountchart = mongoose.model('Accountchart'),
     Account = mongoose.model('Account');
 
 /**
  * Globals
  */
 var user,
+    accountchart,
     account;
 
 /**
@@ -28,15 +30,37 @@ describe('Account Model Unit Tests:', function() {
             password: 'password'
         });
 
-        user.save(function() {
-            account = new Account({
-                name: 'Account name',
-                accountno: '10000',
-                parent: 0,
-                user: user
-            });
+        accountchart = new Accountchart({
+            name: ' name',
+            accountno: 'Account0000',
+            parent: 0,
+            user: user
+        });
 
-            done();
+        user.save(function() {
+            accountchart.save(function() {
+                account = new Account({
+                    docno: 'JV20170800001',
+                    docdate: new Date(),
+                    debits: [{
+                        account: accountchart,
+                        description: 'ค่าข้าว',
+                        amount: 50
+                    }],
+                    credits: [{
+                        account: accountchart,
+                        description: 'ค่าข้าว',
+                        amount: 50
+                    }],
+                    remark: 'JV',
+                    totaldebit: 50,
+                    totalcredit: 50,
+                    gltype: 'JV',
+                    status: 'Open',
+                    user: user
+                });
+                done();
+            });
         });
     });
 
@@ -49,20 +73,55 @@ describe('Account Model Unit Tests:', function() {
             });
         });
 
-        it('should be able to show an error when try to save without name', function(done) {
-            account.name = '';
+        it('should be able to show an error when try to save without docno', function(done) {
+            account.docno = '';
 
             return account.save(function(err) {
                 should.exist(err);
                 done();
             });
         });
+
+        it('should be able to show an error when try to save duplicate docno', function(done) {
+            var account2 = new Account(account);
+
+            return account.save(function(err) {
+                should.not.exist(err);
+                account2.save(function(err) {
+                    should.exist(err);
+                    done();
+                });
+            });
+        });
+
+        it('should be able to show an error when try to save without docdate', function(done) {
+            account.docdate = null;
+
+            return account.save(function(err) {
+                should.exist(err);
+                done();
+            });
+        });
+
+        it('should be able to show an error when try to save duplicate docdate', function(done) {
+            var account2 = new Account(account);
+
+            return account.save(function(err) {
+                should.not.exist(err);
+                account2.save(function(err) {
+                    should.exist(err);
+                    done();
+                });
+            });
+        });
     });
 
     afterEach(function(done) {
         Account.remove().exec(function() {
-            User.remove().exec(function() {
-                done();
+            Accountchart.remove().exec(function() {
+                User.remove().exec(function() {
+                    done();
+                });
             });
         });
     });

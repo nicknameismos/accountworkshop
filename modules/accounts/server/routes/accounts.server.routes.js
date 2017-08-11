@@ -4,19 +4,22 @@
  * Module dependencies
  */
 var accountsPolicy = require('../policies/accounts.server.policy'),
-  accounts = require('../controllers/accounts.server.controller');
+    accounts = require('../controllers/accounts.server.controller');
 
 module.exports = function(app) {
-  // Accounts Routes
-  app.route('/api/accounts').all(accountsPolicy.isAllowed)
-    .get(accounts.list)
-    .post(accounts.create);
+    // Accounts Routes
+    app.route('/api/accounts').all(accountsPolicy.isAllowed)
+        .get(accounts.list)
+        .post(accounts.genDocno, accounts.create);
 
-  app.route('/api/accounts/:accountId').all(accountsPolicy.isAllowed)
-    .get(accounts.read)
-    .put(accounts.update)
-    .delete(accounts.delete);
+    app.route('/api/gendocno').all(accountsPolicy.isAllowed)
+        .get(accounts.genDocno);
 
-  // Finish by binding the Account middleware
-  app.param('accountId', accounts.accountByID);
+    app.route('/api/accounts/:accountId').all(accountsPolicy.isAllowed)
+        .get(accounts.read)
+        .put(accounts.update)
+        .delete(accounts.delete);
+
+    // Finish by binding the Account middleware
+    app.param('accountId', accounts.accountByID);
 };
