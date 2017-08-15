@@ -12,10 +12,15 @@ module.exports = function(app) {
         .get(accounts.list)
         .post(accounts.genDocno, accounts.create);
 
-    app.route('/api/gendocno').all(accountsPolicy.isAllowed)
-        .get(accounts.genDocno);
-
     app.route('/api/accounts/:accountId').all(accountsPolicy.isAllowed)
+        .get(accounts.read)
+        .put(accounts.update)
+        .delete(accounts.delete);
+
+    app.route('/api/orther/accounts')
+        .post(accounts.genDocnoAccount, accounts.createAccount);
+
+    app.route('/api/orther/accounts/:accountId')
         .get(accounts.read)
         .put(accounts.update)
         .delete(accounts.delete);

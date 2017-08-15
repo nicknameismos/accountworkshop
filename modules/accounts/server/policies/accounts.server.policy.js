@@ -21,7 +21,10 @@ exports.invokeRolesPolicies = function() {
             resources: '/api/accounts/:accountId',
             permissions: '*'
         }, {
-            resources: '/api/gendocno',
+            resources: '/api/orther/accounts',
+            permissions: '*'
+        }, {
+            resources: '/api/orther/accounts/:accountId',
             permissions: '*'
         }]
     }, {
@@ -33,7 +36,10 @@ exports.invokeRolesPolicies = function() {
             resources: '/api/accounts/:accountId',
             permissions: ['get']
         }, {
-            resources: '/api/gendocno',
+            resources: '/api/orther/accounts',
+            permissions: ['get']
+        }, {
+            resources: '/api/orther/accounts/:accountId',
             permissions: ['get']
         }]
     }, {
@@ -45,7 +51,10 @@ exports.invokeRolesPolicies = function() {
             resources: '/api/accounts/:accountId',
             permissions: ['get']
         }, {
-            resources: '/api/gendocno',
+            resources: '/api/orther/accounts',
+            permissions: ['get']
+        }, {
+            resources: '/api/orther/accounts/:accountId',
             permissions: ['get']
         }]
     }]);
