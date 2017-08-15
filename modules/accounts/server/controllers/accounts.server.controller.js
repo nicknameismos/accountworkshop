@@ -14,6 +14,7 @@ var path = require('path'),
  */
 exports.genDocno = function(req, res, next) {
     var account = new Account(req.body);
+    // console.log(account);
     account.user = req.user;
     var date = new Date(account.docdate);
     var reqGltype = account.gltype;
@@ -52,11 +53,30 @@ exports.genDocno = function(req, res, next) {
     });
 };
 
+
 exports.create = function(req, res) {
     var account = new Account(req.body);
     account.user = req.user;
     account.docno = req.genDocno;
-    console.log(account);
+    account.totaldebit = 0;
+    account.totalcredit = 0;
+
+    if (account.debits && account.debits.length > 0) {
+        account.debits.forEach(function(debit) {
+            account.totaldebit += debit.amount;
+        });
+    }
+
+    if (account.credits && account.credits.length > 0) {
+        account.credits.forEach(function(credit) {
+            account.totalcredit += credit.amount;
+        });
+    }
+    if (account.totaldebit !== account.totalcredit) {
+        res.jsonp({
+            message: 'totalcredit not equal totaldebit!'
+        });
+    }
 
     account.save(function(err) {
         if (err) {

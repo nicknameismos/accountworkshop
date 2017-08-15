@@ -75,8 +75,8 @@ describe('Account CRUD tests', function() {
                         amount: 50
                     }],
                     remark: 'JV',
-                    totaldebit: 50,
-                    totalcredit: 50,
+                    // totaldebit: 50,
+                    // totalcredit: 50,
                     gltype: 'JV',
                     status: 'Open',
                     user: user
@@ -124,6 +124,9 @@ describe('Account CRUD tests', function() {
                                 (accounts[0].user._id).should.equal(userId);
                                 (accounts[0].docno).should.match('JV20170800001');
                                 (accounts[0].docdate).should.match(new Date());
+                                (accounts[0].totaldebit).should.match(50);
+                                (accounts[0].totalcredit).should.match(50);
+
 
                                 // Call the assertion callback
                                 done();
@@ -431,6 +434,72 @@ describe('Account CRUD tests', function() {
                 });
         });
     });
+
+    it('check gen doc no', function(done) {
+        agent.post('/api/auth/signin')
+            .send(credentials)
+            .expect(200)
+            .end(function(signinErr, signinRes) {
+                // Handle signin error
+                if (signinErr) {
+                    return done(signinErr);
+                }
+
+                // Get the userId
+                var userId = user.id;
+                // Save a new Account
+
+                var acc2 = new Account({
+                    docdate: new Date(),
+                    debits: [{
+                        account: accountchart,
+                        description: 'sdfsdf',
+                        amount: 50
+                    }],
+                    credits: [{
+                        account: accountchart,
+                        description: 'sdffsd',
+                        amount: 50
+                    }],
+                    remark: 'JV',
+                    totaldebit: 50,
+                    totalcredit: 50,
+                    gltype: 'JV',
+                    status: 'Open',
+                });
+
+                agent.post('/api/accounts')
+                    .send(acc2)
+                    .expect(200)
+                    .end(function(accountSaveErr, accountSaveRes) {
+                        // Handle Account save error
+                        if (accountSaveErr) {
+                            return done(accountSaveErr);
+                        }
+
+                        // Get a list of Accounts
+                        agent.get('/api/accounts')
+                            .end(function(accountsGetErr, accountsGetRes) {
+                                // Handle Accounts save error
+                                if (accountsGetErr) {
+                                    return done(accountsGetErr);
+                                }
+
+                                // Get Accounts list
+                                var accounts = accountsGetRes.body;
+
+                                // Set assertions
+                                (accounts[0].user._id).should.equal(userId);
+                                (accounts[0].docno).should.match('JV20170800001');
+                                (accounts[0].docdate).should.match(new Date());
+
+                                // Call the assertion callback
+                                done();
+                            });
+                    });
+            });
+    });
+
 
     afterEach(function(done) {
         User.remove().exec(function() {
