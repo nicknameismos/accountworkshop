@@ -24,6 +24,8 @@ var AccountchartSchema = new Schema({
         unique: true,
         trim: true
     },
+    vat: Number,
+    unitprice: Number,
     status: {
         type: String,
         default: 'active'
