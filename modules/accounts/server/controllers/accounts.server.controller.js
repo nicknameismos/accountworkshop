@@ -12,29 +12,41 @@ var path = require('path'),
 /**
  * Create a Account
  */
-exports.genDocno = function(req, res, next) {
+exports.genDocno = function (req, res, next) {
     var account = new Account(req.body);
     // console.log(account);
     account.user = req.user;
     var date = new Date(account.docdate);
     var reqGltype = account.gltype;
-    var year = date.getFullYear();
+    var year = (date.getFullYear() + 543).toString().substr(2, 2);
     var getmonth = date.getMonth() + 1;
     var month = '';
+    var dayOfMonth = '';
     if (getmonth >= 10) {
         month = getmonth;
     } else {
         month = '0' + getmonth;
     }
-    var genDocno = reqGltype + '' + year + '' + month;
-    Account.find({ gltype: reqGltype }).sort('-created').populate('user', 'displayName').exec(function(err, accounts) {
+
+    if (date.getDate().toString().length === 1) {
+        dayOfMonth = '0' + date.getDate();
+    } else {
+        dayOfMonth = date.getDate();
+    }
+
+    var genDocno = reqGltype + '' + year + '' + month + '' + dayOfMonth;
+    Account.find({
+        gltype: reqGltype
+    }).sort('-created').populate('user', 'displayName').exec(function (err, accounts) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
             if (accounts && accounts.length > 0) {
-                var passSite = accounts.filter(function(obj) { return obj.docno.substr(0, 8) === genDocno.toString(); });
+                var passSite = accounts.filter(function (obj) {
+                    return obj.docno.substr(0, 8) === genDocno.toString();
+                });
                 if (passSite && passSite.length > 0) {
                     var docno = passSite[0].docno;
                     var subnumber = docno.substr(2, 13);
@@ -42,11 +54,11 @@ exports.genDocno = function(req, res, next) {
                     req.genDocno = reqGltype + cookingdocno.toString();
                     next();
                 } else {
-                    req.genDocno = genDocno + '00001';
+                    req.genDocno = genDocno + '01';
                     next();
                 }
             } else {
-                req.genDocno = genDocno + '00001';
+                req.genDocno = genDocno + '01';
                 next();
             }
         }
@@ -54,7 +66,7 @@ exports.genDocno = function(req, res, next) {
 };
 
 
-exports.create = function(req, res) {
+exports.create = function (req, res) {
     var account = new Account(req.body);
     account.user = req.user;
     account.docno = req.genDocno;
@@ -62,13 +74,13 @@ exports.create = function(req, res) {
     account.totalcredit = 0;
 
     if (account.debits && account.debits.length > 0) {
-        account.debits.forEach(function(debit) {
+        account.debits.forEach(function (debit) {
             account.totaldebit += debit.amount;
         });
     }
 
     if (account.credits && account.credits.length > 0) {
-        account.credits.forEach(function(credit) {
+        account.credits.forEach(function (credit) {
             account.totalcredit += credit.amount;
         });
     }
@@ -78,7 +90,7 @@ exports.create = function(req, res) {
         });
     }
 
-    account.save(function(err) {
+    account.save(function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -92,7 +104,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Account
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
     // convert mongoose document to JSON
     var account = req.account ? req.account.toJSON() : {};
 
@@ -106,12 +118,12 @@ exports.read = function(req, res) {
 /**
  * Update a Account
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
     var account = req.account;
 
     account = _.extend(account, req.body);
 
-    account.save(function(err) {
+    account.save(function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -125,10 +137,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Account
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
     var account = req.account;
 
-    account.remove(function(err) {
+    account.remove(function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -142,8 +154,8 @@ exports.delete = function(req, res) {
 /**
  * List of Accounts
  */
-exports.list = function(req, res) {
-    Account.find().sort('-created').populate('user', 'displayName').exec(function(err, accounts) {
+exports.list = function (req, res) {
+    Account.find().sort('-created').populate('user', 'displayName').exec(function (err, accounts) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -157,7 +169,7 @@ exports.list = function(req, res) {
 /**
  * Account middleware
  */
-exports.accountByID = function(req, res, next, id) {
+exports.accountByID = function (req, res, next, id) {
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).send({
@@ -165,7 +177,7 @@ exports.accountByID = function(req, res, next, id) {
         });
     }
 
-    Account.findById(id).populate('user', 'displayName').exec(function(err, account) {
+    Account.findById(id).populate('user', 'displayName').exec(function (err, account) {
         if (err) {
             return next(err);
         } else if (!account) {
@@ -178,27 +190,37 @@ exports.accountByID = function(req, res, next, id) {
     });
 };
 
-exports.genDocnoAccount = function(req, res, next) {
+exports.genDocnoAccount = function (req, res, next) {
     var account = new Account(req.body);
     var date = new Date(account.docdate);
     var reqGltype = account.gltype;
-    var year = date.getFullYear();
+    var year = (date.getFullYear() + 543).toString().substr(2, 2);
     var getmonth = date.getMonth() + 1;
     var month = '';
+    var dayOfMonth = '';
     if (getmonth >= 10) {
         month = getmonth;
     } else {
         month = '0' + getmonth;
     }
-    var genDocno = reqGltype + '' + year + '' + month;
-    Account.find({ gltype: reqGltype }).sort('-created').populate('user', 'displayName').exec(function(err, accounts) {
+    if (date.getDate().toString().length === 1) {
+        dayOfMonth = '0' + date.getDate();
+    } else {
+        dayOfMonth = date.getDate();
+    }
+    var genDocno = reqGltype + '' + year + '' + month + '' + dayOfMonth;
+    Account.find({
+        gltype: reqGltype
+    }).sort('-created').populate('user', 'displayName').exec(function (err, accounts) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
             if (accounts && accounts.length > 0) {
-                var passSite = accounts.filter(function(obj) { return obj.docno.substr(0, 8) === genDocno.toString(); });
+                var passSite = accounts.filter(function (obj) {
+                    return obj.docno.substr(0, 8) === genDocno.toString();
+                });
                 if (passSite && passSite.length > 0) {
                     var docno = passSite[0].docno;
                     var subnumber = docno.substr(2, 13);
@@ -206,11 +228,11 @@ exports.genDocnoAccount = function(req, res, next) {
                     req.genDocno = reqGltype + cookingdocno.toString();
                     next();
                 } else {
-                    req.genDocno = genDocno + '00001';
+                    req.genDocno = genDocno + '01';
                     next();
                 }
             } else {
-                req.genDocno = genDocno + '00001';
+                req.genDocno = genDocno + '01';
                 next();
             }
         }
@@ -218,20 +240,20 @@ exports.genDocnoAccount = function(req, res, next) {
 };
 
 
-exports.createAccount = function(req, res) {
+exports.createAccount = function (req, res) {
     var account = new Account(req.body);
     account.docno = req.genDocno;
     account.totaldebit = 0;
     account.totalcredit = 0;
 
     if (account.debits && account.debits.length > 0) {
-        account.debits.forEach(function(debit) {
+        account.debits.forEach(function (debit) {
             account.totaldebit += debit.amount;
         });
     }
 
     if (account.credits && account.credits.length > 0) {
-        account.credits.forEach(function(credit) {
+        account.credits.forEach(function (credit) {
             account.totalcredit += credit.amount;
         });
     }
@@ -241,7 +263,7 @@ exports.createAccount = function(req, res) {
         });
     }
 
-    account.save(function(err) {
+    account.save(function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
