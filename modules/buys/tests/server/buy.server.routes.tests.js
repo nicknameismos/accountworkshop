@@ -6,6 +6,7 @@ var should = require('should'),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
   Buy = mongoose.model('Buy'),
+  Accountchart = mongoose.model('Accountchart'),
   express = require(path.resolve('./config/lib/express'));
 
 /**
@@ -15,6 +16,7 @@ var app,
   agent,
   credentials,
   user,
+  accountchart,
   buy;
 
 /**
@@ -48,13 +50,36 @@ describe('Buy CRUD tests', function () {
       provider: 'local'
     });
 
+    accountchart = new Accountchart({
+      name: ' name',
+      accountno: 'Account0000',
+      parent: 0,
+      user: user
+    });
+
     // Save a user to the test db and create new Buy
     user.save(function () {
-      buy = {
-        name: 'Buy name'
-      };
+      accountchart.save(function () {
+        buy = {
+          docno: 'PV20171100001',
+          docdate: new Date(),
+          contact: accountchart,
+          items: [{
+            item: accountchart,
+            qty: 1,
+            unitprice: 100,
+            vat: 1,
+            amount: 100
+          }],
+          amount: 100,
+          vatamount: 1,
+          totalamount: 100,
+          Discount: 0,
+          netamount: 100,
+        };
 
-      done();
+        done();
+      });
     });
   });
 
@@ -94,7 +119,7 @@ describe('Buy CRUD tests', function () {
 
                 // Set assertions
                 (buys[0].user._id).should.equal(userId);
-                (buys[0].name).should.match('Buy name');
+                (buys[0].docno).should.match('PV20171100001');
 
                 // Call the assertion callback
                 done();
@@ -113,9 +138,9 @@ describe('Buy CRUD tests', function () {
       });
   });
 
-  it('should not be able to save an Buy if no name is provided', function (done) {
-    // Invalidate name field
-    buy.name = '';
+  it('should not be able to save an Buy if no docno is provided', function (done) {
+    // Invalidate docno field
+    buy.docno = '';
 
     agent.post('/api/auth/signin')
       .send(credentials)
@@ -135,7 +160,7 @@ describe('Buy CRUD tests', function () {
           .expect(400)
           .end(function (buySaveErr, buySaveRes) {
             // Set message assertion
-            (buySaveRes.body.message).should.match('Please fill Buy name');
+            (buySaveRes.body.message).should.match('Please fill docno');
 
             // Handle Buy save error
             done(buySaveErr);
@@ -166,8 +191,8 @@ describe('Buy CRUD tests', function () {
               return done(buySaveErr);
             }
 
-            // Update Buy name
-            buy.name = 'WHY YOU GOTTA BE SO MEAN?';
+            // Update Buy docno
+            buy.docno = 'WHY YOU GOTTA BE SO MEAN?';
 
             // Update an existing Buy
             agent.put('/api/buys/' + buySaveRes.body._id)
@@ -181,7 +206,7 @@ describe('Buy CRUD tests', function () {
 
                 // Set assertions
                 (buyUpdateRes.body._id).should.equal(buySaveRes.body._id);
-                (buyUpdateRes.body.name).should.match('WHY YOU GOTTA BE SO MEAN?');
+                (buyUpdateRes.body.docno).should.match('WHY YOU GOTTA BE SO MEAN?');
 
                 // Call the assertion callback
                 done();
@@ -218,7 +243,7 @@ describe('Buy CRUD tests', function () {
       request(app).get('/api/buys/' + buyObj._id)
         .end(function (req, res) {
           // Set assertion
-          res.body.should.be.instanceof(Object).and.have.property('name', buy.name);
+          res.body.should.be.instanceof(Object).and.have.property('docno', buy.docno);
 
           // Call the assertion callback
           done();
@@ -363,7 +388,7 @@ describe('Buy CRUD tests', function () {
               }
 
               // Set assertions on new Buy
-              (buySaveRes.body.name).should.equal(buy.name);
+              (buySaveRes.body.docno).should.equal(buy.docno);
               should.exist(buySaveRes.body.user);
               should.equal(buySaveRes.body.user._id, orphanId);
 
@@ -390,7 +415,7 @@ describe('Buy CRUD tests', function () {
 
                         // Set assertions
                         (buyInfoRes.body._id).should.equal(buySaveRes.body._id);
-                        (buyInfoRes.body.name).should.equal(buy.name);
+                        (buyInfoRes.body.docno).should.equal(buy.docno);
                         should.equal(buyInfoRes.body.user, undefined);
 
                         // Call the assertion callback
@@ -405,7 +430,9 @@ describe('Buy CRUD tests', function () {
 
   afterEach(function (done) {
     User.remove().exec(function () {
-      Buy.remove().exec(done);
+      Accountchart.remove().exec(function () {
+        Buy.remove().exec(done);
+      });
     });
   });
 });
