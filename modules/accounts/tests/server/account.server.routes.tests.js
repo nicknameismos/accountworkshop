@@ -23,9 +23,9 @@ var app,
 /**
  * Account routes tests
  */
-describe('Account CRUD tests', function() {
+describe('Account CRUD tests', function () {
 
-    before(function(done) {
+    before(function (done) {
         // Get application
         app = express.init(mongoose);
         agent = request.agent(app);
@@ -33,7 +33,7 @@ describe('Account CRUD tests', function() {
         done();
     });
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         // Create user credentials
         credentials = {
             username: 'username',
@@ -59,10 +59,10 @@ describe('Account CRUD tests', function() {
         });
 
         // Save a user to the test db and create new Account
-        user.save(function() {
-            accountchart.save(function() {
+        user.save(function () {
+            accountchart.save(function () {
                 account = {
-                    // docno: 'JV20170800001',
+                    docno: 'JV20170800001',
                     docdate: new Date(),
                     debits: [{
                         account: accountchart,
@@ -86,11 +86,11 @@ describe('Account CRUD tests', function() {
         });
     });
 
-    it('should be able to save a Account if logged in', function(done) {
+    it('should be able to save a Account if logged in', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -103,7 +103,7 @@ describe('Account CRUD tests', function() {
                 agent.post('/api/accounts')
                     .send(account)
                     .expect(200)
-                    .end(function(accountSaveErr, accountSaveRes) {
+                    .end(function (accountSaveErr, accountSaveRes) {
                         // Handle Account save error
                         if (accountSaveErr) {
                             return done(accountSaveErr);
@@ -111,7 +111,7 @@ describe('Account CRUD tests', function() {
 
                         // Get a list of Accounts
                         agent.get('/api/accounts')
-                            .end(function(accountsGetErr, accountsGetRes) {
+                            .end(function (accountsGetErr, accountsGetRes) {
                                 // Handle Accounts save error
                                 if (accountsGetErr) {
                                     return done(accountsGetErr);
@@ -135,24 +135,24 @@ describe('Account CRUD tests', function() {
             });
     });
 
-    it('should not be able to save an Account if not logged in', function(done) {
+    it('should not be able to save an Account if not logged in', function (done) {
         agent.post('/api/accounts')
             .send(account)
             .expect(403)
-            .end(function(accountSaveErr, accountSaveRes) {
+            .end(function (accountSaveErr, accountSaveRes) {
                 // Call the assertion callback
                 done(accountSaveErr);
             });
     });
 
-    it('should not be able to save an Account if no docdate is provided', function(done) {
+    it('should not be able to save an Account if no docdate is provided', function (done) {
         // Invalidate name field
         account.docdate = null;
 
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -165,7 +165,7 @@ describe('Account CRUD tests', function() {
                 agent.post('/api/accounts')
                     .send(account)
                     .expect(400)
-                    .end(function(accountSaveErr, accountSaveRes) {
+                    .end(function (accountSaveErr, accountSaveRes) {
                         // Set message assertion
                         (accountSaveRes.body.message).should.match('Please fill Account docdate');
 
@@ -175,11 +175,11 @@ describe('Account CRUD tests', function() {
             });
     });
 
-    it('should be able to update an Account if signed in', function(done) {
+    it('should be able to update an Account if signed in', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -192,7 +192,7 @@ describe('Account CRUD tests', function() {
                 agent.post('/api/accounts')
                     .send(account)
                     .expect(200)
-                    .end(function(accountSaveErr, accountSaveRes) {
+                    .end(function (accountSaveErr, accountSaveRes) {
                         // Handle Account save error
                         if (accountSaveErr) {
                             return done(accountSaveErr);
@@ -205,7 +205,7 @@ describe('Account CRUD tests', function() {
                         agent.put('/api/accounts/' + accountSaveRes.body._id)
                             .send(account)
                             .expect(200)
-                            .end(function(accountUpdateErr, accountUpdateRes) {
+                            .end(function (accountUpdateErr, accountUpdateRes) {
                                 // Handle Account update error
                                 if (accountUpdateErr) {
                                     return done(accountUpdateErr);
@@ -222,15 +222,15 @@ describe('Account CRUD tests', function() {
             });
     });
 
-    it('should be able to get a list of Accounts if not signed in', function(done) {
+    it('should be able to get a list of Accounts if not signed in', function (done) {
         // Create new Account model instance
         var accountObj = new Account(account);
         accountObj.docno = '13';
         // Save the account
-        accountObj.save(function() {
+        accountObj.save(function () {
             // Request Accounts
             request(app).get('/api/accounts')
-                .end(function(req, res) {
+                .end(function (req, res) {
                     // Set assertion
                     res.body.should.be.instanceof(Array).and.have.lengthOf(1);
 
@@ -241,14 +241,14 @@ describe('Account CRUD tests', function() {
         });
     });
 
-    it('should be able to get a single Account if not signed in', function(done) {
+    it('should be able to get a single Account if not signed in', function (done) {
         // Create new Account model instance
         var accountObj = new Account(account);
         accountObj.docno = '12313';
         // Save the Account
-        accountObj.save(function() {
+        accountObj.save(function () {
             request(app).get('/api/accounts/' + accountObj._id)
-                .end(function(req, res) {
+                .end(function (req, res) {
                     // Set assertion
                     res.body.should.be.instanceof(Object).and.have.property('docno', '12313');
 
@@ -258,10 +258,10 @@ describe('Account CRUD tests', function() {
         });
     });
 
-    it('should return proper error for single Account with an invalid Id, if not signed in', function(done) {
+    it('should return proper error for single Account with an invalid Id, if not signed in', function (done) {
         // test is not a valid mongoose Id
         request(app).get('/api/accounts/test')
-            .end(function(req, res) {
+            .end(function (req, res) {
                 // Set assertion
                 res.body.should.be.instanceof(Object).and.have.property('message', 'Account is invalid');
 
@@ -270,10 +270,10 @@ describe('Account CRUD tests', function() {
             });
     });
 
-    it('should return proper error for single Account which doesnt exist, if not signed in', function(done) {
+    it('should return proper error for single Account which doesnt exist, if not signed in', function (done) {
         // This is a valid mongoose Id but a non-existent Account
         request(app).get('/api/accounts/559e9cd815f80b4c256a8f41')
-            .end(function(req, res) {
+            .end(function (req, res) {
                 // Set assertion
                 res.body.should.be.instanceof(Object).and.have.property('message', 'No Account with that identifier has been found');
 
@@ -282,11 +282,11 @@ describe('Account CRUD tests', function() {
             });
     });
 
-    it('should be able to delete an Account if signed in', function(done) {
+    it('should be able to delete an Account if signed in', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -299,7 +299,7 @@ describe('Account CRUD tests', function() {
                 agent.post('/api/accounts')
                     .send(account)
                     .expect(200)
-                    .end(function(accountSaveErr, accountSaveRes) {
+                    .end(function (accountSaveErr, accountSaveRes) {
                         // Handle Account save error
                         if (accountSaveErr) {
                             return done(accountSaveErr);
@@ -309,7 +309,7 @@ describe('Account CRUD tests', function() {
                         agent.delete('/api/accounts/' + accountSaveRes.body._id)
                             .send(account)
                             .expect(200)
-                            .end(function(accountDeleteErr, accountDeleteRes) {
+                            .end(function (accountDeleteErr, accountDeleteRes) {
                                 // Handle account error error
                                 if (accountDeleteErr) {
                                     return done(accountDeleteErr);
@@ -325,7 +325,7 @@ describe('Account CRUD tests', function() {
             });
     });
 
-    it('should not be able to delete an Account if not signed in', function(done) {
+    it('should not be able to delete an Account if not signed in', function (done) {
         // Set Account user
         account.user = user;
 
@@ -333,11 +333,11 @@ describe('Account CRUD tests', function() {
         var accountObj = new Account(account);
         accountObj.docno = 'adfaffa';
         // Save the Account
-        accountObj.save(function() {
+        accountObj.save(function () {
             // Try deleting Account
             request(app).delete('/api/accounts/' + accountObj._id)
                 .expect(403)
-                .end(function(accountDeleteErr, accountDeleteRes) {
+                .end(function (accountDeleteErr, accountDeleteRes) {
                     // Set message assertion
                     (accountDeleteRes.body.message).should.match('User is not authorized');
 
@@ -348,7 +348,7 @@ describe('Account CRUD tests', function() {
         });
     });
 
-    it('should be able to get a single Account that has an orphaned user reference', function(done) {
+    it('should be able to get a single Account that has an orphaned user reference', function (done) {
         // Create orphan user creds
         var _creds = {
             username: 'orphan',
@@ -366,7 +366,7 @@ describe('Account CRUD tests', function() {
             provider: 'local'
         });
 
-        _orphan.save(function(err, orphan) {
+        _orphan.save(function (err, orphan) {
             // Handle save error
             if (err) {
                 return done(err);
@@ -375,7 +375,7 @@ describe('Account CRUD tests', function() {
             agent.post('/api/auth/signin')
                 .send(_creds)
                 .expect(200)
-                .end(function(signinErr, signinRes) {
+                .end(function (signinErr, signinRes) {
                     // Handle signin error
                     if (signinErr) {
                         return done(signinErr);
@@ -388,7 +388,7 @@ describe('Account CRUD tests', function() {
                     agent.post('/api/accounts')
                         .send(account)
                         .expect(200)
-                        .end(function(accountSaveErr, accountSaveRes) {
+                        .end(function (accountSaveErr, accountSaveRes) {
                             // Handle Account save error
                             if (accountSaveErr) {
                                 return done(accountSaveErr);
@@ -400,12 +400,12 @@ describe('Account CRUD tests', function() {
                             should.equal(accountSaveRes.body.user._id, orphanId);
 
                             // force the Account to have an orphaned user reference
-                            orphan.remove(function() {
+                            orphan.remove(function () {
                                 // now signin with valid user
                                 agent.post('/api/auth/signin')
                                     .send(credentials)
                                     .expect(200)
-                                    .end(function(err, res) {
+                                    .end(function (err, res) {
                                         // Handle signin error
                                         if (err) {
                                             return done(err);
@@ -414,7 +414,7 @@ describe('Account CRUD tests', function() {
                                         // Get the Account
                                         agent.get('/api/accounts/' + accountSaveRes.body._id)
                                             .expect(200)
-                                            .end(function(accountInfoErr, accountInfoRes) {
+                                            .end(function (accountInfoErr, accountInfoRes) {
                                                 // Handle Account error
                                                 if (accountInfoErr) {
                                                     return done(accountInfoErr);
@@ -435,11 +435,11 @@ describe('Account CRUD tests', function() {
         });
     });
 
-    it('check gen doc no', function(done) {
+    it('check gen doc no', function (done) {
         agent.post('/api/auth/signin')
             .send(credentials)
             .expect(200)
-            .end(function(signinErr, signinRes) {
+            .end(function (signinErr, signinRes) {
                 // Handle signin error
                 if (signinErr) {
                     return done(signinErr);
@@ -471,7 +471,7 @@ describe('Account CRUD tests', function() {
                 agent.post('/api/accounts')
                     .send(acc2)
                     .expect(200)
-                    .end(function(accountSaveErr, accountSaveRes) {
+                    .end(function (accountSaveErr, accountSaveRes) {
                         // Handle Account save error
                         if (accountSaveErr) {
                             return done(accountSaveErr);
@@ -479,7 +479,7 @@ describe('Account CRUD tests', function() {
 
                         // Get a list of Accounts
                         agent.get('/api/accounts')
-                            .end(function(accountsGetErr, accountsGetRes) {
+                            .end(function (accountsGetErr, accountsGetRes) {
                                 // Handle Accounts save error
                                 if (accountsGetErr) {
                                     return done(accountsGetErr);
@@ -500,10 +500,66 @@ describe('Account CRUD tests', function() {
             });
     });
 
+    it('should be able to search a Account by docno Array(1)', function (done) {
+        var account1 = new Account({
+            docno: 'JV20170800002',
+            docdate: new Date(),
+            debits: [{
+                account: accountchart,
+                description: 'ค่าข้าว',
+                amount: 50
+            }],
+            credits: [{
+                account: accountchart,
+                description: 'ค่าข้าว',
+                amount: 50
+            }],
+            remark: 'JV',
+            // totaldebit: 50,
+            // totalcredit: 50,
+            gltype: 'JV',
+            status: 'Open',
+            user: user
+        });
+        var account2 = new Account({
+            docno: 'JV20170800003',
+            docdate: new Date(),
+            debits: [{
+                account: accountchart,
+                description: 'ค่าข้าว',
+                amount: 50
+            }],
+            credits: [{
+                account: accountchart,
+                description: 'ค่าข้าว',
+                amount: 50
+            }],
+            remark: 'JV',
+            // totaldebit: 50,
+            // totalcredit: 50,
+            gltype: 'JV',
+            status: 'Open',
+            user: user
+        });
+        account1.save(function () {
+            account2.save(function () {
+                request(app).get('/api/accounts/search/' + account1.docno)
+                    .end(function (req, res) {
+                        // Set assertion
+                        var body = res.body;
+                        (body.docno).should.equal(account1.docno);
 
-    afterEach(function(done) {
-        User.remove().exec(function() {
-            Accountchart.remove().exec(function() {
+                        // Call the assertion callback
+                        done();
+                    });
+            });
+        });
+    });
+
+
+    afterEach(function (done) {
+        User.remove().exec(function () {
+            Accountchart.remove().exec(function () {
                 Account.remove().exec(done);
             });
         });

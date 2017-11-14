@@ -6,7 +6,7 @@
 var accountsPolicy = require('../policies/accounts.server.policy'),
     accounts = require('../controllers/accounts.server.controller');
 
-module.exports = function(app) {
+module.exports = function (app) {
     // Accounts Routes
     app.route('/api/accounts').all(accountsPolicy.isAllowed)
         .get(accounts.list)
@@ -25,6 +25,10 @@ module.exports = function(app) {
         .put(accounts.update)
         .delete(accounts.delete);
 
+    app.route('/api/accounts/search/:docno') // match docno only (*A111 === *A111 : *A111 !== *A11)
+        .get(accounts.listSearch);
+
     // Finish by binding the Account middleware
     app.param('accountId', accounts.accountByID);
+    app.param('docno', accounts.accountByDocno);
 };

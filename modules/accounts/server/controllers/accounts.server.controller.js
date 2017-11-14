@@ -6,6 +6,7 @@
 var path = require('path'),
     mongoose = require('mongoose'),
     Account = mongoose.model('Account'),
+    Accountchart = mongoose.model('Accountchart'),
     errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
     _ = require('lodash');
 
@@ -129,7 +130,23 @@ exports.update = function (req, res) {
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(account);
+            Accountchart.populate(account, {
+                path: 'debits',
+                populate: {
+                    path: 'account',
+                    model: 'Accountchart'
+                }
+            }, function (err, data) {
+                Accountchart.populate(data, {
+                    path: 'credits',
+                    populate: {
+                        path: 'account',
+                        model: 'Accountchart'
+                    }
+                }, function (err, data2) {
+                    res.jsonp(data2);
+                });
+            });
         }
     });
 };
@@ -269,7 +286,46 @@ exports.createAccount = function (req, res) {
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(account);
+            Accountchart.populate(account, {
+                path: 'debits',
+                populate: {
+                    path: 'account',
+                    model: 'Accountchart'
+                }
+            }, function (err, data) {
+                Accountchart.populate(data, {
+                    path: 'credits',
+                    populate: {
+                        path: 'account',
+                        model: 'Accountchart'
+                    }
+                }, function (err, data2) {
+                    res.jsonp(data2);
+                });
+            });
         }
     });
+};
+
+// Accounts search
+exports.accountByDocno = function (req, res, next, docno) {
+
+    Account.find({
+        docno: docno
+    }).populate('debits.account').populate('credits.account').populate('user', 'displayName').exec(function (err, account) {
+        if (err) {
+            return next(err);
+        } else if (!account) {
+            return res.status(404).send({
+                message: 'No Account with that identifier has been found'
+            });
+        }
+        req.account = account;
+        next();
+    });
+};
+
+exports.listSearch = function (req, res) {
+    var account = req.account[0] ? req.account[0] : {};
+    res.jsonp(account);
 };
