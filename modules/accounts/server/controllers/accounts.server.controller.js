@@ -144,7 +144,38 @@ exports.update = function (req, res) {
                         model: 'Accountchart'
                     }
                 }, function (err, data2) {
-                    res.jsonp(data2);
+                    var accountSig = data2.toJSON();
+                    for (var i = 0; i < accountSig.debits.length; i++) {
+                        var accountDebitI = accountSig.debits[i].account;
+                        var accountDebitNew = {
+                            _id: accountDebitI._id,
+                            accountno: accountDebitI.accountno,
+                            name: accountDebitI.name,
+                            fullname: accountDebitI.accountno + ' ' + accountDebitI.name,
+                            status: accountDebitI.status,
+                            parent: accountDebitI.parent ? accountDebitI.parent : null,
+                            vat: accountDebitI.vat ? accountDebitI.vat : 0,
+                            unitprice: accountDebitI.unitprice ? accountDebitI.unitprice : 0,
+                            user: accountDebitI.user
+                        };
+                        accountSig.debits[i].account = accountDebitNew;
+                    }
+                    for (var ii = 0; ii < accountSig.credits.length; ii++) {
+                        var accountCreditI = accountSig.credits[ii].account;
+                        var accountCreditNew = {
+                            _id: accountCreditI._id,
+                            accountno: accountCreditI.accountno,
+                            name: accountCreditI.name,
+                            fullname: accountCreditI.accountno + ' ' + accountCreditI.name,
+                            status: accountCreditI.status,
+                            parent: accountCreditI.parent ? accountCreditI.parent : null,
+                            vat: accountCreditI.vat ? accountCreditI.vat : 0,
+                            unitprice: accountCreditI.unitprice ? accountCreditI.unitprice : 0,
+                            user: accountCreditI.user
+                        };
+                        accountSig.credits[ii].account = accountCreditNew;
+                    }
+                    res.jsonp(accountSig);
                 });
             });
         }
@@ -300,7 +331,38 @@ exports.createAccount = function (req, res) {
                         model: 'Accountchart'
                     }
                 }, function (err, data2) {
-                    res.jsonp(data2);
+                    var accountSig = data2.toJSON();
+                    for (var i = 0; i < accountSig.debits.length; i++) {
+                        var accountDebitI = accountSig.debits[i].account;
+                        var accountDebitNew = {
+                            _id: accountDebitI._id,
+                            accountno: accountDebitI.accountno,
+                            name: accountDebitI.name,
+                            fullname: accountDebitI.accountno + ' ' + accountDebitI.name,
+                            status: accountDebitI.status,
+                            parent: accountDebitI.parent ? accountDebitI.parent : null,
+                            vat: accountDebitI.vat ? accountDebitI.vat : 0,
+                            unitprice: accountDebitI.unitprice ? accountDebitI.unitprice : 0,
+                            user: accountDebitI.user
+                        };
+                        accountSig.debits[i].account = accountDebitNew;
+                    }
+                    for (var ii = 0; ii < accountSig.credits.length; ii++) {
+                        var accountCreditI = accountSig.credits[ii].account;
+                        var accountCreditNew = {
+                            _id: accountCreditI._id,
+                            accountno: accountCreditI.accountno,
+                            name: accountCreditI.name,
+                            fullname: accountCreditI.accountno + ' ' + accountCreditI.name,
+                            status: accountCreditI.status,
+                            parent: accountCreditI.parent ? accountCreditI.parent : null,
+                            vat: accountCreditI.vat ? accountCreditI.vat : 0,
+                            unitprice: accountCreditI.unitprice ? accountCreditI.unitprice : 0,
+                            user: accountCreditI.user
+                        };
+                        accountSig.credits[ii].account = accountCreditNew;
+                    }
+                    res.jsonp(accountSig);
                 });
             });
         }
@@ -320,12 +382,50 @@ exports.accountByDocno = function (req, res, next, docno) {
                 message: 'No Account with that identifier has been found'
             });
         }
-        req.account = account;
-        next();
+
+        if (account[0]) {
+            var accountArr = account[0].toJSON();
+            for (var i = 0; i < accountArr.debits.length; i++) {
+                var accountDebitI = accountArr.debits[i].account;
+                var accountDebitNew = {
+                    _id: accountDebitI._id,
+                    accountno: accountDebitI.accountno,
+                    name: accountDebitI.name,
+                    fullname: accountDebitI.accountno + ' ' + accountDebitI.name,
+                    status: accountDebitI.status,
+                    parent: accountDebitI.parent ? accountDebitI.parent : null,
+                    vat: accountDebitI.vat ? accountDebitI.vat : 0,
+                    unitprice: accountDebitI.unitprice ? accountDebitI.unitprice : 0,
+                    user: accountDebitI.user
+                };
+                accountArr.debits[i].account = accountDebitNew;
+            }
+            for (var ii = 0; ii < accountArr.credits.length; ii++) {
+                var accountCreditI = accountArr.credits[ii].account;
+                var accountCreditNew = {
+                    _id: accountCreditI._id,
+                    accountno: accountCreditI.accountno,
+                    name: accountCreditI.name,
+                    fullname: accountCreditI.accountno + ' ' + accountCreditI.name,
+                    status: accountCreditI.status,
+                    parent: accountCreditI.parent ? accountCreditI.parent : null,
+                    vat: accountCreditI.vat ? accountCreditI.vat : 0,
+                    unitprice: accountCreditI.unitprice ? accountCreditI.unitprice : 0,
+                    user: accountCreditI.user
+                };
+                accountArr.credits[ii].account = accountCreditNew;
+            }
+            req.account = accountArr;
+            next();
+
+        } else {
+            req.account = [];
+            next();
+        }
     });
 };
 
 exports.listSearch = function (req, res) {
-    var account = req.account[0] ? req.account[0] : {};
+    var account = req.account ? req.account : {};
     res.jsonp(account);
 };

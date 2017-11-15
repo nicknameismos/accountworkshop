@@ -87,7 +87,23 @@ exports.list = function (req, res) {
         message: errorHandler.getErrorMessage(err)
       });
     } else {
-      res.jsonp(accountcharts);
+      var accounts = [];
+      var i;
+      var loop = accountcharts.length;
+      for (i = 0; i < loop; i++) {
+        accounts.push({
+          _id: accountcharts[i]._id,
+          accountno: accountcharts[i].accountno,
+          name: accountcharts[i].name,
+          fullname: accountcharts[i].accountno + ' ' + accountcharts[i].name,
+          status: accountcharts[i].status,
+          parent: accountcharts[i].parent ? accountcharts[i].parent : null,
+          vat: accountcharts[i].vat ? accountcharts[i].vat : 0,
+          unitprice: accountcharts[i].unitprice ? accountcharts[i].unitprice : 0,
+          user: accountcharts[i].user
+        });
+      }
+      res.jsonp(accounts);
     }
   });
 };

@@ -98,7 +98,6 @@ describe('Accountchart CRUD tests', function() {
                                 (accountcharts[0].user._id).should.equal(userId);
                                 (accountcharts[0].name).should.match('Account name');
                                 (accountcharts[0].accountno).should.match('10000');
-                                (accountcharts[0].parent).should.match('0');
 
                                 // Call the assertion callback
                                 done();
