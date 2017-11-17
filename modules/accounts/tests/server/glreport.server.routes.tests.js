@@ -396,6 +396,15 @@ describe('GL Report tests', function () {
                 (glreports.type).should.match("year");
                 (glreports.startdate).should.match("Fri Jan 01 2016 00:00:00 GMT+0700 (SE Asia Standard Time)");
                 (glreports.enddate).should.match("Sat Dec 31 2016 00:00:00 GMT+0700 (SE Asia Standard Time)");
+
+                (glreports.daily.transaction.length).should.match(7);
+                (glreports.daily.transaction[0].docno).should.match(account.docno);
+                (glreports.daily.transaction[1].docno).should.match(account2.docno);
+                (glreports.daily.transaction[2].docno).should.match(account3.docno);
+                (glreports.daily.transaction[3].docno).should.match(account4.docno);
+                (glreports.daily.transaction[4].docno).should.match(account5.docno);
+                (glreports.daily.transaction[5].docno).should.match(account6.docno);
+                (glreports.daily.transaction[6].docno).should.match(account7.docno);
                 // Call the assertion callback
                 done();
             });
