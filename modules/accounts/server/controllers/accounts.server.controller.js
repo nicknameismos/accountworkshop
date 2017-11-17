@@ -443,7 +443,7 @@ exports.getGlDate = function (req, res, next, date) {
     var paramDate = new Date(date);
     var firstDay;
     var lastDay;
-    console.log("req.type : ", req.type);
+    // console.log("req.type : ", req.type);
     if (req.type === 'month') {
         firstDay = new Date(paramDate.getFullYear(), paramDate.getMonth(), 1);
         lastDay = new Date(new Date(paramDate.getFullYear(), paramDate.getMonth() + 1, 0).setHours(23, 59, 59, 999));
@@ -456,7 +456,7 @@ exports.getGlDate = function (req, res, next, date) {
         });
     }
 
-    console.log(req.type + ' ' + firstDay + ' : ' + lastDay);
+    // console.log(req.type + ' ' + firstDay + ' : ' + lastDay);
     Account.find({
         docdate: { $gte: firstDay, $lte: lastDay } //  $gt > | $lt < | $gte >== | $lte <==
     }).populate('debits.account').populate('credits.account').populate('user', 'displayName').exec(function (err, account) {
@@ -486,15 +486,15 @@ exports.generateGlDaily = function (req, res, next) {
         title: "สมุดรายวันทั่วไป",
         transaction: []
     };
-    
+
     var acc = req.account.length;
     for (var i = 0; i < acc; i++) {
         var element = req.account[i];
         var transaction = {
             docdate: element.docdate,
             docno: element.docno,
-            list:[],
-            remark:element.remark
+            list: [],
+            remark: element.remark
         };
 
         var debitLength = element.debits.length;
@@ -514,7 +514,7 @@ exports.generateGlDaily = function (req, res, next) {
 
         var creditsLength = element.credits.length;
         for (var c = 0; c < creditsLength; c++) {
-            var credits =  element.credits[c];
+            var credits = element.credits[c];
 
             transaction.list.push({
                 accountname: credits.account.name,
@@ -533,8 +533,27 @@ exports.generateGlDaily = function (req, res, next) {
 
     req.daily = daily;
     next();
+};
 
+exports.getAccountchart = function (req, res, next) {
+    Accountchart.find().sort('-created').exec(function (err, accountcharts) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }else{
+            req.accountcharts = accountcharts;
+            next();
+        }
+    });
+};
 
+exports.generateAcceach = function (req, res, next) {
+    var daily =  req.daily;
+    var accountchart = req.accountcharts
+
+    
+    next();
 };
 
 
@@ -544,7 +563,8 @@ exports.returnGlreport = function (req, res) {
         type: req.type,
         startdate: req.firstDay,
         enddate: req.lastDay,
-        daily: req.daily
+        daily: req.daily,
+        acceach: []
     };
 
     // console.log(JSON.stringify(glreport));

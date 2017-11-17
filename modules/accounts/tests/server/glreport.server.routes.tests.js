@@ -362,7 +362,7 @@ describe('GL Report tests', function () {
 
                 // Get Accountcharts list
                 var glreports = glreportsGetRes.body;
-                
+
                 (glreports.type).should.match("month");
                 (glreports.startdate).should.match("Fri Jan 01 2016 00:00:00 GMT+0700 (SE Asia Standard Time)");
                 (glreports.enddate).should.match("Sun Jan 31 2016 23:59:59 GMT+0700 (SE Asia Standard Time)");
@@ -376,7 +376,7 @@ describe('GL Report tests', function () {
                 // Call the assertion callback
                 done();
             });
-            
+
     });
 
     it('GL Report daily get by year', function (done) {
@@ -408,9 +408,35 @@ describe('GL Report tests', function () {
                 // Call the assertion callback
                 done();
             });
-            
+
     });
 
+    it('GL Report get acceach', function (done) {
+
+        var date = new Date('2016-01-05T07:00:00.000+07:00');
+        var type = 'month';
+        // Get a list of Accountcharts
+        agent.get('/api/glreport/' + type + '/' + date)
+            .end(function (glreportssGetErr, glreportssGetRes) {
+                // Handle Accountcharts save error
+                if (glreportssGetErr) {
+                    return done(glreportssGetErr);
+                }
+
+                // Get Accountcharts list
+                var glreports = glreportssGetRes.body;
+
+                (glreports.acceach.length).should.match(0);
+
+
+                
+
+                // (accounts.length).should.match(7);
+
+                // Call the assertion callback
+                done();
+            });
+    });
 
     afterEach(function (done) {
         User.remove().exec(function () {
