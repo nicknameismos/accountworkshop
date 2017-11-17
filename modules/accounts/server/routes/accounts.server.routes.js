@@ -30,7 +30,7 @@ module.exports = function (app) {
         .get(accounts.listSearch);
 
     app.route('/api/glreport/:type/:date').all(accountsPolicy.isAllowed)
-        .get(accounts.returnGlreport);
+        .get(accounts.generateGlDaily ,accounts.returnGlreport);
 
     // Finish by binding the Account middleware
     app.param('accountId', accounts.accountByID);

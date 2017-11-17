@@ -351,7 +351,7 @@ describe('GL Report tests', function () {
 
     it('GL Report daily get by month', function (done) {
         var date = new Date('2016-01-05T07:00:00.000+07:00');
-        var type = 'm';
+        var type = 'month';
         // Get a list of Accountcharts
         agent.get('/api/glreport/' + type + '/' + date)
             .end(function (glreportsGetErr, glreportsGetRes) {
@@ -362,20 +362,26 @@ describe('GL Report tests', function () {
 
                 // Get Accountcharts list
                 var glreports = glreportsGetRes.body;
-
-                // (glreports).should.match({});
-
-                (glreports.length).should.match(4);
                 
+                (glreports.type).should.match("month");
+                (glreports.startdate).should.match("Fri Jan 01 2016 00:00:00 GMT+0700 (SE Asia Standard Time)");
+                (glreports.enddate).should.match("Sun Jan 31 2016 23:59:59 GMT+0700 (SE Asia Standard Time)");
+                // (glreports).should.match('');
+                (glreports.daily.transaction.length).should.match(4);
+                (glreports.daily.transaction[0].docno).should.match(account.docno);
+                (glreports.daily.transaction[1].docno).should.match(account2.docno);
+                (glreports.daily.transaction[2].docno).should.match(account3.docno);
+                (glreports.daily.transaction[3].docno).should.match(account4.docno);
+
                 // Call the assertion callback
                 done();
             });
             
     });
 
-    it('GL Report daily get by month', function (done) {
+    it('GL Report daily get by year', function (done) {
         var date = new Date('2016-01-05T07:00:00.000+07:00');
-        var type = 'y';
+        var type = 'year';
         // Get a list of Accountcharts
         agent.get('/api/glreport/' + type + '/' + date)
             .end(function (glreportsGetErr, glreportsGetRes) {
@@ -387,10 +393,9 @@ describe('GL Report tests', function () {
                 // Get Accountcharts list
                 var glreports = glreportsGetRes.body;
 
-                // (glreports).should.match({});
-
-                (glreports.length).should.match(7);
-                
+                (glreports.type).should.match("year");
+                (glreports.startdate).should.match("Fri Jan 01 2016 00:00:00 GMT+0700 (SE Asia Standard Time)");
+                (glreports.enddate).should.match("Sat Dec 31 2016 00:00:00 GMT+0700 (SE Asia Standard Time)");
                 // Call the assertion callback
                 done();
             });

@@ -431,8 +431,7 @@ exports.listSearch = function (req, res) {
 };
 
 
-///////////////////////////////////////////////
-
+/////////////////////////////////////////////// Gen GL
 exports.glType = function (req, res, next, type) {
     req.type = type;
     next();
@@ -444,11 +443,11 @@ exports.getGlDate = function (req, res, next, date) {
     var paramDate = new Date(date);
     var firstDay;
     var lastDay;
-
-    if (req.type === 'm') {
+    console.log("req.type : ", req.type);
+    if (req.type === 'month') {
         firstDay = new Date(paramDate.getFullYear(), paramDate.getMonth(), 1);
         lastDay = new Date(new Date(paramDate.getFullYear(), paramDate.getMonth() + 1, 0).setHours(23, 59, 59, 999));
-    } else if (req.type === 'y') {
+    } else if (req.type === 'year') {
         firstDay = new Date(paramDate.getFullYear(), 0, 1);
         lastDay = new Date(paramDate.getFullYear(), 11, 31);
     } else {
@@ -469,14 +468,87 @@ exports.getGlDate = function (req, res, next, date) {
             });
         }
         req.account = account;
+        req.firstDay = '' + firstDay;
+        req.lastDay = '' + lastDay;
         next();
     });
 };
 
 
+
+exports.generateGlDaily = function (req, res, next) {
+
+    var daily = {
+        date: new Date(),
+        company: "Cyber Advance System annd Network Co.,Ltd",
+        startdate: req.firstDay,
+        enddate: req.lastDay,
+        title: "สมุดรายวันทั่วไป",
+        transaction: []
+    };
+    
+    var acc = req.account.length;
+    for (var i = 0; i < acc; i++) {
+        var element = req.account[i];
+        var transaction = {
+            docdate: element.docdate,
+            docno: element.docno,
+            list:[],
+            remark:element.remark
+        };
+
+        var debitLength = element.debits.length;
+        for (var d = 0; d < debitLength; d++) {
+            var debit = element.debits[d];
+
+            transaction.list.push({
+                accountname: debit.account.name,
+                accountno: debit.account.accountno,
+                description: debit.description,
+                document: "",
+                timestamp: "",
+                debit: debit.amount,
+                credit: 0
+            });
+        }
+
+        var creditsLength = element.credits.length;
+        for (var c = 0; c < creditsLength; c++) {
+            var credits =  element.credits[c];
+
+            transaction.list.push({
+                accountname: credits.account.name,
+                accountno: credits.account.accountno,
+                description: credits.description,
+                document: "",
+                timestamp: "",
+                debit: 0,
+                credit: credits.amount
+            });
+        }
+
+        daily.transaction.push(transaction);
+
+    }
+
+    req.daily = daily;
+    next();
+
+
+};
+
+
 exports.returnGlreport = function (req, res) {
-    res.jsonp(req.account);
+
+    var glreport = {
+        type: req.type,
+        startdate: req.firstDay,
+        enddate: req.lastDay,
+        daily: req.daily
+    };
+
+    // console.log(JSON.stringify(glreport));
 
 
-
+    res.jsonp(glreport);
 };
