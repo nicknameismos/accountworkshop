@@ -1,5 +1,3 @@
-
-
 'use strict';
 
 var should = require('should'),
@@ -132,13 +130,11 @@ describe('GL Report tests', function () {
                 account: accountchart2,
                 description: "ค่ากระดาษถ่ายเอกสาร",
                 amount: 168.22
-            },
-            {
+            }, {
                 account: accountchart3,
                 description: "ค่ากระดาษถ่ายเอกสาร",
                 amount: 11.78
-            }
-            ],
+            }],
             docdate: "2016-01-04T07:00:00.000+07:00",
             docno: "PV59010401",
             gltype: "PV",
@@ -350,7 +346,7 @@ describe('GL Report tests', function () {
     });
 
     it('GL Report daily get by month', function (done) {
-        var date = new Date('2016-01-05T07:00:00.000+07:00');
+        var date = '2016-01-05';
         var type = 'month';
         // Get a list of Accountcharts
         agent.get('/api/glreport/' + type + '/' + date)
@@ -364,9 +360,6 @@ describe('GL Report tests', function () {
                 var glreports = glreportsGetRes.body;
 
                 (glreports.type).should.match("month");
-                (glreports.startdate).should.match("Fri Jan 01 2016 00:00:00 GMT+0700 (SE Asia Standard Time)");
-                (glreports.enddate).should.match("Sun Jan 31 2016 23:59:59 GMT+0700 (SE Asia Standard Time)");
-                // (glreports).should.match('');
                 (glreports.daily.transaction.length).should.match(4);
                 (glreports.daily.transaction[0].docno).should.match(account.docno);
                 (glreports.daily.transaction[1].docno).should.match(account2.docno);
@@ -380,7 +373,7 @@ describe('GL Report tests', function () {
     });
 
     it('GL Report daily get by year', function (done) {
-        var date = new Date('2016-01-05T07:00:00.000+07:00');
+        var date = '2016-01-05';
         var type = 'year';
         // Get a list of Accountcharts
         agent.get('/api/glreport/' + type + '/' + date)
@@ -394,9 +387,6 @@ describe('GL Report tests', function () {
                 var glreports = glreportsGetRes.body;
 
                 (glreports.type).should.match("year");
-                (glreports.startdate).should.match("Fri Jan 01 2016 00:00:00 GMT+0700 (SE Asia Standard Time)");
-                (glreports.enddate).should.match("Sat Dec 31 2016 00:00:00 GMT+0700 (SE Asia Standard Time)");
-
                 (glreports.daily.transaction.length).should.match(7);
                 (glreports.daily.transaction[0].docno).should.match(account.docno);
                 (glreports.daily.transaction[1].docno).should.match(account2.docno);
@@ -411,9 +401,9 @@ describe('GL Report tests', function () {
 
     });
 
-    it('GL Report get acceach', function (done) {
+    it('GL Report get acceach by month', function (done) {
 
-        var date = new Date('2016-01-05T07:00:00.000+07:00');
+        var date = '2016-01-05';
         var type = 'month';
         // Get a list of Accountcharts
         agent.get('/api/glreport/' + type + '/' + date)
@@ -426,9 +416,35 @@ describe('GL Report tests', function () {
                 // Get Accountcharts list
                 var glreports = glreportssGetRes.body;
 
-                (glreports.acceach.length).should.match(9);
-                // (glreports.acceach)
+                (glreports.type).should.match("month");
+                (glreports.acceach.length).should.match(5);
+                (glreports.acceach[0].accountno).should.match('101101');
+                (glreports.acceach[1].accountno).should.match('101502');
+                (glreports.acceach[2].accountno).should.match('102101');
+                (glreports.acceach[3].accountno).should.match('501001');
+                (glreports.acceach[4].accountno).should.match('605003');
+                // Call the assertion callback
+                done();
+            });
+    });
 
+    it('GL Report get acceach by year', function (done) {
+
+        var date = '2016-01-05';
+        var type = 'year';
+        // Get a list of Accountcharts
+        agent.get('/api/glreport/' + type + '/' + date)
+            .end(function (glreportssGetErr, glreportssGetRes) {
+                // Handle Accountcharts save error
+                if (glreportssGetErr) {
+                    return done(glreportssGetErr);
+                }
+
+                // Get Accountcharts list
+                var glreports = glreportssGetRes.body;
+
+                (glreports.type).should.match("year");
+                (glreports.acceach.length).should.match(9);
                 (glreports.acceach[0].accountno).should.match('101101');
                 (glreports.acceach[1].accountno).should.match('101111');
                 (glreports.acceach[2].accountno).should.match('101211');
@@ -438,17 +454,11 @@ describe('GL Report tests', function () {
                 (glreports.acceach[6].accountno).should.match('605003');
                 (glreports.acceach[7].accountno).should.match('605009');
                 (glreports.acceach[8].accountno).should.match('605011');
-                
-
-                (glreports.acceach.transaction[0].docdate).should.match(account.docno);
-                
-
-                // (accounts.length).should.match(7);
-
                 // Call the assertion callback
                 done();
             });
     });
+
 
     afterEach(function (done) {
         User.remove().exec(function () {

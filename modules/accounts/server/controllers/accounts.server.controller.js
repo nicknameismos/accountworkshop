@@ -458,7 +458,10 @@ exports.getGlDate = function (req, res, next, date) {
 
     // console.log(req.type + ' ' + firstDay + ' : ' + lastDay);
     Account.find({
-        docdate: { $gte: firstDay, $lte: lastDay } //  $gt > | $lt < | $gte >== | $lte <==
+        docdate: {
+            $gte: firstDay,
+            $lte: lastDay
+        } //  $gt > | $lt < | $gte >== | $lte <==
     }).populate('debits.account').populate('credits.account').populate('user', 'displayName').exec(function (err, account) {
         if (err) {
             return next(err);
@@ -536,7 +539,7 @@ exports.generateGlDaily = function (req, res, next) {
 };
 
 exports.getAccountchart = function (req, res, next) {
-    Accountchart.find().sort('-created').exec(function (err, accountcharts) {
+    Accountchart.find().sort('accountno').exec(function (err, accountcharts) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -551,12 +554,11 @@ exports.getAccountchart = function (req, res, next) {
 exports.generateAcceach = function (req, res, next) {
     var daily = req.daily;
     var accountchart = req.accountcharts;
-
-
     var accChartsLength = accountchart.length;
     var dailyLength = daily.transaction.length;
+    var acceach = [];
 
-    for (let i = 0; i < accChartsLength; i++) {
+    for (var i = 0; i < accChartsLength; i++) {
         var accountchartI = accountchart[i];
 
         var acceachGrop = {
@@ -565,23 +567,59 @@ exports.generateAcceach = function (req, res, next) {
             startdate: req.firstDay,
             enddate: req.lastDay,
             title: "บัญชีแยกประเภท" + accountchartI.name,
-            accoutno: accountchartI.accountno,
+            accountno: accountchartI.accountno,
             transaction: []
         };
+
         var transaction = [];
+
         for (var ii = 0; ii < dailyLength; ii++) {
             var dailyI = daily.transaction[ii];
-            var indexOfAccountno = dailyI.list.findIndex(i => i.accountno === accountchartI.accountno);
+            var indexOfAccountno = dailyI.list.map(function (e) {
+                return e.accountno;
+            }).indexOf(accountchartI.accountno);
+
             if (indexOfAccountno !== -1) {
                 var checkDuplicate = dailyI.list;
-                checkDuplicate.splice(indexOfAccountno, 1);
-                transaction = transaction.concat(checkDuplicate);
+                // checkDuplicate.splice(indexOfAccountno, 1);
+                var checkDuplicateLength = checkDuplicate.length;
+
+                for (var iii = 0; iii < checkDuplicateLength; iii++) {
+                    var checkDuplicateI = checkDuplicate[iii];
+                    if (checkDuplicateI.accountno !== accountchartI.accountno) {
+                        transaction.push({
+                            docdate: dailyI.docdate,
+                            docno: dailyI.docno,
+                            accountname: checkDuplicateI.accountname,
+                            accountno: checkDuplicateI.accountno,
+                            document: "",
+                            timestamp: "",
+                            debit: checkDuplicateI.credit,
+                            credit: checkDuplicateI.debit,
+                            description: checkDuplicateI.description
+                        });
+                    }
+                }
             }
         }
         if (transaction.length > 0) {
-            console.log('=======' + accountchartI.accountno + '=======', transaction);
+            transaction = _(transaction)
+                .groupBy('docdate')
+                .reduce(function (array, children, key) {
+                    array.push({
+                        docdate: key,
+                        list: children
+                    });
+
+                    return array;
+                }, []);
+
+            acceachGrop.transaction = transaction;
+            // console.dir(acceachGrop);
+            acceach.push(acceachGrop);
         }
     }
+    req.acceach = acceach;
     next();
 };
 
@@ -593,11 +631,9 @@ exports.returnGlreport = function (req, res) {
         startdate: req.firstDay,
         enddate: req.lastDay,
         daily: req.daily,
-        acceach: []
+        acceach: req.acceach
     };
-
-    // console.log(JSON.stringify(glreport));
-
-
     res.jsonp(glreport);
 };
+
+// จัดแค่ format อย่างเดียว
