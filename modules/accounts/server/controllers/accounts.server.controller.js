@@ -429,3 +429,54 @@ exports.listSearch = function (req, res) {
     var account = req.account ? req.account : {};
     res.jsonp(account);
 };
+
+
+///////////////////////////////////////////////
+
+exports.glType = function (req, res, next, type) {
+    req.type = type;
+    next();
+};
+
+exports.getGlDate = function (req, res, next, date) {
+    req.date = date;
+
+    var paramDate = new Date(date);
+    var firstDay;
+    var lastDay;
+
+    if (req.type === 'm') {
+        firstDay = new Date(paramDate.getFullYear(), paramDate.getMonth(), 1);
+        lastDay = new Date(new Date(paramDate.getFullYear(), paramDate.getMonth() + 1, 0).setHours(23, 59, 59, 999));
+    } else if (req.type === 'y') {
+        firstDay = new Date(paramDate.getFullYear(), 0, 1);
+        lastDay = new Date(paramDate.getFullYear(), 11, 31);
+    } else {
+        return res.status(404).send({
+            message: 'Type not macth. [m,y]'
+        });
+    }
+
+    console.log(req.type + ' ' + firstDay + ' : ' + lastDay);
+    Account.find({
+        docdate: { $gte: firstDay, $lte: lastDay } //  $gt > | $lt < | $gte >== | $lte <==
+    }).populate('debits.account').populate('credits.account').populate('user', 'displayName').exec(function (err, account) {
+        if (err) {
+            return next(err);
+        } else if (!account) {
+            return res.status(404).send({
+                message: 'No Account with that identifier has been found'
+            });
+        }
+        req.account = account;
+        next();
+    });
+};
+
+
+exports.returnGlreport = function (req, res) {
+    res.jsonp(req.account);
+
+
+
+};

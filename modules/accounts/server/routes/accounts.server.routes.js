@@ -1,3 +1,4 @@
+
 'use strict';
 
 /**
@@ -28,7 +29,12 @@ module.exports = function (app) {
     app.route('/api/accounts/search/:docno') // match docno only (*A111 === *A111 : *A111 !== *A11)
         .get(accounts.listSearch);
 
+    app.route('/api/glreport/:type/:date').all(accountsPolicy.isAllowed)
+        .get(accounts.returnGlreport);
+
     // Finish by binding the Account middleware
     app.param('accountId', accounts.accountByID);
     app.param('docno', accounts.accountByDocno);
+    app.param('type', accounts.glType);
+    app.param('date', accounts.getGlDate);
 };

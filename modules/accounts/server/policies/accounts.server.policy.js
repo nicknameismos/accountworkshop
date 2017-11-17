@@ -11,11 +11,14 @@ acl = new acl(new acl.memoryBackend());
 /**
  * Invoke Accounts Permissions
  */
-exports.invokeRolesPolicies = function() {
+exports.invokeRolesPolicies = function () {
     acl.allow([{
         roles: ['admin'],
         allows: [{
             resources: '/api/accounts',
+            permissions: '*'
+        }, {
+            resources: '/api/glreport/:type/:date',
             permissions: '*'
         }, {
             resources: '/api/accounts/:accountId',
@@ -33,6 +36,9 @@ exports.invokeRolesPolicies = function() {
             resources: '/api/accounts',
             permissions: ['get', 'post']
         }, {
+            resources: '/api/glreport/:type/:date',
+            permissions: '*'
+        }, {
             resources: '/api/accounts/:accountId',
             permissions: ['get']
         }, {
@@ -47,6 +53,9 @@ exports.invokeRolesPolicies = function() {
         allows: [{
             resources: '/api/accounts',
             permissions: ['get']
+        }, {
+            resources: '/api/glreport/:type/:date',
+            permissions: '*'
         }, {
             resources: '/api/accounts/:accountId',
             permissions: ['get']
@@ -63,7 +72,7 @@ exports.invokeRolesPolicies = function() {
 /**
  * Check If Accounts Policy Allows
  */
-exports.isAllowed = function(req, res, next) {
+exports.isAllowed = function (req, res, next) {
     var roles = (req.user) ? req.user.roles : ['guest'];
 
     // If an Account is being processed and the current user created it then allow any manipulation
@@ -72,7 +81,7 @@ exports.isAllowed = function(req, res, next) {
     }
 
     // Check for user roles
-    acl.areAnyRolesAllowed(roles, req.route.path, req.method.toLowerCase(), function(err, isAllowed) {
+    acl.areAnyRolesAllowed(roles, req.route.path, req.method.toLowerCase(), function (err, isAllowed) {
         if (err) {
             // An authorization error occurred
             return res.status(500).send('Unexpected authorization error');
