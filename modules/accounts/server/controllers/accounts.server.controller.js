@@ -541,7 +541,7 @@ exports.getAccountchart = function (req, res, next) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
-        }else{
+        } else {
             req.accountcharts = accountcharts;
             next();
         }
@@ -549,10 +549,39 @@ exports.getAccountchart = function (req, res, next) {
 };
 
 exports.generateAcceach = function (req, res, next) {
-    var daily =  req.daily;
-    var accountchart = req.accountcharts
+    var daily = req.daily;
+    var accountchart = req.accountcharts;
 
-    
+
+    var accChartsLength = accountchart.length;
+    var dailyLength = daily.transaction.length;
+
+    for (let i = 0; i < accChartsLength; i++) {
+        var accountchartI = accountchart[i];
+
+        var acceachGrop = {
+            date: new Date(),
+            company: "Cyber Advance System annd Network Co.,Ltd",
+            startdate: req.firstDay,
+            enddate: req.lastDay,
+            title: "บัญชีแยกประเภท" + accountchartI.name,
+            accoutno: accountchartI.accountno,
+            transaction: []
+        };
+        var transaction = [];
+        for (var ii = 0; ii < dailyLength; ii++) {
+            var dailyI = daily.transaction[ii];
+            var indexOfAccountno = dailyI.list.findIndex(i => i.accountno === accountchartI.accountno);
+            if (indexOfAccountno !== -1) {
+                var checkDuplicate = dailyI.list;
+                checkDuplicate.splice(indexOfAccountno, 1);
+                transaction = transaction.concat(checkDuplicate);
+            }
+        }
+        if (transaction.length > 0) {
+            console.log('=======' + accountchartI.accountno + '=======', transaction);
+        }
+    }
     next();
 };
 

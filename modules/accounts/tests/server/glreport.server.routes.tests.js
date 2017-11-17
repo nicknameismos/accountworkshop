@@ -426,9 +426,21 @@ describe('GL Report tests', function () {
                 // Get Accountcharts list
                 var glreports = glreportssGetRes.body;
 
-                (glreports.acceach.length).should.match(0);
+                (glreports.acceach.length).should.match(9);
+                // (glreports.acceach)
 
+                (glreports.acceach[0].accountno).should.match('101101');
+                (glreports.acceach[1].accountno).should.match('101111');
+                (glreports.acceach[2].accountno).should.match('101211');
+                (glreports.acceach[3].accountno).should.match('101502');
+                (glreports.acceach[4].accountno).should.match('102101');
+                (glreports.acceach[5].accountno).should.match('501001');
+                (glreports.acceach[6].accountno).should.match('605003');
+                (glreports.acceach[7].accountno).should.match('605009');
+                (glreports.acceach[8].accountno).should.match('605011');
+                
 
+                (glreports.acceach.transaction[0].docdate).should.match(account.docno);
                 
 
                 // (accounts.length).should.match(7);
