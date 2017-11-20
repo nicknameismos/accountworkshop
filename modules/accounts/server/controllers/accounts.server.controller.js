@@ -446,7 +446,7 @@ exports.getGlDate = function (req, res, next, date) {
     // console.log("req.type : ", req.type);
     if (req.type === 'month') {
         firstDay = new Date(paramDate.getFullYear(), paramDate.getMonth(), 1);
-        lastDay = new Date(new Date(paramDate.getFullYear(), paramDate.getMonth() + 1, 0).setHours(23, 59, 59, 999));
+        lastDay = new Date(new Date(paramDate.getFullYear(), paramDate.getMonth() + 1, 0).setHours(23, 59, 59));
     } else if (req.type === 'year') {
         firstDay = new Date(paramDate.getFullYear(), 0, 1);
         lastDay = new Date(paramDate.getFullYear(), 11, 31);
