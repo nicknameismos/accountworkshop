@@ -462,7 +462,7 @@ exports.getGlDate = function (req, res, next, date) {
             $gte: firstDay,
             $lte: lastDay
         } //  $gt > | $lt < | $gte >== | $lte <==
-    }).populate('debits.account').populate('credits.account').populate('user', 'displayName').exec(function (err, account) {
+    }).populate('debits.account').populate('credits.account').populate('user', 'displayName').sort('docno').exec(function (err, account) {
         if (err) {
             return next(err);
         } else if (!account) {
@@ -551,6 +551,238 @@ exports.getAccountchart = function (req, res, next) {
     });
 };
 
+exports.getBringForwardForAcceach = function (req, res, next) {
+    Account.find({
+        docdate: {
+            $lt: req.firstDay
+        }
+    }).populate('debits.account').populate('credits.account').populate('user', 'displayName').sort('docno').exec(function (err, account) {
+        if (err) {
+            return next(err);
+        } else if (!account) {
+            return res.status(404).send({
+                message: 'No Account with that identifier has been found'
+            });
+        }
+
+        // รายวันทั้งหมด
+        var daily = {
+            transaction: []
+        };
+
+        var acc = account.length;
+        for (var i = 0; i < acc; i++) {
+            var element = account[i];
+            var transaction = {
+                docdate: element.docdate,
+                docno: element.docno,
+                list: [],
+                remark: element.remark
+            };
+
+            var debitLength = element.debits.length;
+            for (var d = 0; d < debitLength; d++) {
+                var debit = element.debits[d];
+
+                transaction.list.push({
+                    accountname: debit.account.name,
+                    accountno: debit.account.accountno,
+                    description: debit.description,
+                    document: "",
+                    timestamp: "",
+                    debit: debit.amount,
+                    credit: 0
+                });
+            }
+
+            var creditsLength = element.credits.length;
+            for (var c = 0; c < creditsLength; c++) {
+                var credits = element.credits[c];
+
+                transaction.list.push({
+                    accountname: credits.account.name,
+                    accountno: credits.account.accountno,
+                    description: credits.description,
+                    document: "",
+                    timestamp: "",
+                    debit: 0,
+                    credit: credits.amount
+                });
+            }
+
+            daily.transaction.push(transaction);
+
+        }
+        // รายวันทั้งหมด
+        // แยกประเภททั้งหมด
+        var accountchart = req.accountcharts;
+        var accChartsLength = accountchart.length;
+        var dailyLength = daily.transaction.length;
+        var acceach = [];
+
+        for (var each = 0; each < accChartsLength; each++) {
+            var accountchartI = accountchart[each];
+
+            var acceachGrop = {
+                title: "บัญชีแยกประเภท" + accountchartI.name,
+                accountno: accountchartI.accountno,
+                current: {
+                    debit: 0,
+                    credit: 0
+                },
+                transaction: []
+            };
+
+            var transactionAccEach = [];
+
+            for (var ii = 0; ii < dailyLength; ii++) {
+                var dailyI = daily.transaction[ii];
+                var indexOfAccountno = dailyI.list.map(function (e) {
+                    return e.accountno;
+                }).indexOf(accountchartI.accountno);
+
+                if (indexOfAccountno !== -1) {
+                    var dailyIList = dailyI.list;
+                    // checkDuplicate.splice(indexOfAccountno, 1);
+                    var dailyIListLength = dailyIList.length;
+
+                    var macthAccount = dailyIList[indexOfAccountno];
+                    var iii = 0;
+                    if (macthAccount.debit > 0) {
+
+                        var sumCredit = 0;
+                        var dailyListCredit = [];
+                        for (iii; iii < dailyIListLength; iii++) {
+                            var dailyListICredit = dailyIList[iii];
+                            if (dailyListICredit.credit > 0) {
+                                sumCredit += dailyListICredit.credit;
+                                dailyListCredit.push({
+                                    docdate: dailyI.docdate,
+                                    docno: dailyI.docno,
+                                    accountname: dailyListICredit.accountname,
+                                    accountno: dailyListICredit.accountno,
+                                    document: "",
+                                    timestamp: "",
+                                    debit: dailyListICredit.credit,
+                                    credit: dailyListICredit.debit,
+                                    description: dailyListICredit.description
+                                });
+                            }
+                        }
+
+                        if (macthAccount.debit === sumCredit) {
+                            transactionAccEach = transactionAccEach.concat(dailyListCredit);
+                        } else {
+                            transactionAccEach.push({
+                                docdate: dailyI.docdate,
+                                docno: dailyI.docno,
+                                accountname: dailyListCredit[0].accountname,
+                                accountno: dailyListCredit[0].accountno,
+                                document: "",
+                                timestamp: "",
+                                debit: macthAccount.debit,
+                                credit: 0,
+                                description: dailyListCredit[0].description
+                            });
+                        }
+
+                    } else if (macthAccount.credit > 0) {
+
+                        var sumDebit = 0;
+                        var dailyListDabit = [];
+                        for (iii; iii < dailyIListLength; iii++) {
+                            var dailyListIDabit = dailyIList[iii];
+                            if (dailyListIDabit.debit > 0) {
+                                sumDebit += dailyListIDabit.debit;
+                                dailyListDabit.push({
+                                    docdate: dailyI.docdate,
+                                    docno: dailyI.docno,
+                                    accountname: dailyListIDabit.accountname,
+                                    accountno: dailyListIDabit.accountno,
+                                    document: "",
+                                    timestamp: "",
+                                    debit: dailyListIDabit.credit,
+                                    credit: dailyListIDabit.debit,
+                                    description: dailyListIDabit.description
+                                });
+                            }
+                        }
+
+                        if (macthAccount.credit === sumDebit) {
+                            transactionAccEach = transactionAccEach.concat(dailyListDabit);
+                        } else {
+                            transactionAccEach.push({
+                                docdate: dailyI.docdate,
+                                docno: dailyI.docno,
+                                accountname: dailyListDabit[0].accountname,
+                                accountno: dailyListDabit[0].accountno,
+                                document: "",
+                                timestamp: "",
+                                debit: 0,
+                                credit: macthAccount.credit,
+                                description: dailyListDabit[0].description
+                            });
+                        }
+
+                    }
+
+                }
+            }
+
+            var tranLength = transactionAccEach.length;
+            var currentDebit = 0;
+            var currentCredit = 0;
+            if (tranLength > 0) {
+
+                for (var index = 0; index < tranLength; index++) {
+                    var tran = transactionAccEach[index];
+                    currentDebit += tran.debit;
+                    currentCredit += tran.credit;
+                }
+                var carryforwardDebit = 0;
+                var carryforwardCredit = 0;
+                var sumCurent = currentDebit - currentCredit;
+                acceachGrop.current.debit = currentDebit > currentCredit ? currentDebit : currentCredit;
+                acceachGrop.current.credit = acceachGrop.current.debit;
+                if (sumCurent >= 0) {
+                    carryforwardCredit = sumCurent;
+                } else {
+                    carryforwardDebit = Math.abs(sumCurent);
+                }
+
+                acceachGrop.carryforward = {
+                    docdate: "",
+                    docno: "",
+                    accountname: "ยอดยกไป",
+                    accountno: "",
+                    document: "",
+                    timestamp: "",
+                    debit: carryforwardDebit,
+                    credit: carryforwardCredit,
+                    description: ""
+                };
+
+                transactionAccEach = _(transactionAccEach)
+                    .groupBy('docdate')
+                    .reduce(function (array, children, key) {
+                        array.push({
+                            docdate: key,
+                            list: children
+                        });
+
+                        return array;
+                    }, []);
+
+                acceachGrop.transaction = transactionAccEach;
+                acceach.push(acceachGrop);
+            }
+        }
+        req.bringforward = acceach;
+        next();
+        // แยกประเภททั้งหมด
+    });
+};
+
 exports.generateAcceach = function (req, res, next) {
     var daily = req.daily;
     var accountchart = req.accountcharts;
@@ -568,6 +800,10 @@ exports.generateAcceach = function (req, res, next) {
             enddate: req.lastDay,
             title: "บัญชีแยกประเภท" + accountchartI.name,
             accountno: accountchartI.accountno,
+            current: {
+                debit: 0,
+                credit: 0
+            },
             transaction: []
         };
 
@@ -580,29 +816,161 @@ exports.generateAcceach = function (req, res, next) {
             }).indexOf(accountchartI.accountno);
 
             if (indexOfAccountno !== -1) {
-                var checkDuplicate = dailyI.list;
+                var dailyIList = dailyI.list;
                 // checkDuplicate.splice(indexOfAccountno, 1);
-                var checkDuplicateLength = checkDuplicate.length;
+                var dailyIListLength = dailyIList.length;
 
-                for (var iii = 0; iii < checkDuplicateLength; iii++) {
-                    var checkDuplicateI = checkDuplicate[iii];
-                    if (checkDuplicateI.accountno !== accountchartI.accountno) {
+                var macthAccount = dailyIList[indexOfAccountno];
+                var iii = 0;
+                if (macthAccount.debit > 0) {
+
+                    var sumCredit = 0;
+                    var dailyListCredit = [];
+                    for (iii; iii < dailyIListLength; iii++) {
+                        var dailyListICredit = dailyIList[iii];
+                        if (dailyListICredit.credit > 0) {
+                            sumCredit += dailyListICredit.credit;
+                            dailyListCredit.push({
+                                docdate: dailyI.docdate,
+                                docno: dailyI.docno,
+                                accountname: dailyListICredit.accountname,
+                                accountno: dailyListICredit.accountno,
+                                document: "",
+                                timestamp: "",
+                                debit: dailyListICredit.credit,
+                                credit: dailyListICredit.debit,
+                                description: dailyListICredit.description
+                            });
+                        }
+                    }
+
+                    if (macthAccount.debit === sumCredit) {
+                        transaction = transaction.concat(dailyListCredit);
+                    } else {
                         transaction.push({
                             docdate: dailyI.docdate,
                             docno: dailyI.docno,
-                            accountname: checkDuplicateI.accountname,
-                            accountno: checkDuplicateI.accountno,
+                            accountname: dailyListCredit[0].accountname,
+                            accountno: dailyListCredit[0].accountno,
                             document: "",
                             timestamp: "",
-                            debit: checkDuplicateI.credit,
-                            credit: checkDuplicateI.debit,
-                            description: checkDuplicateI.description
+                            debit: macthAccount.debit,
+                            credit: 0,
+                            description: dailyListCredit[0].description
                         });
                     }
+
+                } else if (macthAccount.credit > 0) {
+
+                    var sumDebit = 0;
+                    var dailyListDabit = [];
+                    for (iii; iii < dailyIListLength; iii++) {
+                        var dailyListIDabit = dailyIList[iii];
+                        if (dailyListIDabit.debit > 0) {
+                            sumDebit += dailyListIDabit.debit;
+                            dailyListDabit.push({
+                                docdate: dailyI.docdate,
+                                docno: dailyI.docno,
+                                accountname: dailyListIDabit.accountname,
+                                accountno: dailyListIDabit.accountno,
+                                document: "",
+                                timestamp: "",
+                                debit: dailyListIDabit.credit,
+                                credit: dailyListIDabit.debit,
+                                description: dailyListIDabit.description
+                            });
+                        }
+                    }
+
+                    if (macthAccount.credit === sumDebit) {
+                        transaction = transaction.concat(dailyListDabit);
+                    } else {
+                        transaction.push({
+                            docdate: dailyI.docdate,
+                            docno: dailyI.docno,
+                            accountname: dailyListDabit[0].accountname,
+                            accountno: dailyListDabit[0].accountno,
+                            document: "",
+                            timestamp: "",
+                            debit: 0,
+                            credit: macthAccount.credit,
+                            description: dailyListDabit[0].description
+                        });
+                    }
+
                 }
+
             }
         }
-        if (transaction.length > 0) {
+
+        var tranLength = transaction.length;
+        var currentDebit = 0;
+        var currentCredit = 0;
+        if (tranLength > 0) {
+
+            for (var index = 0; index < tranLength; index++) {
+                var tran = transaction[index];
+                currentDebit += tran.debit;
+                currentCredit += tran.credit;
+            }
+
+            var indexOfbringforward = req.bringforward.map(function (e) {
+                return e.accountno;
+            }).indexOf(accountchartI.accountno);
+
+            if (indexOfbringforward !== -1) {
+                currentDebit += req.bringforward[indexOfbringforward].carryforward.debit;
+                currentCredit += req.bringforward[indexOfbringforward].carryforward.credit;
+                acceachGrop.bringforward = {
+                    docdate: "",
+                    docno: "",
+                    accountname: "ยอดยกมา",
+                    accountno: "",
+                    document: "",
+                    timestamp: "",
+                    debit: req.bringforward[indexOfbringforward].carryforward.debit,
+                    credit: req.bringforward[indexOfbringforward].carryforward.credit,
+                    description: ""
+                };
+            } else {
+                acceachGrop.bringforward = {
+                    docdate: "",
+                    docno: "",
+                    accountname: "ยอดยกมา",
+                    accountno: "",
+                    document: "",
+                    timestamp: "",
+                    debit: 0,
+                    credit: 0,
+                    description: ""
+                };
+            }
+
+            var carryforwardDebit = 0;
+            var carryforwardCredit = 0;
+            var sumCurent = currentDebit - currentCredit;
+
+            acceachGrop.current.debit = currentDebit > currentCredit ? currentDebit : currentCredit;
+            acceachGrop.current.credit = acceachGrop.current.debit;
+
+            if (sumCurent >= 0) {
+                carryforwardCredit = sumCurent;
+            } else {
+                carryforwardDebit = Math.abs(sumCurent);
+            }
+
+            acceachGrop.carryforward = {
+                docdate: "",
+                docno: "",
+                accountname: "ยอดยกไป",
+                accountno: "",
+                document: "",
+                timestamp: "",
+                debit: carryforwardDebit,
+                credit: carryforwardCredit,
+                description: ""
+            };
+
             transaction = _(transaction)
                 .groupBy('docdate')
                 .reduce(function (array, children, key) {
@@ -615,7 +983,6 @@ exports.generateAcceach = function (req, res, next) {
                 }, []);
 
             acceachGrop.transaction = transaction;
-            // console.dir(acceachGrop);
             acceach.push(acceachGrop);
         }
     }

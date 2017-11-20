@@ -28,11 +28,7 @@ var app,
     accountchart9,
     account,
     account2,
-    account3,
-    account4,
-    account5,
-    account6,
-    account7;
+    account3;
 
 /**
  * Account routes tests
@@ -146,79 +142,6 @@ describe('GL Report tests', function () {
 
         account2 = new Account({
             credits: [{
-                account: accountchart1,
-                description: "ค่าหมึกพิมพ์",
-                amount: 11450
-            }],
-            debits: [{
-                account: accountchart2,
-                description: "ค่าหมึกพิมพ์",
-                amount: 10700.93
-            }, {
-                account: accountchart3,
-                description: "ค่าหมึกพิมพ์",
-                amount: 749.07
-            }],
-            docdate: "2016-01-04T07:00:00.000+07:00",
-            docno: "PV59010402",
-            gltype: "PV",
-            remark: "",
-            status: "Open",
-            totalcredit: 11450,
-            totaldebit: 11450
-
-        });
-
-        account3 = new Account({
-            credits: [{
-                account: accountchart1,
-                description: "ค่าอุปกรณ์คอมพิวเตอร์- Tablet",
-                amount: 67561
-            }],
-            debits: [{
-                account: accountchart4,
-                description: "ค่าอุปกรณ์คอมพิวเตอร์- Tablet",
-                amount: 63141.12
-            }, {
-                account: accountchart3,
-                description: "ค่าอุปกรณ์คอมพิวเตอร์- Tablet",
-                amount: 4419.88
-            }],
-            docdate: "2016-01-04T07:00:00.000+07:00",
-            docno: "PV59010403",
-            gltype: "PV",
-            remark: "",
-            status: "Open",
-            totalcredit: 67561,
-            totaldebit: 67561
-        });
-
-        account4 = new Account({
-            credits: [{
-                account: accountchart1,
-                description: "ค่าเครื่งคอมคอมพิวเตอร์",
-                amount: 13803
-            }],
-            debits: [{
-                account: accountchart5,
-                description: "ค่าเครื่งคอมคอมพิวเตอร์",
-                amount: 12900
-            }, {
-                account: accountchart3,
-                description: "ค่าเครื่งคอมคอมพิวเตอร์",
-                amount: 903
-            }],
-            docdate: "2016-01-04T07:00:00.000+07:00",
-            docno: "PV59010404",
-            gltype: "PV",
-            remark: "",
-            status: "Open",
-            totalcredit: 13803,
-            totaldebit: 13803
-        });
-
-        account5 = new Account({
-            credits: [{
                 account: accountchart6,
                 description: "โอนเงินระหว่างบัญชี",
                 amount: 200000
@@ -237,50 +160,29 @@ describe('GL Report tests', function () {
             totaldebit: 200000
         });
 
-        account6 = new Account({
+        account3 = new Account({
             credits: [{
-                account: accountchart7,
-                description: "ค่าเช่าสำนักงาน",
-                amount: 32300
-            }],
-            debits: [{
-                account: accountchart8,
-                description: "ค่าเช่าสำนักงาน",
-                amount: 32300
-            }],
-            docdate: "2016-02-05T07:00:00.000+07:00",
-            docno: "PV59020501",
-            gltype: "PV",
-            remark: "",
-            status: "Open",
-            totalcredit: 32300,
-            totaldebit: 32300
-        });
-
-        account7 = new Account({
-            credits: [{
-                account: accountchart7,
-                description: "เบิกเงิน",
-                amount: 313660.39
-            }],
-            debits: [{
-                account: accountchart9,
-                description: "เบิกเงิน",
-                amount: 0.39
-            }, {
                 account: accountchart1,
-                description: "เบิกเงิน",
-                amount: 313660
+                description: "ค่ากระดาษถ่ายเอกสาร",
+                amount: 180
             }],
-            docdate: "2016-02-05T07:00:00.000+07:00",
-            docno: "PV59020502",
+            debits: [{
+                account: accountchart2,
+                description: "ค่ากระดาษถ่ายเอกสาร",
+                amount: 168.22
+            }, {
+                account: accountchart3,
+                description: "ค่ากระดาษถ่ายเอกสาร",
+                amount: 11.78
+            }],
+            docdate: "2015-12-04T07:00:00.000+07:00",
+            docno: "PV58120401",
             gltype: "PV",
-            remark: "",
+            remark: "ค่ากระดาษถ่ายเอกสาร",
             status: "Open",
-            totalcredit: 313660.39,
-            totaldebit: 313660.39
+            totalcredit: 180,
+            totaldebit: 180
         });
-
 
         // Save a user to the test db and create new Account
         user.save(function () {
@@ -295,11 +197,7 @@ describe('GL Report tests', function () {
             accountchart9.save(function () {
                 account.save();
                 account2.save();
-                account3.save();
-                account4.save();
-                account5.save();
-                account6.save();
-                account7.save(function () {
+                account3.save(function () {
                     done();
                 });
             });
@@ -338,7 +236,7 @@ describe('GL Report tests', function () {
                 // Get Accountcharts list
                 var accounts = accountsGetRes.body;
 
-                (accounts.length).should.match(7);
+                (accounts.length).should.match(3);
 
                 // Call the assertion callback
                 done();
@@ -360,11 +258,8 @@ describe('GL Report tests', function () {
                 var glreports = glreportsGetRes.body;
 
                 (glreports.type).should.match("month");
-                (glreports.daily.transaction.length).should.match(4);
+                (glreports.daily.transaction.length).should.match(1);
                 (glreports.daily.transaction[0].docno).should.match(account.docno);
-                (glreports.daily.transaction[1].docno).should.match(account2.docno);
-                (glreports.daily.transaction[2].docno).should.match(account3.docno);
-                (glreports.daily.transaction[3].docno).should.match(account4.docno);
 
                 // Call the assertion callback
                 done();
@@ -387,14 +282,9 @@ describe('GL Report tests', function () {
                 var glreports = glreportsGetRes.body;
 
                 (glreports.type).should.match("year");
-                (glreports.daily.transaction.length).should.match(7);
+                (glreports.daily.transaction.length).should.match(2);
                 (glreports.daily.transaction[0].docno).should.match(account.docno);
                 (glreports.daily.transaction[1].docno).should.match(account2.docno);
-                (glreports.daily.transaction[2].docno).should.match(account3.docno);
-                (glreports.daily.transaction[3].docno).should.match(account4.docno);
-                (glreports.daily.transaction[4].docno).should.match(account5.docno);
-                (glreports.daily.transaction[5].docno).should.match(account6.docno);
-                (glreports.daily.transaction[6].docno).should.match(account7.docno);
                 // Call the assertion callback
                 done();
             });
@@ -417,12 +307,10 @@ describe('GL Report tests', function () {
                 var glreports = glreportssGetRes.body;
 
                 (glreports.type).should.match("month");
-                (glreports.acceach.length).should.match(5);
+                (glreports.acceach.length).should.match(3);
                 (glreports.acceach[0].accountno).should.match('101101');
-                (glreports.acceach[1].accountno).should.match('101502');
-                (glreports.acceach[2].accountno).should.match('102101');
-                (glreports.acceach[3].accountno).should.match('501001');
-                (glreports.acceach[4].accountno).should.match('605003');
+                (glreports.acceach[0].transaction[0].list[0].accountno).should.match('605003');
+                (glreports.acceach[0].transaction[0].list[1].accountno).should.match('101502');
                 // Call the assertion callback
                 done();
             });
@@ -444,16 +332,15 @@ describe('GL Report tests', function () {
                 var glreports = glreportssGetRes.body;
 
                 (glreports.type).should.match("year");
-                (glreports.acceach.length).should.match(9);
+                (glreports.acceach.length).should.match(5);
                 (glreports.acceach[0].accountno).should.match('101101');
-                (glreports.acceach[1].accountno).should.match('101111');
-                (glreports.acceach[2].accountno).should.match('101211');
-                (glreports.acceach[3].accountno).should.match('101502');
-                (glreports.acceach[4].accountno).should.match('102101');
-                (glreports.acceach[5].accountno).should.match('501001');
-                (glreports.acceach[6].accountno).should.match('605003');
-                (glreports.acceach[7].accountno).should.match('605009');
-                (glreports.acceach[8].accountno).should.match('605011');
+                (glreports.acceach[0].transaction[0].list[0].accountno).should.match('605003');
+                (glreports.acceach[0].transaction[0].list[1].accountno).should.match('101502');
+                (glreports.acceach[0].current.debit).should.match(180);
+                (glreports.acceach[0].current.credit).should.match(180);
+                (glreports.acceach[0].carryforward.accountname).should.match('ยอดยกไป');
+                (glreports.acceach[0].carryforward.debit).should.match(0);
+                (glreports.acceach[0].carryforward.credit).should.match(0);
                 // Call the assertion callback
                 done();
             });
