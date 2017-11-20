@@ -950,9 +950,6 @@ exports.generateAcceach = function (req, res, next) {
             var carryforwardCredit = 0;
             var sumCurent = currentDebit - currentCredit;
 
-            acceachGrop.current.debit = currentDebit > currentCredit ? currentDebit : currentCredit;
-            acceachGrop.current.credit = acceachGrop.current.debit;
-
             if (sumCurent >= 0) {
                 carryforwardCredit = sumCurent;
             } else {
@@ -970,6 +967,9 @@ exports.generateAcceach = function (req, res, next) {
                 credit: carryforwardCredit,
                 description: ""
             };
+
+            acceachGrop.current.debit = currentDebit + carryforwardDebit;
+            acceachGrop.current.credit = currentCredit + carryforwardCredit;
 
             transaction = _(transaction)
                 .groupBy('docdate')
