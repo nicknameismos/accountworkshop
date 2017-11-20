@@ -533,7 +533,7 @@ exports.generateGlDaily = function (req, res, next) {
         daily.transaction.push(transaction);
 
     }
-    if (daily.transaction.length > 0) {
+    if (daily.transaction && daily.transaction.length > 0) {
         req.daily = daily;
     } else {
         req.daily = {};
