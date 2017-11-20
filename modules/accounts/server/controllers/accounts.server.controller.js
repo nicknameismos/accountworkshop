@@ -998,7 +998,9 @@ exports.returnGlreport = function (req, res) {
         startdate: req.firstDay,
         enddate: req.lastDay,
         daily: req.daily,
-        acceach: req.acceach
+        acceach: req.acceach,
+        gain: {},
+        balance: {}
     };
     res.jsonp(glreport);
 };

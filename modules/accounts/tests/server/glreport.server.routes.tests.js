@@ -307,7 +307,7 @@ describe('GL Report tests', function () {
                 var glreports = glreportssGetRes.body;
 
                 (glreports.type).should.match("month");
-                (glreports.acceach).should.match(3);
+                (glreports.acceach.length).should.match(3);
                 (glreports.acceach[0].accountno).should.match('101101');
                 (glreports.acceach[0].transaction[0].list[0].accountno).should.match('605003');
                 (glreports.acceach[0].transaction[0].list[1].accountno).should.match('101502');
