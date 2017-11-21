@@ -1057,7 +1057,7 @@ exports.returnGlreport = function (req, res) {
         daily: req.daily,
         acceach: req.acceach,
         gain: req.gain,
-        balance: {}
+        balance: null
     };
     res.jsonp(glreport);
 };
@@ -1072,7 +1072,7 @@ function generateGlByType(acceach, accountChart, type, name) {
     };
     for (var i = 0; i < accChartLength; i++) {
         var accountChartI = accountChart[i];
-        if (accountChartI.accounttype.accounttypeno === type) {
+        if (accountChartI.accounttype && accountChartI.accounttype.accounttypeno === type) {
             GG.list.push({
                 accountno: accountChartI.accountno,
                 accountname: accountChartI.name,
