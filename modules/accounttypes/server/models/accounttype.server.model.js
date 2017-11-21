@@ -13,11 +13,13 @@ var AccounttypeSchema = new Schema({
   accounttypeno: {
     type: String,
     default: '',
+    unique: true,
     required: 'Please fill Accounttype no'
   },
   accounttypename: {
     type: String,
     default: '',
+    unique: true,    
     required: 'Please fill Accounttype name',
   },
   created: {

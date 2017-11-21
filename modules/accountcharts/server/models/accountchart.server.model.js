@@ -31,6 +31,11 @@ var AccountchartSchema = new Schema({
         default: 'active'
     },
     parent: String,
+    accounttype: {
+        type: Schema.ObjectId,
+        ref: 'Accounttype',
+        required: 'Please fill Account type'
+    },
     created: {
         type: Date,
         default: Date.now

@@ -7,7 +7,8 @@ var should = require('should'),
     User = mongoose.model('User'),
     Account = mongoose.model('Account'),
     Accountchart = mongoose.model('Accountchart'),
-    express = require(path.resolve('./config/lib/express'));
+    express = require(path.resolve('./config/lib/express')),
+    Accounttype = mongoose.model('Accounttype');
 
 /**
  * Globals
@@ -28,7 +29,8 @@ var app,
     accountchart9,
     account,
     account2,
-    account3;
+    account3,
+    accounttype;
 
 /**
  * Account routes tests
@@ -61,57 +63,72 @@ describe('GL Report tests', function () {
             provider: 'local'
         });
 
+        accounttype = new Accounttype({
+            accounttypename: 'Accounttype Name',
+            accounttypeno: '01',
+            user: user
+        });
+
         accountchart1 = new Accountchart({
             name: 'เงินสด TEST',
             accountno: '101101',
             parent: 0,
+            accounttype: accounttype,
             user: user
         });
         accountchart2 = new Accountchart({
             name: 'ค่าเครื่องเขียนแบบพิมพ์',
             accountno: '605003',
             parent: 0,
+            accounttype: accounttype,
             user: user
         });
         accountchart3 = new Accountchart({
             name: 'ภาษีซื้อ',
             accountno: '101502',
             parent: 0,
+            accounttype: accounttype,
             user: user
         });
         accountchart4 = new Accountchart({
             name: 'คอมพิวเตอร์และอุปกรณ์',
             accountno: '102101',
             parent: 0,
+            accounttype: accounttype,
             user: user
         });
         accountchart5 = new Accountchart({
             name: 'ซื้อสินค้า',
             accountno: '501001',
             parent: 0,
+            accounttype: accounttype,
             user: user
         });
         accountchart6 = new Accountchart({
             name: 'เงินฝากธนาคารออมทรัพย์ TMB',
             accountno: '101111',
             parent: 0,
+            accounttype: accounttype,
             user: user
         });
         accountchart7 = new Accountchart({
             name: 'เงินฝากธนาคารกระแสรายวัน TMB',
             accountno: '101211',
+            accounttype: accounttype,
             parent: 0,
             user: user
         });
         accountchart8 = new Accountchart({
             name: 'ค่าเช่าสำนักงาน',
             accountno: '605011',
+            accounttype: accounttype,
             parent: 0,
             user: user
         });
         accountchart9 = new Accountchart({
             name: 'ปรับเศษสตางค์เงินสด',
             accountno: '605009',
+            accounttype: accounttype,
             parent: 0,
             user: user
         });
@@ -186,19 +203,21 @@ describe('GL Report tests', function () {
 
         // Save a user to the test db and create new Account
         user.save(function () {
-            accountchart1.save();
-            accountchart2.save();
-            accountchart3.save();
-            accountchart4.save();
-            accountchart5.save();
-            accountchart6.save();
-            accountchart7.save();
-            accountchart8.save();
-            accountchart9.save(function () {
-                account.save();
-                account2.save();
-                account3.save(function () {
-                    done();
+            accounttype.save(function () {
+                accountchart1.save();
+                accountchart2.save();
+                accountchart3.save();
+                accountchart4.save();
+                accountchart5.save();
+                accountchart6.save();
+                accountchart7.save();
+                accountchart8.save();
+                accountchart9.save(function () {
+                    account.save();
+                    account2.save();
+                    account3.save(function () {
+                        done();
+                    });
                 });
             });
         });
@@ -349,8 +368,10 @@ describe('GL Report tests', function () {
 
     afterEach(function (done) {
         User.remove().exec(function () {
-            Accountchart.remove().exec(function () {
-                Account.remove().exec(done);
+            Accounttype.remove().exec(function () {
+                Accountchart.remove().exec(function () {
+                    Account.remove().exec(done);
+                });
             });
         });
     });

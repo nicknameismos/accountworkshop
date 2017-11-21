@@ -7,7 +7,8 @@ var should = require('should'),
     User = mongoose.model('User'),
     Account = mongoose.model('Account'),
     Accountchart = mongoose.model('Accountchart'),
-    express = require(path.resolve('./config/lib/express'));
+    express = require(path.resolve('./config/lib/express')),
+    Accounttype = mongoose.model('Accounttype');
 
 /**
  * Globals
@@ -17,8 +18,8 @@ var app,
     credentials,
     user,
     accountchart,
-    account3,
-    account;
+    account,
+    accounttype;
 
 /**
  * Account routes tests
@@ -51,37 +52,46 @@ describe('Account CRUD tests', function () {
             provider: 'local'
         });
 
+        accounttype = new Accounttype({
+            accounttypename: 'Accounttype Name',
+            accounttypeno: '01',
+            user: user
+        });
+
         accountchart = new Accountchart({
             name: ' name',
             accountno: 'Account0000',
             parent: 0,
+            accounttype: accounttype,
             user: user
         });
 
         // Save a user to the test db and create new Account
         user.save(function () {
-            accountchart.save(function () {
-                account = {
-                    docno: 'JV20170800001',
-                    docdate: new Date(),
-                    debits: [{
-                        account: accountchart,
-                        description: 'ค่าข้าว',
-                        amount: 50
-                    }],
-                    credits: [{
-                        account: accountchart,
-                        description: 'ค่าข้าว',
-                        amount: 50
-                    }],
-                    remark: 'JV',
-                    // totaldebit: 50,
-                    // totalcredit: 50,
-                    gltype: 'JV',
-                    status: 'Open',
-                    user: user
-                };
-                done();
+            accounttype.save(function () {
+                accountchart.save(function () {
+                    account = {
+                        docno: 'JV20170800001',
+                        docdate: new Date(),
+                        debits: [{
+                            account: accountchart,
+                            description: 'ค่าข้าว',
+                            amount: 50
+                        }],
+                        credits: [{
+                            account: accountchart,
+                            description: 'ค่าข้าว',
+                            amount: 50
+                        }],
+                        remark: 'JV',
+                        // totaldebit: 50,
+                        // totalcredit: 50,
+                        gltype: 'JV',
+                        status: 'Open',
+                        user: user
+                    };
+                    done();
+                });
             });
         });
     });
@@ -559,8 +569,10 @@ describe('Account CRUD tests', function () {
 
     afterEach(function (done) {
         User.remove().exec(function () {
-            Accountchart.remove().exec(function () {
-                Account.remove().exec(done);
+            Accounttype.remove().exec(function () {
+                Accountchart.remove().exec(function () {
+                    Account.remove().exec(done);
+                });
             });
         });
     });

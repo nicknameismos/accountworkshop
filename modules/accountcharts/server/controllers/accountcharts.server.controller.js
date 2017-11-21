@@ -81,7 +81,7 @@ exports.delete = function (req, res) {
  * List of Accountcharts
  */
 exports.list = function (req, res) {
-  Accountchart.find().sort('-created').populate('user', 'displayName').exec(function (err, accountcharts) {
+  Accountchart.find().sort('-created').populate('accounttype').populate('user', 'displayName').exec(function (err, accountcharts) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -100,6 +100,7 @@ exports.list = function (req, res) {
           parent: accountcharts[i].parent ? accountcharts[i].parent : null,
           vat: accountcharts[i].vat ? accountcharts[i].vat : 0,
           unitprice: accountcharts[i].unitprice ? accountcharts[i].unitprice : 0,
+          accounttype: accountcharts[i].accounttype,
           user: accountcharts[i].user
         });
       }
