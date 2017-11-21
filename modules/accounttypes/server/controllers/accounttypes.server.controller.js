@@ -12,11 +12,11 @@ var path = require('path'),
 /**
  * Create a Accounttype
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   var accounttype = new Accounttype(req.body);
-  accounttype.user = req.user;
+  accounttype.user = req.user ? req.user : req.body.user;
 
-  accounttype.save(function(err) {
+  accounttype.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -30,7 +30,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Accounttype
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
   // convert mongoose document to JSON
   var accounttype = req.accounttype ? req.accounttype.toJSON() : {};
 
@@ -44,12 +44,12 @@ exports.read = function(req, res) {
 /**
  * Update a Accounttype
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
   var accounttype = req.accounttype;
 
   accounttype = _.extend(accounttype, req.body);
 
-  accounttype.save(function(err) {
+  accounttype.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -63,10 +63,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Accounttype
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
   var accounttype = req.accounttype;
 
-  accounttype.remove(function(err) {
+  accounttype.remove(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -80,8 +80,8 @@ exports.delete = function(req, res) {
 /**
  * List of Accounttypes
  */
-exports.list = function(req, res) {
-  Accounttype.find().sort('-created').populate('user', 'displayName').exec(function(err, accounttypes) {
+exports.list = function (req, res) {
+  Accounttype.find().sort('-created').populate('user', 'displayName').exec(function (err, accounttypes) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 /**
  * Accounttype middleware
  */
-exports.accounttypeByID = function(req, res, next, id) {
+exports.accounttypeByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({

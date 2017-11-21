@@ -8,11 +8,11 @@ var accounttypesPolicy = require('../policies/accounttypes.server.policy'),
 
 module.exports = function(app) {
   // Accounttypes Routes
-  app.route('/api/accounttypes').all(accounttypesPolicy.isAllowed)
+  app.route('/api/accounttypes')//.all(accounttypesPolicy.isAllowed)
     .get(accounttypes.list)
     .post(accounttypes.create);
 
-  app.route('/api/accounttypes/:accounttypeId').all(accounttypesPolicy.isAllowed)
+  app.route('/api/accounttypes/:accounttypeId')//.all(accounttypesPolicy.isAllowed)
     .get(accounttypes.read)
     .put(accounttypes.update)
     .delete(accounttypes.delete);
