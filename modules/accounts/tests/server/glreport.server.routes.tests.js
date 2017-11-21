@@ -64,8 +64,8 @@ describe('GL Report tests', function () {
         });
 
         accounttype = new Accounttype({
-            accounttypename: 'Accounttype Name',
-            accounttypeno: '01',
+            accounttypename: 'สินทรัพย์',
+            accounttypeno: '09',
             user: user
         });
 
@@ -360,6 +360,36 @@ describe('GL Report tests', function () {
                 (glreports.acceach[0].carryforward.accountname).should.match('ยอดยกไป');
                 (glreports.acceach[0].carryforward.debit).should.match(0);
                 (glreports.acceach[0].carryforward.credit).should.match(0);
+                // Call the assertion callback
+                done();
+            });
+    });
+
+    it('GL Report get gain by month', function (done) {
+
+        var date = '2016-01-05';
+        var type = 'month';
+        // Get a list of Accountcharts
+        agent.get('/api/glreport/' + type + '/' + date)
+            .end(function (glreportssGetErr, glreportssGetRes) {
+                // Handle Accountcharts save error
+                if (glreportssGetErr) {
+                    return done(glreportssGetErr);
+                }
+
+                // Get Accountcharts list
+                var glreports = glreportssGetRes.body;
+
+                (glreports.type).should.match("month");
+                (glreports.gain.transaction.length).should.match(8);
+                (glreports.gain.transaction[0].accounttype).should.match('รายได้จากการดำเนินงาน');
+                (glreports.gain.transaction[1].accounttype).should.match('กำไรขั้นต้น');
+                (glreports.gain.transaction[2].accounttype).should.match('ค่าใช้จ่ายในการดำเนินงาน');
+                (glreports.gain.transaction[3].accounttype).should.match('ค่าใช้จ่ายในการผลิต');
+                (glreports.gain.transaction[4].accounttype).should.match('กำไรสุทธิจากการดำเนินงาน');
+                (glreports.gain.transaction[5].accounttype).should.match('รายได้อื่น');
+                (glreports.gain.transaction[6].accounttype).should.match('ค่าใช้จ่ายอื่น');
+                (glreports.gain.transaction[7].accounttype).should.match('กำไรสุทธิ');
                 // Call the assertion callback
                 done();
             });

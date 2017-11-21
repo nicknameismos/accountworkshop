@@ -477,8 +477,6 @@ exports.getGlDate = function (req, res, next, date) {
     });
 };
 
-
-
 exports.generateGlDaily = function (req, res, next) {
 
     var daily = {
@@ -538,7 +536,7 @@ exports.generateGlDaily = function (req, res, next) {
 };
 
 exports.getAccountchart = function (req, res, next) {
-    Accountchart.find().sort('accountno').exec(function (err, accountcharts) {
+    Accountchart.find().populate('accounttype').sort('accountno').exec(function (err, accountcharts) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -799,6 +797,7 @@ exports.generateAcceach = function (req, res, next) {
             enddate: req.lastDay,
             title: "บัญชีแยกประเภท" + accountchartI.name,
             accountno: accountchartI.accountno,
+            account: accountchartI, //สำหรับเอาไปทำงบกำไรขาดทุน
             current: {
                 debit: 0,
                 credit: 0
@@ -989,6 +988,65 @@ exports.generateAcceach = function (req, res, next) {
     next();
 };
 
+exports.generateGain = function (req, res, next) {
+    var acceach = req.acceach;
+    var accountChart = req.accountcharts;
+
+    var gain = {
+        date: new Date(),
+        company: "Cyber Advance System annd Network Co.,Ltd",
+        startdate: req.firstDay,
+        enddate: req.lastDay,
+        title: "งบกำไรขาดทุน",
+        transaction: []
+    };
+    // รายได้จากการดำเนินงาน
+    gain.transaction.push(generateGlByType(acceach, accountChart, '09', 'รายได้จากการดำเนินงาน'));
+    // จบรายได้จากการดำเนินงาน
+
+    // กำไรขั้นต้น
+    gain.transaction.push({
+        accounttype: "กำไรขั้นต้น",
+        list: [],
+        summary: gain.transaction[0].summary
+    });
+    // จบกำไรขั้นต้น
+
+    // ค่าใช้จ่ายในการดำเนินงาน
+    gain.transaction.push(generateGlByType(acceach, accountChart, '11', 'ค่าใช้จ่ายในการดำเนินงาน'));
+    // จบค่าใช้จ่ายในการดำเนินงาน
+
+    // ค่าใช้จ่ายในการผลิต
+    gain.transaction.push(generateGlByType(acceach, accountChart, '12', 'ค่าใช้จ่ายในการผลิต'));
+    // จบค่าใช้จ่ายในการผลิต
+
+    // กำไรสุทธิจากการดำเนินงาน***
+    gain.transaction.push({
+        accounttype: "กำไรสุทธิจากการดำเนินงาน",
+        list: [],
+        summary: (gain.transaction[1].summary ? gain.transaction[1].summary : 0) - (gain.transaction[2].summary ? gain.transaction[2].summary : 0) - (gain.transaction[3].summary ? gain.transaction[3].summary : 0)
+    });
+    // จบกำไรสุทธิจากการดำเนินงาน***
+
+    // รายได้อื่น
+    gain.transaction.push(generateGlByType(acceach, accountChart, '10', 'รายได้อื่น'));
+    // จบรายได้อื่น
+
+    // ค่าใช้จ่ายอื่น
+    gain.transaction.push(generateGlByType(acceach, accountChart, '13', 'ค่าใช้จ่ายอื่น'));
+    // จบค่าใช้จ่ายอื่น
+
+    // กำไรสุทธิ***
+    gain.transaction.push({
+        accounttype: "กำไรสุทธิ",
+        list: [],
+        summary: (gain.transaction[5].summary ? gain.transaction[5].summary : 0) - (gain.transaction[6].summary ? gain.transaction[6].summary : 0)
+    });
+    // จบกำไรสุทธิ***
+
+    req.gain = gain;
+    next();
+};
 
 exports.returnGlreport = function (req, res) {
 
@@ -998,10 +1056,43 @@ exports.returnGlreport = function (req, res) {
         enddate: req.lastDay,
         daily: req.daily,
         acceach: req.acceach,
-        gain: {},
+        gain: req.gain,
         balance: {}
     };
     res.jsonp(glreport);
 };
 
-// จัดแค่ format อย่างเดียว
+function generateGlByType(acceach, accountChart, type, name) {
+    var accChartLength = accountChart.length;
+    var accLength = acceach.length;
+    var GG = {
+        accounttype: name,
+        list: [],
+        summary: 0
+    };
+    for (var i = 0; i < accChartLength; i++) {
+        var accountChartI = accountChart[i];
+        if (accountChartI.accounttype.accounttypeno === type) {
+            GG.list.push({
+                accountno: accountChartI.accountno,
+                accountname: accountChartI.name,
+                amount: 0
+            });
+        }
+    }
+    for (var ii = 0; ii < accLength; ii++) {
+        var acceachI09 = acceach[ii];
+
+        var indexOfGG = GG.list.map(function (e) {
+            return e.accountno;
+        }).indexOf(acceachI09.accountno);
+        if (indexOfGG !== -1) {
+            GG.list[indexOfGG].amount = acceachI09.carryforward.debit > 0 ? acceachI09.carryforward.debit : acceachI09.carryforward.credit;
+        }
+    }
+    var GGListLength = GG.list.length;
+    for (var iii = 0; iii < GGListLength; iii++) {
+        GG.summary += GG.list[iii].amount;
+    }
+    return GG;
+}
