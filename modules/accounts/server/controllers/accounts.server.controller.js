@@ -1000,49 +1000,53 @@ exports.generateGain = function (req, res, next) {
         title: "งบกำไรขาดทุน",
         transaction: []
     };
-    // รายได้จากการดำเนินงาน
+    // 0 รายได้จากการดำเนินงาน
     gain.transaction.push(generateGlByType(acceach, accountChart, '09', 'รายได้จากการดำเนินงาน'));
-    // จบรายได้จากการดำเนินงาน
+    // 0 จบรายได้จากการดำเนินงาน
 
-    // กำไรขั้นต้น
+    // 1 กำไรขั้นต้น
     gain.transaction.push({
         accounttype: "กำไรขั้นต้น",
         list: [],
         summary: gain.transaction[0].summary
     });
-    // จบกำไรขั้นต้น
+    // 1 จบกำไรขั้นต้น
 
-    // ค่าใช้จ่ายในการดำเนินงาน
+    // 2 ค่าใช้จ่ายในการดำเนินงาน
     gain.transaction.push(generateGlByType(acceach, accountChart, '11', 'ค่าใช้จ่ายในการดำเนินงาน'));
-    // จบค่าใช้จ่ายในการดำเนินงาน
+    // 2 จบค่าใช้จ่ายในการดำเนินงาน
 
-    // ค่าใช้จ่ายในการผลิต
+    // 3 ค่าใช้จ่ายในการผลิต
     gain.transaction.push(generateGlByType(acceach, accountChart, '12', 'ค่าใช้จ่ายในการผลิต'));
-    // จบค่าใช้จ่ายในการผลิต
+    // 3 จบค่าใช้จ่ายในการผลิต
 
-    // กำไรสุทธิจากการดำเนินงาน***
+    // 4 กำไรสุทธิจากการดำเนินงาน***
     gain.transaction.push({
         accounttype: "กำไรสุทธิจากการดำเนินงาน",
         list: [],
         summary: (gain.transaction[1].summary ? gain.transaction[1].summary : 0) - (gain.transaction[2].summary ? gain.transaction[2].summary : 0) - (gain.transaction[3].summary ? gain.transaction[3].summary : 0)
     });
-    // จบกำไรสุทธิจากการดำเนินงาน***
+    // 4 จบกำไรสุทธิจากการดำเนินงาน***
 
-    // รายได้อื่น
+    // 5 รายได้อื่น
     gain.transaction.push(generateGlByType(acceach, accountChart, '10', 'รายได้อื่น'));
-    // จบรายได้อื่น
+    gain.transaction[5].sumtrans = {
+        accountno: "",
+        amount: (gain.transaction[4].summary ? gain.transaction[4].summary : 0) + (gain.transaction[5].summary ? gain.transaction[5].summary : 0)
+    };
+    // 5 จบรายได้อื่น
 
-    // ค่าใช้จ่ายอื่น
+    // 6 ค่าใช้จ่ายอื่น
     gain.transaction.push(generateGlByType(acceach, accountChart, '13', 'ค่าใช้จ่ายอื่น'));
-    // จบค่าใช้จ่ายอื่น
+    // 6 จบค่าใช้จ่ายอื่น
 
-    // กำไรสุทธิ***
+    // 7 กำไรสุทธิ***
     gain.transaction.push({
-        accounttype: "กำไรสุทธิ",
+        accounttype: "กำไรสุทธิ (ขาดทุนสุทธิ)",
         list: [],
         summary: (gain.transaction[5].summary ? gain.transaction[5].summary : 0) - (gain.transaction[6].summary ? gain.transaction[6].summary : 0)
     });
-    // จบกำไรสุทธิ***
+    // 7 จบกำไรสุทธิ***
 
     req.gain = gain;
     next();
