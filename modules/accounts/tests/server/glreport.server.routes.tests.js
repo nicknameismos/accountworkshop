@@ -262,7 +262,7 @@ describe('GL Report tests', function () {
             });
     });
 
-    it('GL Report daily get by month', function (done) {
+    it('GL gen report daily by month', function (done) {
         var date = '2016-01-05';
         var type = 'month';
         // Get a list of Accountcharts
@@ -286,7 +286,7 @@ describe('GL Report tests', function () {
 
     });
 
-    it('GL Report daily get by year', function (done) {
+    it('GL gen report daily by year', function (done) {
         var date = '2016-01-05';
         var type = 'year';
         // Get a list of Accountcharts
@@ -310,7 +310,7 @@ describe('GL Report tests', function () {
 
     });
 
-    it('GL Report get acceach by month', function (done) {
+    it('GL gen report acceach by month', function (done) {
 
         var date = '2016-01-05';
         var type = 'month';
@@ -335,7 +335,7 @@ describe('GL Report tests', function () {
             });
     });
 
-    it('GL Report get acceach by year', function (done) {
+    it('GL gen report acceach by year', function (done) {
 
         var date = '2016-01-05';
         var type = 'year';
@@ -365,7 +365,7 @@ describe('GL Report tests', function () {
             });
     });
 
-    it('GL Report get gain by month', function (done) {
+    it('GL gen report gain', function (done) {
 
         var date = '2016-01-05';
         var type = 'month';
@@ -394,6 +394,34 @@ describe('GL Report tests', function () {
                 done();
             });
     });
+
+    it('GL gen report balance', function (done) {
+        
+                var date = '2016-01-05';
+                var type = 'month';
+                // Get a list of Accountcharts
+                agent.get('/api/glreport/' + type + '/' + date)
+                    .end(function (glreportssGetErr, glreportssGetRes) {
+                        // Handle Accountcharts save error
+                        if (glreportssGetErr) {
+                            return done(glreportssGetErr);
+                        }
+        
+                        // Get Accountcharts list
+                        var glreports = glreportssGetRes.body;
+        
+                        (glreports.type).should.match("month");
+                        (glreports.balance.asset.transaction[0].accounttype).should.match('สินทรัพย์หมุนเวียน');
+                        (glreports.balance.asset.transaction[1].accounttype).should.match('ที่ดิน อาคารและอุปกรณ์');
+                        (glreports.balance.asset.transaction[2].accounttype).should.match('สินทรัพย์อื่น');
+                        (glreports.balance.asset.transaction[3].accounttype).should.match('รวมสินทรัพย์');
+                        (glreports.balance.debt.transaction[0].accounttype).should.match('หนี้สินหมุนเวียน');
+                        (glreports.balance.debt.transaction[1].accounttype).should.match('ส่วนของผู้ถือหุ้น');
+                        (glreports.balance.debt.transaction[2].accounttype).should.match('รวมหนี้สินและส่วนของผู้ถือหุ้น');
+                        // Call the assertion callback
+                        done();
+                    });
+            });
 
 
     afterEach(function (done) {

@@ -1048,6 +1048,56 @@ exports.generateGain = function (req, res, next) {
     next();
 };
 
+exports.generateBalance = function (req, res, next) {
+    var acceach = req.acceach;
+    var accountChart = req.accountcharts;
+
+    var balance = {
+        date: new Date(),
+        company: "Cyber Advance System annd Network Co.,Ltd",
+        startdate: req.firstDay,
+        enddate: req.lastDay,
+        title: "งบแสดงฐานะการเงิน",
+        asset: {
+            name: "- สินทรัพย์ -",
+            transaction: []
+        },
+        debt: {
+            name: "- หนี้สินและส่วนของผู้ถือหุ้น -",
+            transaction: []
+        }
+    };
+    balance.asset.transaction.push(generateGlByType(acceach, accountChart, '01', 'สินทรัพย์หมุนเวียน'));
+    balance.asset.transaction.push(generateGlByType(acceach, accountChart, '03', 'ที่ดิน อาคารและอุปกรณ์'));
+    balance.asset.transaction.push(generateGlByType(acceach, accountChart, '04', 'สินทรัพย์อื่น'));
+    balance.asset.transaction.push({
+        accounttype: "รวมสินทรัพย์",
+        list: [],
+        summary: (balance.asset.transaction[0].summary ? balance.asset.transaction[0].summary : 0) + (balance.asset.transaction[1].summary ? balance.asset.transaction[1].summary : 0) + (balance.asset.transaction[2].summary ? balance.asset.transaction[2].summary : 0)
+    });
+
+    balance.debt.transaction.push(generateGlByType(acceach, accountChart, '05', 'หนี้สินหมุนเวียน'));
+    balance.debt.transaction[0].sumtrans = {
+        accountno: "- รวมหนี้สิน -",
+        amoun: balance.debt.transaction[0].summary
+    };
+
+    balance.debt.transaction.push(generateGlByType(acceach, accountChart, '08', 'ส่วนของผู้ถือหุ้น'));
+    balance.debt.transaction[1].sumtrans = {
+        accountno: "- รวมส่วนของผู้ถือหุ้น -",
+        amoun: balance.debt.transaction[1].summary
+    };
+
+    balance.debt.transaction.push({
+        accounttype: "รวมหนี้สินและส่วนของผู้ถือหุ้น",
+        list: [],
+        summary: (balance.debt.transaction[0].summary ? balance.debt.transaction[0].summary : 0) + (balance.debt.transaction[1].summary ? balance.debt.transaction[1].summary : 0)
+    });
+
+    req.balance = balance;
+    next();
+};
+
 exports.returnGlreport = function (req, res) {
 
     var glreport = {
@@ -1057,7 +1107,7 @@ exports.returnGlreport = function (req, res) {
         daily: req.daily,
         acceach: req.acceach,
         gain: req.gain,
-        balance: null
+        balance: req.balance
     };
     res.jsonp(glreport);
 };
