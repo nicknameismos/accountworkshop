@@ -1044,7 +1044,7 @@ exports.generateGain = function (req, res, next) {
     gain.transaction.push({
         accounttype: "กำไรสุทธิ (ขาดทุนสุทธิ)",
         list: [],
-        summary: (gain.transaction[5].summary ? gain.transaction[5].summary : 0) - (gain.transaction[6].summary ? gain.transaction[6].summary : 0)
+        summary: (gain.transaction[5].sumtrans.amount ? gain.transaction[5].sumtrans.amount : 0) - (gain.transaction[6].summary ? gain.transaction[6].summary : 0)
     });
     // 7 จบกำไรสุทธิ***
 
