@@ -389,7 +389,7 @@ describe('GL Report tests', function () {
                 (glreports.gain.transaction[4].accounttype).should.match('กำไรสุทธิจากการดำเนินงาน');
                 (glreports.gain.transaction[5].accounttype).should.match('รายได้อื่น');
                 (glreports.gain.transaction[6].accounttype).should.match('ค่าใช้จ่ายอื่น');
-                (glreports.gain.transaction[7].accounttype).should.match('กำไรสุทธิ');
+                (glreports.gain.transaction[7].accounttype).should.match('กำไรสุทธิ (ขาดทุนสุทธิ)');
                 // Call the assertion callback
                 done();
             });

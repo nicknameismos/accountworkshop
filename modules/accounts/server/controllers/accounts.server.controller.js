@@ -471,8 +471,10 @@ exports.getGlDate = function (req, res, next, date) {
             });
         }
         req.account = account;
-        req.firstDay = '' + firstDay;
-        req.lastDay = '' + lastDay;
+        req.firstDay = firstDay;
+        req.lastDay = lastDay;
+        req.firstDayText = convertDateThai(firstDay);
+        req.lastDayText = convertDateThai(lastDay);
         next();
     });
 };
@@ -1149,4 +1151,10 @@ function generateGlByType(acceach, accountChart, type, name) {
         GG.summary += GG.list[iii].amount;
     }
     return GG;
+}
+
+function convertDateThai(d) {
+    var months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+    var date = new Date(d);
+    return date.getDate() + ' ' + months[date.getMonth()] + ' ' + (date.getFullYear() + 543);
 }
