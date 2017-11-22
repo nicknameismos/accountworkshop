@@ -1110,6 +1110,8 @@ exports.returnGlreport = function (req, res) {
         type: req.type,
         startdate: req.firstDay,
         enddate: req.lastDay,
+        firstDayText: req.firstDayText,
+        lastDayText: req.lastDayText,
         daily: req.daily,
         acceach: req.acceach,
         gain: req.gain,
