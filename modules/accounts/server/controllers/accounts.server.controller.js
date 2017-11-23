@@ -539,8 +539,10 @@ exports.generateGlDaily = function (req, res, next) {
 
     daily.transaction.sort(
         function (a, b) {
-            if (new Date(a.docdate).getTime() != new Date(b.docdate).getTime()) {
-                return (new Date(a.docdate).getTime() - new Date(b.docdate).getTime());
+            var aDate = new Date(a.docdate).getDate() + '' + new Date(a.docdate).getMonth() + '' + new Date(a.docdate).getFullYear();
+            var bDate = new Date(b.docdate).getDate() + '' + new Date(b.docdate).getMonth() + '' + new Date(b.docdate).getFullYear();
+            if (aDate != bDate) {
+                return (aDate - bDate);
             } else {
                 return (a.docno - b.docno);
             }
