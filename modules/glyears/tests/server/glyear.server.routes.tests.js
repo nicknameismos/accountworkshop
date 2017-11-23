@@ -343,15 +343,15 @@ describe('Glyear CRUD tests', function () {
       });
   });
 
-  it('should not be able to save an Glyear if not logged in', function (done) {
-    agent.post('/api/glyears')
-      .send(glyear)
-      .expect(403)
-      .end(function (glyearSaveErr, glyearSaveRes) {
-        // Call the assertion callback
-        done(glyearSaveErr);
-      });
-  });
+  // it('should not be able to save an Glyear if not logged in', function (done) {
+  //   agent.post('/api/glyears')
+  //     .send(glyear)
+  //     .expect(403)
+  //     .end(function (glyearSaveErr, glyearSaveRes) {
+  //       // Call the assertion callback
+  //       done(glyearSaveErr);
+  //     });
+  // });
 
   it('should be able to update an Glyear if signed in', function (done) {
     agent.post('/api/auth/signin')
@@ -503,28 +503,28 @@ describe('Glyear CRUD tests', function () {
       });
   });
 
-  it('should not be able to delete an Glyear if not signed in', function (done) {
-    // Set Glyear user
-    glyear.user = user;
+  // it('should not be able to delete an Glyear if not signed in', function (done) {
+  //   // Set Glyear user
+  //   glyear.user = user;
 
-    // Create new Glyear model instance
-    var glyearObj = new Glyear(glyear);
+  //   // Create new Glyear model instance
+  //   var glyearObj = new Glyear(glyear);
 
-    // Save the Glyear
-    glyearObj.save(function () {
-      // Try deleting Glyear
-      request(app).delete('/api/glyears/' + glyearObj._id)
-        .expect(403)
-        .end(function (glyearDeleteErr, glyearDeleteRes) {
-          // Set message assertion
-          (glyearDeleteRes.body.message).should.match('User is not authorized');
+  //   // Save the Glyear
+  //   glyearObj.save(function () {
+  //     // Try deleting Glyear
+  //     request(app).delete('/api/glyears/' + glyearObj._id)
+  //       .expect(403)
+  //       .end(function (glyearDeleteErr, glyearDeleteRes) {
+  //         // Set message assertion
+  //         (glyearDeleteRes.body.message).should.match('User is not authorized');
 
-          // Handle Glyear error error
-          done(glyearDeleteErr);
-        });
+  //         // Handle Glyear error error
+  //         done(glyearDeleteErr);
+  //       });
 
-    });
-  });
+  //   });
+  // });
 
   it('should be able to get a single Glyear that has an orphaned user reference', function (done) {
     // Create orphan user creds

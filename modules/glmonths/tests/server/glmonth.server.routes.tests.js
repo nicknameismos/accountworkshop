@@ -343,15 +343,15 @@ describe('Glmonth CRUD tests', function () {
       });
   });
 
-  it('should not be able to save an Glmonth if not logged in', function (done) {
-    agent.post('/api/glmonths')
-      .send(glmonth)
-      .expect(403)
-      .end(function (glmonthSaveErr, glmonthSaveRes) {
-        // Call the assertion callback
-        done(glmonthSaveErr);
-      });
-  });
+  // it('should not be able to save an Glmonth if not logged in', function (done) {
+  //   agent.post('/api/glmonths')
+  //     .send(glmonth)
+  //     .expect(403)
+  //     .end(function (glmonthSaveErr, glmonthSaveRes) {
+  //       // Call the assertion callback
+  //       done(glmonthSaveErr);
+  //     });
+  // });
 
   it('should be able to update an Glmonth if signed in', function (done) {
     agent.post('/api/auth/signin')
@@ -503,28 +503,28 @@ describe('Glmonth CRUD tests', function () {
       });
   });
 
-  it('should not be able to delete an Glmonth if not signed in', function (done) {
-    // Set Glmonth user
-    glmonth.user = user;
+  // it('should not be able to delete an Glmonth if not signed in', function (done) {
+  //   // Set Glmonth user
+  //   glmonth.user = user;
 
-    // Create new Glmonth model instance
-    var glmonthObj = new Glmonth(glmonth);
+  //   // Create new Glmonth model instance
+  //   var glmonthObj = new Glmonth(glmonth);
 
-    // Save the Glmonth
-    glmonthObj.save(function () {
-      // Try deleting Glmonth
-      request(app).delete('/api/glmonths/' + glmonthObj._id)
-        .expect(403)
-        .end(function (glmonthDeleteErr, glmonthDeleteRes) {
-          // Set message assertion
-          (glmonthDeleteRes.body.message).should.match('User is not authorized');
+  //   // Save the Glmonth
+  //   glmonthObj.save(function () {
+  //     // Try deleting Glmonth
+  //     request(app).delete('/api/glmonths/' + glmonthObj._id)
+  //       .expect(403)
+  //       .end(function (glmonthDeleteErr, glmonthDeleteRes) {
+  //         // Set message assertion
+  //         (glmonthDeleteRes.body.message).should.match('User is not authorized');
 
-          // Handle Glmonth error error
-          done(glmonthDeleteErr);
-        });
+  //         // Handle Glmonth error error
+  //         done(glmonthDeleteErr);
+  //       });
 
-    });
-  });
+  //   });
+  // });
 
   it('should be able to get a single Glmonth that has an orphaned user reference', function (done) {
     // Create orphan user creds

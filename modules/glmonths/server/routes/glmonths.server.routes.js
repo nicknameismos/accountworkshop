@@ -8,11 +8,11 @@ var glmonthsPolicy = require('../policies/glmonths.server.policy'),
 
 module.exports = function(app) {
   // Glmonths Routes
-  app.route('/api/glmonths').all(glmonthsPolicy.isAllowed)
+  app.route('/api/glmonths')//.all(glmonthsPolicy.isAllowed)
     .get(glmonths.list)
     .post(glmonths.create);
 
-  app.route('/api/glmonths/:glmonthId').all(glmonthsPolicy.isAllowed)
+  app.route('/api/glmonths/:glmonthId')//.all(glmonthsPolicy.isAllowed)
     .get(glmonths.read)
     .put(glmonths.update)
     .delete(glmonths.delete);

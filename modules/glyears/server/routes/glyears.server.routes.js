@@ -8,11 +8,11 @@ var glyearsPolicy = require('../policies/glyears.server.policy'),
 
 module.exports = function(app) {
   // Glyears Routes
-  app.route('/api/glyears').all(glyearsPolicy.isAllowed)
+  app.route('/api/glyears')//.all(glyearsPolicy.isAllowed)
     .get(glyears.list)
     .post(glyears.create);
 
-  app.route('/api/glyears/:glyearId').all(glyearsPolicy.isAllowed)
+  app.route('/api/glyears/:glyearId')//.all(glyearsPolicy.isAllowed)
     .get(glyears.read)
     .put(glyears.update)
     .delete(glyears.delete);
