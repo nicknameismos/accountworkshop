@@ -55,6 +55,7 @@ describe('Glmonth CRUD tests', function () {
         lastDayText: '30 มกราคม 2559',
         startdate: '2016-01-01T00:00:00.000Z',
         enddate: '2016-12-31T00:00:00.000Z',
+        type:'mounth',
         acceach: [
           {
             accountno: '101101',
@@ -109,6 +110,13 @@ describe('Glmonth CRUD tests', function () {
             }
           },
         ],
+        balance:{
+          company: 'Cyber Advance System annd Network Co.,Ltd',
+          date: '2017-11-23T03:15:21.478Z',
+          enddate: '2016-12-31T00:00:00.000Z',
+          startdate: '2016-01-01T00:00:00.000Z',
+          title: 'งบแสดงฐานะการเงิน',
+        }
       };
 
       done();
@@ -155,6 +163,8 @@ describe('Glmonth CRUD tests', function () {
                 (glmonths[0].lastDayText).should.match('30 มกราคม 2559');
                 (glmonths[0].startdate).should.match('2016-01-01T00:00:00.000Z');
                 (glmonths[0].enddate).should.match('2016-12-31T00:00:00.000Z');
+                (glmonths[0].type).should.match('mounth');
+                
                 (glmonths[0].acceach[0].accountno).should.match('101101');
                 (glmonths[0].acceach[0].company).should.match('Cyber Advance System annd Network Co.,Ltd');
                 (glmonths[0].acceach[0].date).should.match('2017-11-23T03:15:21.469Z');
@@ -201,6 +211,11 @@ describe('Glmonth CRUD tests', function () {
                 (glmonths[0].acceach[0].account.accounttype._id).should.match('5a140e8f99625713006df61b');
 
 
+                (glmonths[0].balance.company).should.match('Cyber Advance System annd Network Co.,Ltd');
+                // (glmonths[0].balance.date).should.match('2017-11-23T03:15:21.478Z');
+                // (glmonths[0].balance.enddate).should.match('2016-12-31T00:00:00.000Z');
+                // (glmonths[0].balance.startdate).should.match('2016-01-01T00:00:00.000Z');
+                // (glmonths[0].balance.title).should.match('งบแสดงฐานะการเงิน');
 
                 // Call the assertion callback
                 done();

@@ -22,6 +22,9 @@ var GlmonthSchema = new Schema({
   enddate: {
     type: Date
   },
+  type: {
+    type: String
+  },
 
   acceach: {
     type: [{
@@ -112,22 +115,22 @@ var GlmonthSchema = new Schema({
         }
       },
       account: {
-        accounttype:{
-          accounttypename:{
-            type:String
+        accounttype: {
+          accounttypename: {
+            type: String
           },
-          accounttypeno:{
-            type:String
+          accounttypeno: {
+            type: String
           },
-          created:{
+          created: {
             type: Date
           },
           user: {
             type: Schema.ObjectId,
             ref: 'User'
           },
-          _id:{
-            type:String
+          _id: {
+            type: String
           }
         },
         accountno: {
@@ -160,6 +163,26 @@ var GlmonthSchema = new Schema({
         }
       }
     }]
+  },
+
+  balance: {
+    type: {
+      company: {
+        type: String
+      },
+      date: {
+        type: Date
+      },
+      enddate: {
+        type: Date
+      },
+      startdate: {
+        type: Date
+      },
+      title: {
+        type: Date
+      }
+    }
   },
 
 
