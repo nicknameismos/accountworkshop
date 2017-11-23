@@ -541,6 +541,8 @@ exports.generateGlDaily = function (req, res, next) {
         var bDate = new Date(b.docdate).getDate() + '' + new Date(b.docdate).getMonth() + '' + new Date(b.docdate).getFullYear();
         if (aDate === bDate) {
             return a.docno - b.docno;
+        }else{
+            return 0;
         }
     });
 
