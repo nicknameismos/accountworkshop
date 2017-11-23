@@ -30,7 +30,8 @@ describe('Glmonth Model Unit Tests:', function() {
 
     user.save(function() {
       glmonth = new Glmonth({
-        name: 'Glmonth Name',
+        firstDayText: '1 มกราคม 2559',
+        lastDayText:'30 มกราคม 2559',
         user: user
       });
 
@@ -47,14 +48,6 @@ describe('Glmonth Model Unit Tests:', function() {
       });
     });
 
-    it('should be able to show an error when try to save without name', function(done) {
-      glmonth.name = '';
-
-      return glmonth.save(function(err) {
-        should.exist(err);
-        done();
-      });
-    });
   });
 
   afterEach(function(done) {
