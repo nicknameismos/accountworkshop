@@ -533,9 +533,18 @@ exports.generateGlDaily = function (req, res, next) {
 
     }
 
-    daily.transaction.sort(function (a, b) {
-        return new Date(a.docdate).getTime() - new Date(b.docdate).getTime();
-    });
+    // daily.transaction.sort(function (a, b) {
+    //     return new Date(a.docdate).getTime() - new Date(b.docdate).getTime();
+    // });
+
+    daily.sort(
+        function (a, b) {
+            if (a.docdate != b.docdate) {
+                return (b.docdate - a.docdate);
+            } else {
+                return (a.docno - b.docno);
+            }
+        });
 
     req.daily = daily;
     next();
