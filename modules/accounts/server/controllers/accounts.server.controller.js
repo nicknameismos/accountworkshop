@@ -519,7 +519,7 @@ exports.generateGlDaily = function (req, res, next) {
         for (var c = 0; c < creditsLength; c++) {
             var credits = element.credits[c];
 
-            transaction.list.push({
+            transaction.list.push({           
                 accountname: credits.account.name,
                 accountno: credits.account.accountno,
                 description: credits.description,
@@ -533,18 +533,19 @@ exports.generateGlDaily = function (req, res, next) {
 
     }
 
-    daily.transaction.sort(function (a, b) {
-        return new Date(a.docdate).getTime() - new Date(b.docdate).getTime();
-    });
-    daily.transaction.sort(function (a, b) {
-        var aDate = new Date(a.docdate).getDate() + '' + new Date(a.docdate).getMonth() + '' + new Date(a.docdate).getFullYear();
-        var bDate = new Date(b.docdate).getDate() + '' + new Date(b.docdate).getMonth() + '' + new Date(b.docdate).getFullYear();
-        if (aDate === bDate) {
-            return a.docno - b.docno;
-        }else{
-            return 0;
+    daily.transaction.sort(function(a, b) {
+        var adate = new Date(a.docdate).getTime(),
+            bdate = new Date(b.docdate).getTime(),
+            rv = adate - bdate;
+        if (rv === 0) {
+            rv = a.docno.localeCompare(b.docno);
         }
+        return rv;
     });
+
+    // daily.transaction.sort(function (a, b) {
+    //     return new Date(a.docdate).getTime() - new Date(b.docdate).getTime();
+    // });
 
     req.daily = daily;
     next();
