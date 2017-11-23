@@ -533,22 +533,9 @@ exports.generateGlDaily = function (req, res, next) {
 
     }
 
-    // daily.transaction.sort(function (a, b) {
-    //     return new Date(a.docdate).getTime() - new Date(b.docdate).getTime();
-    // });
-
-    daily.transaction.sort(
-        function (a, b) {
-            var aDate = new Date(a.docdate).getDate() + '' + new Date(a.docdate).getMonth() + '' + new Date(a.docdate).getFullYear();
-            var bDate = new Date(b.docdate).getDate() + '' + new Date(b.docdate).getMonth() + '' + new Date(b.docdate).getFullYear();
-            console.log(aDate);
-            console.log(bDate);
-            if (aDate != bDate) {
-                return (aDate - bDate);
-            } else {
-                return (a.docno - b.docno);
-            }
-        });
+    daily.transaction.sort(function (a, b) {
+        return new Date(a.docdate).getTime() - new Date(b.docdate).getTime();
+    });
 
     req.daily = daily;
     next();
