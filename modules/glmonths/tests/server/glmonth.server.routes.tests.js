@@ -55,7 +55,7 @@ describe('Glmonth CRUD tests', function () {
         lastDayText: '30 มกราคม 2559',
         startdate: '2016-01-01T00:00:00.000Z',
         enddate: '2016-12-31T00:00:00.000Z',
-        type:'mounth',
+        type: 'mounth',
         acceach: [
           {
             accountno: '101101',
@@ -91,12 +91,12 @@ describe('Glmonth CRUD tests', function () {
               timestamp: ""
             },
             account: {
-              accounttype:{
-                accounttypename:'สินทรัพย์หมุนเวียน',
-                accounttypeno:'01',
-                created:'2017-11-21T11:31:27.911Z',
+              accounttype: {
+                accounttypename: 'สินทรัพย์หมุนเวียน',
+                accounttypeno: '01',
+                created: '2017-11-21T11:31:27.911Z',
                 user: user,
-                _id:'5a140e8f99625713006df61b'
+                _id: '5a140e8f99625713006df61b'
               },
               accountno: '101101',
               created: '2017-11-13T07:35:29.292Z',
@@ -110,12 +110,84 @@ describe('Glmonth CRUD tests', function () {
             }
           },
         ],
-        balance:{
+        balance: {
           company: 'Cyber Advance System annd Network Co.,Ltd',
           date: '2017-11-23T03:15:21.478Z',
           enddate: '2016-12-31T00:00:00.000Z',
           startdate: '2016-01-01T00:00:00.000Z',
           title: 'งบแสดงฐานะการเงิน',
+          asset: {
+            name: '- สินทรัพย์ -',
+            transaction: [
+              {
+                accounttype: 'ที่ดิน อาคารและอุปกรณ์',
+                summary: 0,
+                sumtrans: {
+                  accountno: '- รวมหนี้สิน -',
+                  amount: 0
+                },
+                list: [{
+                  accountname: 'ส่วนปรับปรุงสำนักงาน',
+                  accountno: '102003',
+                  amount: 0
+                }]
+              }
+            ]
+          },
+          debt: {
+            name: '- หนี้สินและส่วนของผู้ถือหุ้น -',
+            transaction: [{
+              accounttype: 'หนี้สินหมุนเวียน',
+              summary: 0,
+              sumtrans: {
+                accountno: '- รวมหนี้สิน -',
+                amount: 0
+              },
+              list: [{
+                accountname: 'เงินกู้ยืมจากกรรมการ',
+                accountno: '201201',
+                amount: 0
+              }]
+            }]
+          }
+        },
+        daily: {
+          company: 'Cyber Advance System annd Network Co.,Ltd',
+          date: '2017-11-23T03:15:21.478Z',
+          enddate: '2016-12-31T00:00:00.000Z',
+          startdate: '2016-01-01T00:00:00.000Z',
+          title: 'งบแสดงฐานะการเงิน',
+          transaction: [{
+            docdate: '2016-01-04T00:00:00.000Z',
+            docno: 'PV59010401',
+            remark: 'ค่ากระดาษถ่ายเอกสาร',
+            list: [{
+              accountname: "ค่าเครื่องเขียนแบบพิมพ์",
+              accountno: "605003",
+              credit: 0,
+              debit: 168.22,
+              description: "ค่ากระดาษถ่ายเอกสาร",
+              document: "",
+              timestamp: "",
+            }]
+          }]
+        },
+
+        gain: {
+          company: 'Cyber Advance System annd Network Co.,Ltd',
+          date: '2017-11-23T03:15:21.478Z',
+          enddate: '2016-12-31T00:00:00.000Z',
+          startdate: '2016-01-01T00:00:00.000Z',
+          title: 'งบกำไรขาดทุน',
+          transaction: [{
+            accounttype: 'รายได้จากการดำเนินงาน',
+            summary: 0,
+            list: [{
+              accountname: 'รายได้จากการขาย',
+              accountno: '401001',
+              amount: 0
+            }]
+          }]
         }
       };
 
@@ -164,7 +236,7 @@ describe('Glmonth CRUD tests', function () {
                 (glmonths[0].startdate).should.match('2016-01-01T00:00:00.000Z');
                 (glmonths[0].enddate).should.match('2016-12-31T00:00:00.000Z');
                 (glmonths[0].type).should.match('mounth');
-                
+
                 (glmonths[0].acceach[0].accountno).should.match('101101');
                 (glmonths[0].acceach[0].company).should.match('Cyber Advance System annd Network Co.,Ltd');
                 (glmonths[0].acceach[0].date).should.match('2017-11-23T03:15:21.469Z');
@@ -212,10 +284,57 @@ describe('Glmonth CRUD tests', function () {
 
 
                 (glmonths[0].balance.company).should.match('Cyber Advance System annd Network Co.,Ltd');
-                // (glmonths[0].balance.date).should.match('2017-11-23T03:15:21.478Z');
-                // (glmonths[0].balance.enddate).should.match('2016-12-31T00:00:00.000Z');
-                // (glmonths[0].balance.startdate).should.match('2016-01-01T00:00:00.000Z');
-                // (glmonths[0].balance.title).should.match('งบแสดงฐานะการเงิน');
+                (glmonths[0].balance.date).should.match('2017-11-23T03:15:21.478Z');
+                (glmonths[0].balance.enddate).should.match('2016-12-31T00:00:00.000Z');
+                (glmonths[0].balance.startdate).should.match('2016-01-01T00:00:00.000Z');
+                (glmonths[0].balance.title).should.match('งบแสดงฐานะการเงิน');
+
+                (glmonths[0].balance.asset.name).should.match(glmonth.balance.asset.name);
+                (glmonths[0].balance.asset.transaction[0].accounttype).should.match(glmonth.balance.asset.transaction[0].accounttype);
+                (glmonths[0].balance.asset.transaction[0].summary).should.match(glmonth.balance.asset.transaction[0].summary);
+                (glmonths[0].balance.asset.transaction[0].list[0].accountname).should.match(glmonth.balance.asset.transaction[0].list[0].accountname);
+                (glmonths[0].balance.asset.transaction[0].list[0].accountno).should.match(glmonth.balance.asset.transaction[0].list[0].accountno);
+                (glmonths[0].balance.asset.transaction[0].list[0].amount).should.match(glmonth.balance.asset.transaction[0].list[0].amount);
+
+                (glmonths[0].balance.asset.transaction[0].sumtrans.accountno).should.match(glmonth.balance.asset.transaction[0].sumtrans.accountno);
+                // (glmonths[0].balance.asset.transaction[0].sumtrans.amount).should.match(glmonth.balance.asset.transaction[0].sumtrans.amount); //eer amoun
+
+
+                (glmonths[0].balance.debt.name).should.match(glmonth.balance.debt.name);
+                (glmonths[0].balance.debt.transaction[0].accounttype).should.match(glmonth.balance.debt.transaction[0].accounttype);
+                (glmonths[0].balance.debt.transaction[0].summary).should.match(glmonth.balance.debt.transaction[0].summary);
+                (glmonths[0].balance.debt.transaction[0].sumtrans.accountno).should.match(glmonth.balance.debt.transaction[0].sumtrans.accountno);
+                // (glmonths[0].balance.debt.transaction[0].sumtrans.account).should.match(glmonth.balance.debt.transaction[0].sumtrans.account);
+
+                (glmonths[0].daily.company).should.match(glmonth.daily.company);
+                (glmonths[0].daily.date).should.match(glmonth.daily.date);
+                (glmonths[0].daily.enddate).should.match(glmonth.daily.enddate);
+                (glmonths[0].daily.startdate).should.match(glmonth.daily.startdate);
+                (glmonths[0].daily.title).should.match(glmonth.daily.title);
+
+                (glmonths[0].daily.transaction[0].docdate).should.match(glmonth.daily.transaction[0].docdate);
+                (glmonths[0].daily.transaction[0].docno).should.match(glmonth.daily.transaction[0].docno);
+                (glmonths[0].daily.transaction[0].remark).should.match(glmonth.daily.transaction[0].remark);
+                (glmonths[0].daily.transaction[0].list[0].accountname).should.match(glmonth.daily.transaction[0].list[0].accountname);
+                (glmonths[0].daily.transaction[0].list[0].accountno).should.match(glmonth.daily.transaction[0].list[0].accountno);
+                (glmonths[0].daily.transaction[0].list[0].credit).should.match(glmonth.daily.transaction[0].list[0].credit);
+                (glmonths[0].daily.transaction[0].list[0].debit).should.match(glmonth.daily.transaction[0].list[0].debit);
+                (glmonths[0].daily.transaction[0].list[0].description).should.match(glmonth.daily.transaction[0].list[0].description);
+                (glmonths[0].daily.transaction[0].list[0].document).should.match(glmonth.daily.transaction[0].list[0].document);
+                (glmonths[0].daily.transaction[0].list[0].timestamp).should.match(glmonth.daily.transaction[0].list[0].timestamp);
+
+
+                (glmonths[0].gain.company).should.match(glmonth.gain.company);
+                (glmonths[0].gain.date).should.match(glmonth.gain.date);
+                (glmonths[0].gain.enddate).should.match(glmonth.gain.enddate);
+                (glmonths[0].gain.startdate).should.match(glmonth.gain.startdate);
+                (glmonths[0].gain.title).should.match(glmonth.gain.title);
+                (glmonths[0].gain.transaction[0].accounttype).should.match(glmonth.gain.transaction[0].accounttype);
+                (glmonths[0].gain.transaction[0].summary).should.match(glmonth.gain.transaction[0].summary);
+                (glmonths[0].gain.transaction[0].list[0].accountname).should.match(glmonth.gain.transaction[0].list[0].accountname);
+                (glmonths[0].gain.transaction[0].list[0].accountno).should.match(glmonth.gain.transaction[0].list[0].accountno);
+                (glmonths[0].gain.transaction[0].list[0].amount).should.match(glmonth.gain.transaction[0].list[0].amount);
+
 
                 // Call the assertion callback
                 done();
