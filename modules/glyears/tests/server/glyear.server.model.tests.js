@@ -30,7 +30,7 @@ describe('Glyear Model Unit Tests:', function() {
 
     user.save(function() {
       glyear = new Glyear({
-        name: 'Glyear Name',
+        firstDayText: '1 มกราคม 2559',
         user: user
       });
 
@@ -47,14 +47,6 @@ describe('Glyear Model Unit Tests:', function() {
       });
     });
 
-    it('should be able to show an error when try to save without name', function(done) {
-      glyear.name = '';
-
-      return glyear.save(function(err) {
-        should.exist(err);
-        done();
-      });
-    });
   });
 
   afterEach(function(done) {

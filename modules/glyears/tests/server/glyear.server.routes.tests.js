@@ -51,7 +51,144 @@ describe('Glyear CRUD tests', function () {
     // Save a user to the test db and create new Glyear
     user.save(function () {
       glyear = {
-        name: 'Glyear name'
+        firstDayText: '1 มกราคม 2559',
+        lastDayText: '31 ธันวาคม 2559',
+        startdate: '2016-01-01T00:00:00.000Z',
+        enddate: '2016-12-31T00:00:00.000Z',
+        type: 'year',
+        acceach: [
+          {
+            accountno: '101101',
+            company: 'Cyber Advance System annd Network Co.,Ltd',
+            date: '2017-11-23T03:15:21.469Z',
+            enddate: '2016-12-31T00:00:00.000Z',
+            startdate: '2016-01-01T00:00:00.000Z',
+            title: 'บัญชีแยกประเภทเงินสด',
+            current: {
+              credit: 13289,
+              debit: 13289
+            },
+            carryforward: {
+              accountname: "ยอดยกไป",
+              accountno: "",
+              credit: 0,
+              debit: 13289,
+              description: "",
+              docdate: "",
+              docno: "",
+              document: "",
+              timestamp: ""
+            },
+            bringforward: {
+              accountname: "ยอดยกมา",
+              accountno: "",
+              credit: 0,
+              debit: 0,
+              description: "",
+              docdate: "",
+              docno: "",
+              document: "",
+              timestamp: ""
+            },
+            account: {
+              accounttype: {
+                accounttypename: 'สินทรัพย์หมุนเวียน',
+                accounttypeno: '01',
+                created: '2017-11-21T11:31:27.911Z',
+                user: user,
+                _id: '5a140e8f99625713006df61b'
+              },
+              accountno: '101101',
+              created: '2017-11-13T07:35:29.292Z',
+              name: 'เงินสด',
+              parent: '',
+              status: 'active',
+              unitprice: 0,
+              user: user,
+              vat: 0,
+              _id: "5a094b41c601191100d6ded8"
+            }
+          },
+        ],
+        balance: {
+          company: 'Cyber Advance System annd Network Co.,Ltd',
+          date: '2017-11-23T03:15:21.478Z',
+          enddate: '2016-12-31T00:00:00.000Z',
+          startdate: '2016-01-01T00:00:00.000Z',
+          title: 'งบแสดงฐานะการเงิน',
+          asset: {
+            name: '- สินทรัพย์ -',
+            transaction: [
+              {
+                accounttype: 'ที่ดิน อาคารและอุปกรณ์',
+                summary: 0,
+                sumtrans: {
+                  accountno: '- รวมหนี้สิน -',
+                  amount: 0
+                },
+                list: [{
+                  accountname: 'ส่วนปรับปรุงสำนักงาน',
+                  accountno: '102003',
+                  amount: 0
+                }]
+              }
+            ]
+          },
+          debt: {
+            name: '- หนี้สินและส่วนของผู้ถือหุ้น -',
+            transaction: [{
+              accounttype: 'หนี้สินหมุนเวียน',
+              summary: 0,
+              sumtrans: {
+                accountno: '- รวมหนี้สิน -',
+                amount: 0
+              },
+              list: [{
+                accountname: 'เงินกู้ยืมจากกรรมการ',
+                accountno: '201201',
+                amount: 0
+              }]
+            }]
+          }
+        },
+        daily: {
+          company: 'Cyber Advance System annd Network Co.,Ltd',
+          date: '2017-11-23T03:15:21.478Z',
+          enddate: '2016-12-31T00:00:00.000Z',
+          startdate: '2016-01-01T00:00:00.000Z',
+          title: 'งบแสดงฐานะการเงิน',
+          transaction: [{
+            docdate: '2016-01-04T00:00:00.000Z',
+            docno: 'PV59010401',
+            remark: 'ค่ากระดาษถ่ายเอกสาร',
+            list: [{
+              accountname: "ค่าเครื่องเขียนแบบพิมพ์",
+              accountno: "605003",
+              credit: 0,
+              debit: 168.22,
+              description: "ค่ากระดาษถ่ายเอกสาร",
+              document: "",
+              timestamp: "",
+            }]
+          }]
+        },
+
+        gain: {
+          company: 'Cyber Advance System annd Network Co.,Ltd',
+          date: '2017-11-23T03:15:21.478Z',
+          enddate: '2016-12-31T00:00:00.000Z',
+          startdate: '2016-01-01T00:00:00.000Z',
+          title: 'งบกำไรขาดทุน',
+          transaction: [{
+            accounttype: 'รายได้จากการดำเนินงาน',
+            summary: 0,
+            list: [{
+              accountname: 'รายได้จากการขาย',
+              accountno: '401001',
+              amount: 0
+            }]
+          }]
+        }
       };
 
       done();
@@ -94,7 +231,110 @@ describe('Glyear CRUD tests', function () {
 
                 // Set assertions
                 (glyears[0].user._id).should.equal(userId);
-                (glyears[0].name).should.match('Glyear name');
+                (glyears[0].firstDayText).should.match('1 มกราคม 2559');
+                (glyears[0].lastDayText).should.match('31 ธันวาคม 2559');
+                (glyears[0].startdate).should.match('2016-01-01T00:00:00.000Z');
+                (glyears[0].enddate).should.match('2016-12-31T00:00:00.000Z');
+                (glyears[0].type).should.match('year');
+
+                (glyears[0].acceach[0].accountno).should.match('101101');
+                (glyears[0].acceach[0].company).should.match('Cyber Advance System annd Network Co.,Ltd');
+                (glyears[0].acceach[0].date).should.match('2017-11-23T03:15:21.469Z');
+                (glyears[0].acceach[0].enddate).should.match('2016-12-31T00:00:00.000Z');
+                (glyears[0].acceach[0].startdate).should.match('2016-01-01T00:00:00.000Z');
+                (glyears[0].acceach[0].title).should.match('บัญชีแยกประเภทเงินสด');
+                (glyears[0].acceach[0].current.credit).should.match(13289);
+                (glyears[0].acceach[0].current.debit).should.match(13289);
+
+                (glyears[0].acceach[0].carryforward.accountname).should.match('ยอดยกไป');
+                (glyears[0].acceach[0].carryforward.accountno).should.match('');
+                (glyears[0].acceach[0].carryforward.credit).should.match(0);
+                (glyears[0].acceach[0].carryforward.debit).should.match(13289);
+                (glyears[0].acceach[0].carryforward.description).should.match('');
+                (glyears[0].acceach[0].carryforward.docdate).should.match('');
+                (glyears[0].acceach[0].carryforward.docno).should.match('');
+                (glyears[0].acceach[0].carryforward.document).should.match('');
+                (glyears[0].acceach[0].carryforward.timestamp).should.match('');
+
+                (glyears[0].acceach[0].bringforward.accountname).should.match('ยอดยกมา');
+                (glyears[0].acceach[0].bringforward.accountno).should.match('');
+                (glyears[0].acceach[0].bringforward.credit).should.match(0);
+                (glyears[0].acceach[0].bringforward.debit).should.match(0);
+                (glyears[0].acceach[0].bringforward.description).should.match('');
+                (glyears[0].acceach[0].bringforward.docdate).should.match('');
+                (glyears[0].acceach[0].bringforward.docno).should.match('');
+                (glyears[0].acceach[0].bringforward.document).should.match('');
+                (glyears[0].acceach[0].bringforward.timestamp).should.match('');
+
+                (glyears[0].acceach[0].account.accountno).should.match('101101');
+                (glyears[0].acceach[0].account.created).should.match('2017-11-13T07:35:29.292Z');
+                (glyears[0].acceach[0].account.name).should.match('เงินสด');
+                (glyears[0].acceach[0].account.parent).should.match('');
+                (glyears[0].acceach[0].account.status).should.match('active');
+                (glyears[0].acceach[0].account.unitprice).should.match(0);
+                (glyears[0].acceach[0].account.vat).should.match(0);
+                (glyears[0].acceach[0].account.user).should.match(user.id);
+                (glyears[0].acceach[0].account._id).should.match('5a094b41c601191100d6ded8');
+
+                (glyears[0].acceach[0].account.accounttype.accounttypename).should.match('สินทรัพย์หมุนเวียน');
+                (glyears[0].acceach[0].account.accounttype.accounttypeno).should.match('01');
+                (glyears[0].acceach[0].account.accounttype.created).should.match('2017-11-21T11:31:27.911Z');
+                (glyears[0].acceach[0].account.accounttype.user).should.match(user.id);
+                (glyears[0].acceach[0].account.accounttype._id).should.match('5a140e8f99625713006df61b');
+
+
+                (glyears[0].balance.company).should.match('Cyber Advance System annd Network Co.,Ltd');
+                (glyears[0].balance.date).should.match('2017-11-23T03:15:21.478Z');
+                (glyears[0].balance.enddate).should.match('2016-12-31T00:00:00.000Z');
+                (glyears[0].balance.startdate).should.match('2016-01-01T00:00:00.000Z');
+                (glyears[0].balance.title).should.match('งบแสดงฐานะการเงิน');
+
+                (glyears[0].balance.asset.name).should.match(glyear.balance.asset.name);
+                (glyears[0].balance.asset.transaction[0].accounttype).should.match(glyear.balance.asset.transaction[0].accounttype);
+                (glyears[0].balance.asset.transaction[0].summary).should.match(glyear.balance.asset.transaction[0].summary);
+                (glyears[0].balance.asset.transaction[0].list[0].accountname).should.match(glyear.balance.asset.transaction[0].list[0].accountname);
+                (glyears[0].balance.asset.transaction[0].list[0].accountno).should.match(glyear.balance.asset.transaction[0].list[0].accountno);
+                (glyears[0].balance.asset.transaction[0].list[0].amount).should.match(glyear.balance.asset.transaction[0].list[0].amount);
+
+                (glyears[0].balance.asset.transaction[0].sumtrans.accountno).should.match(glyear.balance.asset.transaction[0].sumtrans.accountno);
+                // (glyears[0].balance.asset.transaction[0].sumtrans.amount).should.match(glyear.balance.asset.transaction[0].sumtrans.amount); //eer amoun
+
+
+                (glyears[0].balance.debt.name).should.match(glyear.balance.debt.name);
+                (glyears[0].balance.debt.transaction[0].accounttype).should.match(glyear.balance.debt.transaction[0].accounttype);
+                (glyears[0].balance.debt.transaction[0].summary).should.match(glyear.balance.debt.transaction[0].summary);
+                (glyears[0].balance.debt.transaction[0].sumtrans.accountno).should.match(glyear.balance.debt.transaction[0].sumtrans.accountno);
+                // (glyears[0].balance.debt.transaction[0].sumtrans.account).should.match(glyear.balance.debt.transaction[0].sumtrans.account);
+
+                (glyears[0].daily.company).should.match(glyear.daily.company);
+                (glyears[0].daily.date).should.match(glyear.daily.date);
+                (glyears[0].daily.enddate).should.match(glyear.daily.enddate);
+                (glyears[0].daily.startdate).should.match(glyear.daily.startdate);
+                (glyears[0].daily.title).should.match(glyear.daily.title);
+
+                (glyears[0].daily.transaction[0].docdate).should.match(glyear.daily.transaction[0].docdate);
+                (glyears[0].daily.transaction[0].docno).should.match(glyear.daily.transaction[0].docno);
+                (glyears[0].daily.transaction[0].remark).should.match(glyear.daily.transaction[0].remark);
+                (glyears[0].daily.transaction[0].list[0].accountname).should.match(glyear.daily.transaction[0].list[0].accountname);
+                (glyears[0].daily.transaction[0].list[0].accountno).should.match(glyear.daily.transaction[0].list[0].accountno);
+                (glyears[0].daily.transaction[0].list[0].credit).should.match(glyear.daily.transaction[0].list[0].credit);
+                (glyears[0].daily.transaction[0].list[0].debit).should.match(glyear.daily.transaction[0].list[0].debit);
+                (glyears[0].daily.transaction[0].list[0].description).should.match(glyear.daily.transaction[0].list[0].description);
+                (glyears[0].daily.transaction[0].list[0].document).should.match(glyear.daily.transaction[0].list[0].document);
+                (glyears[0].daily.transaction[0].list[0].timestamp).should.match(glyear.daily.transaction[0].list[0].timestamp);
+
+
+                (glyears[0].gain.company).should.match(glyear.gain.company);
+                (glyears[0].gain.date).should.match(glyear.gain.date);
+                (glyears[0].gain.enddate).should.match(glyear.gain.enddate);
+                (glyears[0].gain.startdate).should.match(glyear.gain.startdate);
+                (glyears[0].gain.title).should.match(glyear.gain.title);
+                (glyears[0].gain.transaction[0].accounttype).should.match(glyear.gain.transaction[0].accounttype);
+                (glyears[0].gain.transaction[0].summary).should.match(glyear.gain.transaction[0].summary);
+                (glyears[0].gain.transaction[0].list[0].accountname).should.match(glyear.gain.transaction[0].list[0].accountname);
+                (glyears[0].gain.transaction[0].list[0].accountno).should.match(glyear.gain.transaction[0].list[0].accountno);
+                (glyears[0].gain.transaction[0].list[0].amount).should.match(glyear.gain.transaction[0].list[0].amount);
+
 
                 // Call the assertion callback
                 done();
@@ -110,36 +350,6 @@ describe('Glyear CRUD tests', function () {
       .end(function (glyearSaveErr, glyearSaveRes) {
         // Call the assertion callback
         done(glyearSaveErr);
-      });
-  });
-
-  it('should not be able to save an Glyear if no name is provided', function (done) {
-    // Invalidate name field
-    glyear.name = '';
-
-    agent.post('/api/auth/signin')
-      .send(credentials)
-      .expect(200)
-      .end(function (signinErr, signinRes) {
-        // Handle signin error
-        if (signinErr) {
-          return done(signinErr);
-        }
-
-        // Get the userId
-        var userId = user.id;
-
-        // Save a new Glyear
-        agent.post('/api/glyears')
-          .send(glyear)
-          .expect(400)
-          .end(function (glyearSaveErr, glyearSaveRes) {
-            // Set message assertion
-            (glyearSaveRes.body.message).should.match('Please fill Glyear name');
-
-            // Handle Glyear save error
-            done(glyearSaveErr);
-          });
       });
   });
 
@@ -167,7 +377,7 @@ describe('Glyear CRUD tests', function () {
             }
 
             // Update Glyear name
-            glyear.name = 'WHY YOU GOTTA BE SO MEAN?';
+            glyear.firstDayText = 'WHY YOU GOTTA BE SO MEAN?';
 
             // Update an existing Glyear
             agent.put('/api/glyears/' + glyearSaveRes.body._id)
@@ -181,7 +391,7 @@ describe('Glyear CRUD tests', function () {
 
                 // Set assertions
                 (glyearUpdateRes.body._id).should.equal(glyearSaveRes.body._id);
-                (glyearUpdateRes.body.name).should.match('WHY YOU GOTTA BE SO MEAN?');
+                (glyearUpdateRes.body.firstDayText).should.match('WHY YOU GOTTA BE SO MEAN?');
 
                 // Call the assertion callback
                 done();
@@ -218,7 +428,7 @@ describe('Glyear CRUD tests', function () {
       request(app).get('/api/glyears/' + glyearObj._id)
         .end(function (req, res) {
           // Set assertion
-          res.body.should.be.instanceof(Object).and.have.property('name', glyear.name);
+          res.body.should.be.instanceof(Object).and.have.property('firstDayText', glyear.firstDayText);
 
           // Call the assertion callback
           done();
@@ -363,7 +573,7 @@ describe('Glyear CRUD tests', function () {
               }
 
               // Set assertions on new Glyear
-              (glyearSaveRes.body.name).should.equal(glyear.name);
+              (glyearSaveRes.body.firstDayText).should.equal(glyear.firstDayText);
               should.exist(glyearSaveRes.body.user);
               should.equal(glyearSaveRes.body.user._id, orphanId);
 
@@ -390,7 +600,7 @@ describe('Glyear CRUD tests', function () {
 
                         // Set assertions
                         (glyearInfoRes.body._id).should.equal(glyearSaveRes.body._id);
-                        (glyearInfoRes.body.name).should.equal(glyear.name);
+                        (glyearInfoRes.body.firstDayText).should.equal(glyear.firstDayText);
                         should.equal(glyearInfoRes.body.user, undefined);
 
                         // Call the assertion callback
