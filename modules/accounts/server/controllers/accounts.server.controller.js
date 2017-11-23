@@ -529,10 +529,14 @@ exports.generateGlDaily = function (req, res, next) {
                 credit: credits.amount
             });
         }
-
         daily.transaction.push(transaction);
 
     }
+
+    daily.transaction.sort(function (a, b) {
+        return new Date(a.docdate).getTime() - new Date(b.docdate).getTime();
+    });
+
     req.daily = daily;
     next();
 };
@@ -1085,13 +1089,13 @@ exports.generateBalance = function (req, res, next) {
     balance.debt.transaction.push(generateGlByType(acceach, accountChart, '05', 'หนี้สินหมุนเวียน'));
     balance.debt.transaction[0].sumtrans = {
         accountno: "- รวมหนี้สิน -",
-        amoun: balance.debt.transaction[0].summary
+        amount: balance.debt.transaction[0].summary
     };
 
     balance.debt.transaction.push(generateGlByType(acceach, accountChart, '08', 'ส่วนของผู้ถือหุ้น'));
     balance.debt.transaction[1].sumtrans = {
         accountno: "- รวมส่วนของผู้ถือหุ้น -",
-        amoun: balance.debt.transaction[1].summary
+        amount: balance.debt.transaction[1].summary
     };
 
     balance.debt.transaction.push({
