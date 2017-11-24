@@ -7,6 +7,8 @@ var path = require('path'),
     mongoose = require('mongoose'),
     Account = mongoose.model('Account'),
     Accountchart = mongoose.model('Accountchart'),
+    Glmonth = mongoose.model('Glmonth'),
+    Glyear = mongoose.model('Glyear'),
     errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
     _ = require('lodash');
 
@@ -456,11 +458,55 @@ exports.getGlDate = function (req, res, next, date) {
         });
     }
 
-    // console.log(req.type + ' ' + firstDay + ' : ' + lastDay);
+    req.firstDay = '' + firstDay;
+    req.lastDay = '' + lastDay;
+    next();
+};
+
+exports.getGlByCondition = function (req, res, next) {
+    if (req.type === 'month') {
+        Glmonth.find({
+            startdate: req.firstDay
+        }).exec(function (err, glReport) {
+            if (err) {
+                return next(err);
+            } else if (!glReport) {
+                return res.status(404).send({
+                    message: 'No Glmonth with that identifier has been found'
+                });
+            }
+            if (glReport[0]) {
+                res.jsonp(glReport[0]);
+            } else {
+                next();
+            }
+        });
+    } else {
+        Glyear.find({
+            startdate: req.firstDay
+        }).exec(function (err, glReport) {
+            if (err) {
+                return next(err);
+            } else if (!glReport) {
+                return res.status(404).send({
+                    message: 'No Glyear with that identifier has been found'
+                });
+            }
+            if (glReport[0]) {
+                res.jsonp(glReport[0]);
+            } else {
+                next();
+            }
+        });
+    }
+};
+
+exports.getAccounts = function (req, res, next) {
+
     Account.find({
         docdate: {
-            $gte: firstDay,
-            $lte: lastDay
+            $gte: req.firstDay,
+            $lte: req.lastDay
         } //  $gt > | $lt < | $gte >== | $lte <==
     }).populate('debits.account').populate('credits.account').populate('user', 'displayName').sort('docno').exec(function (err, account) {
         if (err) {
@@ -471,10 +517,8 @@ exports.getGlDate = function (req, res, next, date) {
             });
         }
         req.account = account;
-        req.firstDay = firstDay;
-        req.lastDay = lastDay;
-        req.firstDayText = convertDateThai(firstDay);
-        req.lastDayText = convertDateThai(lastDay);
+        req.firstDayText = convertDateThai(req.firstDay);
+        req.lastDayText = convertDateThai(req.lastDay);
         next();
     });
 };
@@ -519,7 +563,7 @@ exports.generateGlDaily = function (req, res, next) {
         for (var c = 0; c < creditsLength; c++) {
             var credits = element.credits[c];
 
-            transaction.list.push({           
+            transaction.list.push({
                 accountname: credits.account.name,
                 accountno: credits.account.accountno,
                 description: credits.description,
@@ -533,7 +577,7 @@ exports.generateGlDaily = function (req, res, next) {
 
     }
 
-    daily.transaction.sort(function(a, b) {
+    daily.transaction.sort(function (a, b) {
         var adate = new Date(a.docdate).getTime(),
             bdate = new Date(b.docdate).getTime(),
             rv = adate - bdate;

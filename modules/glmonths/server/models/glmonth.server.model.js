@@ -10,6 +10,9 @@ var mongoose = require('mongoose'),
  * Glmonth Schema
  */
 var GlmonthSchema = new Schema({
+  statementname: {
+    type: String
+  },
   firstDayText: {
     type: String,
   },
@@ -161,6 +164,44 @@ var GlmonthSchema = new Schema({
         _id: {
           type: String
         }
+      },
+      transaction: {
+        type: [{
+          docdate: {
+            type: Date
+          },
+          list: {
+            type: [{
+              accountname: {
+                type: String
+              },
+              accountno: {
+                type: String
+              },
+              credit: {
+                type: Number
+              },
+              debit: {
+                type: Number
+              },
+              description: {
+                type: String
+              },
+              docdate: {
+                type: Date
+              },
+              docno: {
+                type: String
+              },
+              document: {
+                type: String
+              },
+              timestamp: {
+                type: String
+              }
+            }]
+          }
+        }]
       }
     }]
   },
@@ -188,39 +229,37 @@ var GlmonthSchema = new Schema({
             type: String
           },
           transaction: {
-            type: [
-              {
-                accounttype: {
-                  type: String
-                },
-                summary: {
-                  type: Number
-                },
-                sumtrans: {
-                  type: {
-                    accountno: {
-                      type: String
-                    },
-                    amount: {
-                      type: Number
-                    }
+            type: [{
+              accounttype: {
+                type: String
+              },
+              summary: {
+                type: Number
+              },
+              sumtrans: {
+                type: {
+                  accountno: {
+                    type: String
+                  },
+                  amount: {
+                    type: Number
                   }
-                },
-                list: {
-                  type: [{
-                    accountname: {
-                      type: String
-                    },
-                    accountno: {
-                      type: String
-                    },
-                    amount: {
-                      type: Number
-                    }
-                  }]
                 }
+              },
+              list: {
+                type: [{
+                  accountname: {
+                    type: String
+                  },
+                  accountno: {
+                    type: String
+                  },
+                  amount: {
+                    type: Number
+                  }
+                }]
               }
-            ]
+            }]
           }
         }
       },
@@ -230,39 +269,37 @@ var GlmonthSchema = new Schema({
             type: String
           },
           transaction: {
-            type: [
-              {
-                accounttype: {
-                  type: String
-                },
-                summary: {
-                  type: Number
-                },
-                sumtrans: {
-                  type: {
-                    accountno: {
-                      type: String
-                    },
-                    amount: {
-                      type: Number
-                    }
+            type: [{
+              accounttype: {
+                type: String
+              },
+              summary: {
+                type: Number
+              },
+              sumtrans: {
+                type: {
+                  accountno: {
+                    type: String
+                  },
+                  amount: {
+                    type: Number
                   }
-                },
-                list: {
-                  type: [{
-                    accountname: {
-                      type: String
-                    },
-                    accountno: {
-                      type: String
-                    },
-                    amount: {
-                      type: Number
-                    }
-                  }]
                 }
+              },
+              list: {
+                type: [{
+                  accountname: {
+                    type: String
+                  },
+                  accountno: {
+                    type: String
+                  },
+                  amount: {
+                    type: Number
+                  }
+                }]
               }
-            ]
+            }]
           }
         }
       },

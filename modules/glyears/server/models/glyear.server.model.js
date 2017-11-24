@@ -10,6 +10,9 @@ var mongoose = require('mongoose'),
  * Glyear Schema
  */
 var GlyearSchema = new Schema({
+  statementname: {
+    type: String
+  },
   firstDayText: {
     type: String
   },
@@ -160,6 +163,44 @@ var GlyearSchema = new Schema({
         _id: {
           type: String
         }
+      },
+      transaction: {
+        type: [{
+          docdate: {
+            type: Date
+          },
+          list: {
+            type: [{
+              accountname: {
+                type: String
+              },
+              accountno: {
+                type: String
+              },
+              credit: {
+                type: Number
+              },
+              debit: {
+                type: Number
+              },
+              description: {
+                type: String
+              },
+              docdate: {
+                type: Date
+              },
+              docno: {
+                type: String
+              },
+              document: {
+                type: String
+              },
+              timestamp: {
+                type: String
+              }
+            }]
+          }
+        }]
       }
     }]
   },
@@ -187,39 +228,37 @@ var GlyearSchema = new Schema({
             type: String
           },
           transaction: {
-            type: [
-              {
-                accounttype: {
-                  type: String
-                },
-                summary: {
-                  type: Number
-                },
-                sumtrans: {
-                  type: {
-                    accountno: {
-                      type: String
-                    },
-                    amount: {
-                      type: Number
-                    }
+            type: [{
+              accounttype: {
+                type: String
+              },
+              summary: {
+                type: Number
+              },
+              sumtrans: {
+                type: {
+                  accountno: {
+                    type: String
+                  },
+                  amount: {
+                    type: Number
                   }
-                },
-                list: {
-                  type: [{
-                    accountname: {
-                      type: String
-                    },
-                    accountno: {
-                      type: String
-                    },
-                    amount: {
-                      type: Number
-                    }
-                  }]
                 }
+              },
+              list: {
+                type: [{
+                  accountname: {
+                    type: String
+                  },
+                  accountno: {
+                    type: String
+                  },
+                  amount: {
+                    type: Number
+                  }
+                }]
               }
-            ]
+            }]
           }
         }
       },
@@ -229,39 +268,37 @@ var GlyearSchema = new Schema({
             type: String
           },
           transaction: {
-            type: [
-              {
-                accounttype: {
-                  type: String
-                },
-                summary: {
-                  type: Number
-                },
-                sumtrans: {
-                  type: {
-                    accountno: {
-                      type: String
-                    },
-                    amount: {
-                      type: Number
-                    }
+            type: [{
+              accounttype: {
+                type: String
+              },
+              summary: {
+                type: Number
+              },
+              sumtrans: {
+                type: {
+                  accountno: {
+                    type: String
+                  },
+                  amount: {
+                    type: Number
                   }
-                },
-                list: {
-                  type: [{
-                    accountname: {
-                      type: String
-                    },
-                    accountno: {
-                      type: String
-                    },
-                    amount: {
-                      type: Number
-                    }
-                  }]
                 }
+              },
+              list: {
+                type: [{
+                  accountname: {
+                    type: String
+                  },
+                  accountno: {
+                    type: String
+                  },
+                  amount: {
+                    type: Number
+                  }
+                }]
               }
-            ]
+            }]
           }
         }
       },
