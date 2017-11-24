@@ -379,7 +379,7 @@ var GlyearSchema = new Schema({
         type: Date
       },
       title: {
-        type: Date
+        type: String
       },
       transaction: {
         type: [{
