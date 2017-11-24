@@ -220,7 +220,7 @@ var GlyearSchema = new Schema({
         type: Date
       },
       title: {
-        type: Date
+        type: String
       },
       asset: {
         type: {
@@ -321,7 +321,7 @@ var GlyearSchema = new Schema({
         type: Date
       },
       title: {
-        type: Date
+        type: String
       },
       transaction: {
         type: [{
@@ -379,7 +379,7 @@ var GlyearSchema = new Schema({
         type: Date
       },
       title: {
-        type: Date
+        type: String
       },
       transaction: {
         type: [{
