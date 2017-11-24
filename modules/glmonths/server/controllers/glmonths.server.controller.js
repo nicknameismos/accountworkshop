@@ -12,11 +12,11 @@ var path = require('path'),
 /**
  * Create a Glmonth
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   var glmonth = new Glmonth(req.body);
   glmonth.user = req.user;
 
-  glmonth.save(function(err) {
+  glmonth.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -30,7 +30,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Glmonth
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
   // convert mongoose document to JSON
   var glmonth = req.glmonth ? req.glmonth.toJSON() : {};
 
@@ -44,12 +44,12 @@ exports.read = function(req, res) {
 /**
  * Update a Glmonth
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
   var glmonth = req.glmonth;
 
   glmonth = _.extend(glmonth, req.body);
 
-  glmonth.save(function(err) {
+  glmonth.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -63,10 +63,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Glmonth
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
   var glmonth = req.glmonth;
 
-  glmonth.remove(function(err) {
+  glmonth.remove(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -80,8 +80,8 @@ exports.delete = function(req, res) {
 /**
  * List of Glmonths
  */
-exports.list = function(req, res) {
-  Glmonth.find().sort('-created').populate('user', 'displayName').exec(function(err, glmonths) {
+exports.list = function (req, res) {
+  Glmonth.find().sort('-created').populate('user', 'displayName').exec(function (err, glmonths) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 /**
  * Glmonth middleware
  */
-exports.glmonthByID = function(req, res, next, id) {
+exports.glmonthByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
@@ -113,5 +113,17 @@ exports.glmonthByID = function(req, res, next, id) {
     }
     req.glmonth = glmonth;
     next();
+  });
+};
+
+exports.glmonthsWithList = function (req, res) {
+  Glmonth.find().select('enddate statementname').sort('startdate').populate('user', 'displayName').exec(function (err, glmonths) {
+    if (err) {
+      return res.status(400).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      res.jsonp(glmonths);
+    }
   });
 };

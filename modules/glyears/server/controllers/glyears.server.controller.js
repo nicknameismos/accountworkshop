@@ -115,3 +115,15 @@ exports.glyearByID = function(req, res, next, id) {
     next();
   });
 };
+
+exports.glyearsWithList = function (req, res) {
+  Glyear.find().select('enddate statementname').sort('startdate').populate('user', 'displayName').exec(function (err, glyears) {
+    if (err) {
+      return res.status(400).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      res.jsonp(glyears);
+    }
+  });
+};
