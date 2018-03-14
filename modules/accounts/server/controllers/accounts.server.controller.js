@@ -1261,6 +1261,8 @@ exports.returnGlreport = function (req, res) {
 
 exports.exportExcel = function (req, res) {
     var wb = new xl.Workbook();
+    var ws;
+    var i;
     //var ws = wb.addWorksheet(req.daily.title);
     var numStyle = wb.createStyle({
         // font: {
@@ -1288,7 +1290,7 @@ exports.exportExcel = function (req, res) {
 
 
     if (req.daily) {
-        var ws = wb.addWorksheet(req.daily.title);
+        ws = wb.addWorksheet(req.daily.title);
         ws.cell(1, 1).string('วันที่');
         ws.cell(1, 2).string('เลขเอกสาร');
         ws.cell(1, 3).string('รายการ');
@@ -1298,7 +1300,7 @@ exports.exportExcel = function (req, res) {
         ws.cell(1, 7).string('เดบิต');
         ws.cell(1, 8).string('เครดิด');
 
-        var i = 2;
+        i = 2;
         req.daily.transaction.forEach(function (tran) {
             ws.cell(i, 1).string(tran.docdate.toISOString().slice(0, 10).replace(/-/g, ""));
             ws.cell(i, 2).string(tran.docno);
@@ -1316,7 +1318,7 @@ exports.exportExcel = function (req, res) {
     }
 
     if (req.balancetests) {
-        var ws = wb.addWorksheet(req.balancetests.title);
+        ws = wb.addWorksheet(req.balancetests.title);
         ws.cell(1, 1).string('เลขบัญชี');
         ws.cell(1, 2).string('ชื่อบัญชี');
         ws.cell(1, 3).string('ยกมา(เดบิต)');
@@ -1326,7 +1328,7 @@ exports.exportExcel = function (req, res) {
         ws.cell(1, 7).string('ยกไป(เดบิต)');
         ws.cell(1, 8).string('ยกไป(เครดิต)');
 
-        var i = 2;
+        i = 2;
         req.balancetests.transaction.forEach(function (tran) {
             ws.cell(i, 1).string(tran.accountno);
             ws.cell(i, 2).string(tran.name);
