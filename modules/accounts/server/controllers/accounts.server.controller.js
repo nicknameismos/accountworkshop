@@ -9,8 +9,11 @@ var path = require('path'),
     Accountchart = mongoose.model('Accountchart'),
     Glmonth = mongoose.model('Glmonth'),
     Glyear = mongoose.model('Glyear'),
+    Company = mongoose.model('Company'),
+    xl = require('excel4node'),
     errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
     _ = require('lodash');
+
 
 /**
  * Create a Account
@@ -439,10 +442,19 @@ exports.glType = function (req, res, next, type) {
     next();
 };
 
+
 exports.getGlDate = function (req, res, next, date) {
     req.date = date;
+    next();
+};
 
-    var paramDate = new Date(date);
+exports.getGlEndDate = function (req, res, next, enddate) {
+    req.enddate = enddate;
+    next();
+};
+
+exports.setReportCondition = function (req, res, next) {
+    var paramDate = new Date(req.date);
     var firstDay;
     var lastDay;
     // console.log("req.type : ", req.type);
@@ -452,6 +464,10 @@ exports.getGlDate = function (req, res, next, date) {
     } else if (req.type === 'year') {
         firstDay = new Date(paramDate.getFullYear(), 0, 1);
         lastDay = new Date(paramDate.getFullYear(), 11, 31);
+    } else if (req.type === 'custom') {
+        firstDay = new Date(paramDate.getFullYear(), paramDate.getMonth(), paramDate.getDate());
+        var paramEndDate = new Date(req.enddate);
+        lastDay = new Date(paramEndDate.getFullYear(), paramEndDate.getMonth(), paramEndDate.getDate());
     } else {
         return res.status(404).send({
             message: 'Type not macth. [m,y]'
@@ -501,6 +517,20 @@ exports.getGlByCondition = function (req, res, next) {
     }
 };
 
+exports.getCompany = function (req, res, next) {
+    Company.find({}, "name").exec(function (err, company) {
+        if (err) {
+            return next(err);
+        } else if (!company) {
+            return res.status(404).send({
+                message: 'No Account with that identifier has been found'
+            });
+        }
+        req.company = company[0];
+        next();
+    });
+};
+
 exports.getAccounts = function (req, res, next) {
 
     Account.find({
@@ -525,9 +555,10 @@ exports.getAccounts = function (req, res, next) {
 
 exports.generateGlDaily = function (req, res, next) {
 
+
     var daily = {
         date: new Date(),
-        company: "Cyber Advance System annd Network Co.,Ltd",
+        company: req.company ? req.company.name : "",
         startdate: req.firstDay,
         enddate: req.lastDay,
         title: "สมุดรายวันทั่วไป",
@@ -549,8 +580,8 @@ exports.generateGlDaily = function (req, res, next) {
             var debit = element.debits[d];
 
             transaction.list.push({
-                accountname: debit.account.name,
-                accountno: debit.account.accountno,
+                accountname: debit.account ? debit.account.name : 'undefined',
+                accountno: debit.account ? debit.account.accountno : 'undefined',
                 description: debit.description,
                 document: "",
                 timestamp: "",
@@ -564,8 +595,8 @@ exports.generateGlDaily = function (req, res, next) {
             var credits = element.credits[c];
 
             transaction.list.push({
-                accountname: credits.account.name,
-                accountno: credits.account.accountno,
+                accountname: credits.account ? credits.account.name : 'undefined',
+                accountno: credits.account ? credits.account.accountno : 'undefined',
                 description: credits.description,
                 document: "",
                 timestamp: "",
@@ -577,15 +608,15 @@ exports.generateGlDaily = function (req, res, next) {
 
     }
 
-    daily.transaction.sort(function (a, b) {
-        var adate = new Date(a.docdate).getTime(),
-            bdate = new Date(b.docdate).getTime(),
-            rv = adate - bdate;
-        if (rv === 0) {
-            rv = a.docno.localeCompare(b.docno);
-        }
-        return rv;
-    });
+    // daily.transaction.sort(function (a, b) {
+    //     var adate = new Date(a.docdate).getTime(),
+    //         bdate = new Date(b.docdate).getTime(),
+    //         rv = adate - bdate;
+    //     if (rv === 0) {
+    //         rv = a.docno.localeCompare(b.docno);
+    //     }
+    //     return rv;
+    // });
 
     // daily.transaction.sort(function (a, b) {
     //     return new Date(a.docdate).getTime() - new Date(b.docdate).getTime();
@@ -628,6 +659,7 @@ exports.getBringForwardForAcceach = function (req, res, next) {
         };
 
         var acc = account.length;
+        // For loop ตาม ยกมา สร้าง transacetion ยอดยกมา
         for (var i = 0; i < acc; i++) {
             var element = account[i];
             var transaction = {
@@ -642,8 +674,8 @@ exports.getBringForwardForAcceach = function (req, res, next) {
                 var debit = element.debits[d];
 
                 transaction.list.push({
-                    accountname: debit.account.name,
-                    accountno: debit.account.accountno,
+                    accountname: debit.account ? debit.account.name : 'undefined',
+                    accountno: debit.account ? debit.account.accountno : 'undefined',
                     description: debit.description,
                     document: "",
                     timestamp: "",
@@ -657,8 +689,8 @@ exports.getBringForwardForAcceach = function (req, res, next) {
                 var credits = element.credits[c];
 
                 transaction.list.push({
-                    accountname: credits.account.name,
-                    accountno: credits.account.accountno,
+                    accountname: credits.account ? credits.account.name : 'undefined',
+                    accountno: credits.account ? credits.account.accountno : 'undefined',
                     description: credits.description,
                     document: "",
                     timestamp: "",
@@ -694,95 +726,38 @@ exports.getBringForwardForAcceach = function (req, res, next) {
 
             for (var ii = 0; ii < dailyLength; ii++) {
                 var dailyI = daily.transaction[ii];
-                var indexOfAccountno = dailyI.list.map(function (e) {
-                    return e.accountno;
-                }).indexOf(accountchartI.accountno);
-
-                if (indexOfAccountno !== -1) {
-                    var dailyIList = dailyI.list;
-                    // checkDuplicate.splice(indexOfAccountno, 1);
-                    var dailyIListLength = dailyIList.length;
-
-                    var macthAccount = dailyIList[indexOfAccountno];
-                    var iii = 0;
+                var lstOfAccount = _.filter(dailyI.list, { accountno: accountchartI.accountno });
+                for (var idx = 0; idx < lstOfAccount.length; idx++) {
+                    var macthAccount = lstOfAccount[idx];
+                    //ถ้าลงรายการฝั่งเดบิต ให้อ่านรายการอ้างอิงฝั่งเครดิตมาแสดง
                     if (macthAccount.debit > 0) {
-
-                        var sumCredit = 0;
-                        var dailyListCredit = [];
-                        for (iii; iii < dailyIListLength; iii++) {
-                            var dailyListICredit = dailyIList[iii];
-                            if (dailyListICredit.credit > 0) {
-                                sumCredit += dailyListICredit.credit;
-                                dailyListCredit.push({
-                                    docdate: dailyI.docdate,
-                                    docno: dailyI.docno,
-                                    accountname: dailyListICredit.accountname,
-                                    accountno: dailyListICredit.accountno,
-                                    document: "",
-                                    timestamp: "",
-                                    debit: dailyListICredit.credit,
-                                    credit: dailyListICredit.debit,
-                                    description: dailyListICredit.description
-                                });
-                            }
-                        }
-
-                        if (macthAccount.debit === sumCredit) {
-                            transactionAccEach = transactionAccEach.concat(dailyListCredit);
-                        } else {
-                            transactionAccEach.push({
-                                docdate: dailyI.docdate,
-                                docno: dailyI.docno,
-                                accountname: dailyListCredit[0].accountname,
-                                accountno: dailyListCredit[0].accountno,
-                                document: "",
-                                timestamp: "",
-                                debit: macthAccount.debit,
-                                credit: 0,
-                                description: dailyListCredit[0].description
-                            });
-                        }
-
-                    } else if (macthAccount.credit > 0) {
-
-                        var sumDebit = 0;
-                        var dailyListDabit = [];
-                        for (iii; iii < dailyIListLength; iii++) {
-                            var dailyListIDabit = dailyIList[iii];
-                            if (dailyListIDabit.debit > 0) {
-                                sumDebit += dailyListIDabit.debit;
-                                dailyListDabit.push({
-                                    docdate: dailyI.docdate,
-                                    docno: dailyI.docno,
-                                    accountname: dailyListIDabit.accountname,
-                                    accountno: dailyListIDabit.accountno,
-                                    document: "",
-                                    timestamp: "",
-                                    debit: dailyListIDabit.credit,
-                                    credit: dailyListIDabit.debit,
-                                    description: dailyListIDabit.description
-                                });
-                            }
-                        }
-
-                        if (macthAccount.credit === sumDebit) {
-                            transactionAccEach = transactionAccEach.concat(dailyListDabit);
-                        } else {
-                            transactionAccEach.push({
-                                docdate: dailyI.docdate,
-                                docno: dailyI.docno,
-                                accountname: dailyListDabit[0].accountname,
-                                accountno: dailyListDabit[0].accountno,
-                                document: "",
-                                timestamp: "",
-                                debit: 0,
-                                credit: macthAccount.credit,
-                                description: dailyListDabit[0].description
-                            });
-                        }
-
+                        //var dailyListCredit = _.filter(dailyI, {accountno: accountchartI.accountno});
+                        transactionAccEach.push({
+                            docdate: dailyI.docdate,
+                            docno: dailyI.docno,
+                            accountname: macthAccount.accountname,//dailyListCredit[0].accountname,
+                            accountno: macthAccount.accountno,//dailyListCredit[0].accountno,
+                            document: "",
+                            timestamp: "",
+                            debit: macthAccount.debit,
+                            credit: 0,
+                            description: macthAccount.description//dailyListCredit[0].description
+                        });
                     }
-
+                    //ถ้าลงรายการฝั่งเครดิต ให้อ่านรายการอ้างอิงฝั่งเดบิตมาแสดง
+                    else if (macthAccount.credit > 0) {
+                        transactionAccEach.push({
+                            docdate: dailyI.docdate,
+                            docno: dailyI.docno,
+                            accountname: macthAccount.accountname,//dailyListCredit[0].accountname,
+                            accountno: macthAccount.accountno,//dailyListCredit[0].accountno,
+                            document: "",
+                            timestamp: "",
+                            debit: 0,
+                            credit: macthAccount.credit,
+                            description: macthAccount.description//dailyListCredit[0].description
+                        });
+                    }
                 }
             }
 
@@ -802,9 +777,10 @@ exports.getBringForwardForAcceach = function (req, res, next) {
                 acceachGrop.current.debit = currentDebit > currentCredit ? currentDebit : currentCredit;
                 acceachGrop.current.credit = acceachGrop.current.debit;
                 if (sumCurent >= 0) {
-                    carryforwardCredit = sumCurent;
-                } else {
                     carryforwardDebit = Math.abs(sumCurent);
+
+                } else {
+                    carryforwardCredit = Math.abs(sumCurent);
                 }
 
                 acceachGrop.carryforward = {
@@ -852,7 +828,7 @@ exports.generateAcceach = function (req, res, next) {
 
         var acceachGrop = {
             date: new Date(),
-            company: "Cyber Advance System annd Network Co.,Ltd",
+            company: req.company ? req.company.name : "",
             startdate: req.firstDay,
             enddate: req.lastDay,
             title: "บัญชีแยกประเภท" + accountchartI.name,
@@ -867,179 +843,127 @@ exports.generateAcceach = function (req, res, next) {
 
         var transaction = [];
 
+        //ในงวด
         for (var ii = 0; ii < dailyLength; ii++) {
             var dailyI = daily.transaction[ii];
-            var indexOfAccountno = dailyI.list.map(function (e) {
-                return e.accountno;
-            }).indexOf(accountchartI.accountno);
-
-            if (indexOfAccountno !== -1) {
-                var dailyIList = dailyI.list;
-                // checkDuplicate.splice(indexOfAccountno, 1);
-                var dailyIListLength = dailyIList.length;
-
-                var macthAccount = dailyIList[indexOfAccountno];
-                var iii = 0;
+            var lstOfAccount = _.filter(dailyI.list, { accountno: accountchartI.accountno });
+            for (var idx = 0; idx < lstOfAccount.length; idx++) {
+                var macthAccount = lstOfAccount[idx];
+                //ถ้าลงรายการฝั่งเดบิต ให้อ่านรายการอ้างอิงฝั่งเครดิตมาแสดง
                 if (macthAccount.debit > 0) {
-
-                    var sumCredit = 0;
-                    var dailyListCredit = [];
-                    for (iii; iii < dailyIListLength; iii++) {
-                        var dailyListICredit = dailyIList[iii];
-                        if (dailyListICredit.credit > 0) {
-                            sumCredit += dailyListICredit.credit;
-                            dailyListCredit.push({
-                                docdate: dailyI.docdate,
-                                docno: dailyI.docno,
-                                accountname: dailyListICredit.accountname,
-                                accountno: dailyListICredit.accountno,
-                                document: "",
-                                timestamp: "",
-                                debit: dailyListICredit.credit,
-                                credit: dailyListICredit.debit,
-                                description: dailyListICredit.description
-                            });
-                        }
-                    }
-
-                    if (macthAccount.debit === sumCredit) {
-                        transaction = transaction.concat(dailyListCredit);
-                    } else {
-                        transaction.push({
-                            docdate: dailyI.docdate,
-                            docno: dailyI.docno,
-                            accountname: dailyListCredit[0].accountname,
-                            accountno: dailyListCredit[0].accountno,
-                            document: "",
-                            timestamp: "",
-                            debit: macthAccount.debit,
-                            credit: 0,
-                            description: dailyListCredit[0].description
-                        });
-                    }
-
-                } else if (macthAccount.credit > 0) {
-
-                    var sumDebit = 0;
-                    var dailyListDabit = [];
-                    for (iii; iii < dailyIListLength; iii++) {
-                        var dailyListIDabit = dailyIList[iii];
-                        if (dailyListIDabit.debit > 0) {
-                            sumDebit += dailyListIDabit.debit;
-                            dailyListDabit.push({
-                                docdate: dailyI.docdate,
-                                docno: dailyI.docno,
-                                accountname: dailyListIDabit.accountname,
-                                accountno: dailyListIDabit.accountno,
-                                document: "",
-                                timestamp: "",
-                                debit: dailyListIDabit.credit,
-                                credit: dailyListIDabit.debit,
-                                description: dailyListIDabit.description
-                            });
-                        }
-                    }
-
-                    if (macthAccount.credit === sumDebit) {
-                        transaction = transaction.concat(dailyListDabit);
-                    } else {
-                        transaction.push({
-                            docdate: dailyI.docdate,
-                            docno: dailyI.docno,
-                            accountname: dailyListDabit[0].accountname,
-                            accountno: dailyListDabit[0].accountno,
-                            document: "",
-                            timestamp: "",
-                            debit: 0,
-                            credit: macthAccount.credit,
-                            description: dailyListDabit[0].description
-                        });
-                    }
-
+                    transaction.push({
+                        docdate: dailyI.docdate,
+                        docno: dailyI.docno,
+                        accountname: macthAccount.accountname,//dailyListCredit[0].accountname,
+                        accountno: macthAccount.accountno,//dailyListCredit[0].accountno,
+                        document: "",
+                        timestamp: "",
+                        debit: macthAccount.debit,
+                        credit: 0,
+                        description: macthAccount.description//dailyListCredit[0].description
+                    });
                 }
-
+                //ถ้าลงรายการฝั่งเครดิต ให้อ่านรายการอ้างอิงฝั่งเดบิตมาแสดง
+                else if (macthAccount.credit > 0) {
+                    transaction.push({
+                        docdate: dailyI.docdate,
+                        docno: dailyI.docno,
+                        accountname: macthAccount.accountname,//dailyListCredit[0].accountname,
+                        accountno: macthAccount.accountno,//dailyListCredit[0].accountno,
+                        document: "",
+                        timestamp: "",
+                        debit: 0,
+                        credit: macthAccount.credit,
+                        description: macthAccount.description//dailyListCredit[0].description
+                    });
+                }
             }
         }
 
         var tranLength = transaction.length;
         var currentDebit = 0;
         var currentCredit = 0;
-        if (tranLength > 0) {
+        // if (tranLength > 0 || true) {
 
-            for (var index = 0; index < tranLength; index++) {
-                var tran = transaction[index];
-                currentDebit += tran.debit;
-                currentCredit += tran.credit;
-            }
+        // }
+        //summary ยอดในงวดของแต่ละรหัสบัญชี
+        for (var index = 0; index < tranLength; index++) {
+            var tran = transaction[index];
+            currentDebit += tran.debit;
+            currentCredit += tran.credit;
+        }
 
-            var indexOfbringforward = req.bringforward.map(function (e) {
-                return e.accountno;
-            }).indexOf(accountchartI.accountno);
+        //ยอดยกมา
+        var indexOfbringforward = req.bringforward.map(function (e) {
+            return e.accountno;
+        }).indexOf(accountchartI.accountno);
 
-            if (indexOfbringforward !== -1) {
-                currentDebit += req.bringforward[indexOfbringforward].carryforward.debit;
-                currentCredit += req.bringforward[indexOfbringforward].carryforward.credit;
-                acceachGrop.bringforward = {
-                    docdate: "",
-                    docno: "",
-                    accountname: "ยอดยกมา",
-                    accountno: "",
-                    document: "",
-                    timestamp: "",
-                    debit: req.bringforward[indexOfbringforward].carryforward.debit,
-                    credit: req.bringforward[indexOfbringforward].carryforward.credit,
-                    description: ""
-                };
-            } else {
-                acceachGrop.bringforward = {
-                    docdate: "",
-                    docno: "",
-                    accountname: "ยอดยกมา",
-                    accountno: "",
-                    document: "",
-                    timestamp: "",
-                    debit: 0,
-                    credit: 0,
-                    description: ""
-                };
-            }
-
-            var carryforwardDebit = 0;
-            var carryforwardCredit = 0;
-            var sumCurent = currentDebit - currentCredit;
-
-            if (sumCurent >= 0) {
-                carryforwardCredit = sumCurent;
-            } else {
-                carryforwardDebit = Math.abs(sumCurent);
-            }
-
-            acceachGrop.carryforward = {
+        if (indexOfbringforward !== -1) {
+            currentDebit += req.bringforward[indexOfbringforward].carryforward.debit;
+            currentCredit += req.bringforward[indexOfbringforward].carryforward.credit;
+            acceachGrop.bringforward = {
                 docdate: "",
                 docno: "",
-                accountname: "ยอดยกไป",
+                accountname: "ยอดยกมา",
                 accountno: "",
                 document: "",
                 timestamp: "",
-                debit: carryforwardDebit,
-                credit: carryforwardCredit,
+                debit: req.bringforward[indexOfbringforward].carryforward.debit,
+                credit: req.bringforward[indexOfbringforward].carryforward.credit,
+                description: "",
+                transaction: req.bringforward[indexOfbringforward]
+            };
+        } else {
+            acceachGrop.bringforward = {
+                docdate: "",
+                docno: "",
+                accountname: "ยอดยกมา",
+                accountno: "",
+                document: "",
+                timestamp: "",
+                debit: 0,
+                credit: 0,
                 description: ""
             };
+        }
 
-            acceachGrop.current.debit = currentDebit + carryforwardDebit;
-            acceachGrop.current.credit = currentCredit + carryforwardCredit;
+        var carryforwardDebit = 0;
+        var carryforwardCredit = 0;
+        var sumCurent = currentDebit - currentCredit;
 
-            transaction = _(transaction)
-                .groupBy('docdate')
-                .reduce(function (array, children, key) {
-                    array.push({
-                        docdate: key,
-                        list: children
-                    });
+        if (sumCurent >= 0) {
+            carryforwardDebit = Math.abs(sumCurent);
+        } else {
+            carryforwardCredit = Math.abs(sumCurent);
+        }
 
-                    return array;
-                }, []);
+        acceachGrop.carryforward = {
+            docdate: "",
+            docno: "",
+            accountname: "ยอดยกไป",
+            accountno: "",
+            document: "",
+            timestamp: "",
+            debit: carryforwardDebit,
+            credit: carryforwardCredit,
+            description: ""
+        };
 
+        acceachGrop.current.debit = currentDebit;// + carryforwardDebit;
+        acceachGrop.current.credit = currentCredit;// + carryforwardCredit;
+
+        transaction = _(transaction)
+            .groupBy('docdate')
+            .reduce(function (array, children, key) {
+                array.push({
+                    docdate: key,
+                    list: children
+                });
+
+                return array;
+            }, []);
+
+        if (currentDebit > 0 || currentCredit > 0) {
             acceachGrop.transaction = transaction;
             acceach.push(acceachGrop);
         }
@@ -1054,7 +978,7 @@ exports.generateGain = function (req, res, next) {
 
     var gain = {
         date: new Date(),
-        company: "Cyber Advance System annd Network Co.,Ltd",
+        company: req.company ? req.company.name : "",
         startdate: req.firstDay,
         enddate: req.lastDay,
         title: "งบกำไรขาดทุน",
@@ -1118,7 +1042,7 @@ exports.generateBalance = function (req, res, next) {
 
     var balance = {
         date: new Date(),
-        company: "Cyber Advance System annd Network Co.,Ltd",
+        company: req.company ? req.company.name : "",
         startdate: req.firstDay,
         enddate: req.lastDay,
         title: "งบแสดงฐานะการเงิน",
@@ -1162,6 +1086,55 @@ exports.generateBalance = function (req, res, next) {
     next();
 };
 
+exports.balancetest = function (req, res, next) {
+    var balancetests = {
+        date: Date.now(),
+        company: "",
+        startdate: req.firstDay,
+        enddate: req.lastDay,
+        title: "งบทดลอง",
+        transaction: [],
+        summary: {
+            bfdebit: 0,
+            bfcredit: 0,
+            currdebit: 0,
+            currcredit: 0,
+            afdebit: 0,
+            afcredit: 0
+        }
+    };
+    req.acceach.forEach(function (acc) {
+        var currDr = 0;
+        var currCr = 0;
+        acc.transaction.forEach(function (accofdate) {
+            accofdate.list.forEach(function (trn) {
+                currDr += trn.debit;
+                currCr += trn.credit;
+            });
+        });
+
+        var balancetest = {
+            accountno: acc.account.accountno,
+            name: acc.account.name,
+            bfdebit: acc.bringforward.debit,
+            bfcredit: acc.bringforward.credit,
+            currdebit: currDr,
+            currcredit: currCr,
+            afdebit: acc.carryforward.debit,
+            afcredit: acc.carryforward.credit
+        };
+        balancetests.summary.bfdebit += acc.bringforward.debit;
+        balancetests.summary.bfcredit += acc.bringforward.credit;
+        balancetests.summary.currdebit += currDr;
+        balancetests.summary.currcredit += currCr;
+        balancetests.summary.afdebit += acc.carryforward.credit;
+        balancetests.summary.afcredit += acc.carryforward.debit;
+        balancetests.transaction.push(balancetest);
+    });
+    req.balancetests = balancetests;
+    next();
+};
+
 exports.returnGlreport = function (req, res) {
 
     var glreport = {
@@ -1173,9 +1146,96 @@ exports.returnGlreport = function (req, res) {
         daily: req.daily,
         acceach: req.acceach,
         gain: req.gain,
-        balance: req.balance
+        balance: req.balance,
+        balancetests: req.balancetests
     };
     res.jsonp(glreport);
+};
+
+exports.exportExcel = function (req, res) {
+    var wb = new xl.Workbook();
+    //var ws = wb.addWorksheet(req.daily.title);
+    var numStyle = wb.createStyle({
+        // font: {
+        //     color: '#FF0800',
+        //     size: 12
+        // },
+        numberFormat: '#,##0.00; (#,##0.00); -'
+    });
+
+
+
+
+
+    // ws.cell(1, 1).number(100);
+    // // หมายถึงใส่ค่าตัวเลข 100 ลงไปที่ cell A1
+    // ws.cell(1, 2).string('some text');
+    // //หมายถึงใส่ค่าตัวอักษร some text ลงใน cell B1
+    // ws.cell(1, 3).formula('A1+A2');
+    // //หมายถึงใส่สูตร A1+A2 ใน cell C1
+    // ws.cell(1, 4).bool(true);
+    // //หมายถึงใส่ค่า boolean true ใน cell D1
+    // ws.cell(1,5).number(23000).style(numStyle);
+    // ws.cell(1,6).string('my big string').style({font:{ size : 25 }});
+    // ws.cell(1,7).number(45900).style(numStyle).style({font:{ size : 25 }});
+
+
+    // if (req.daily) {
+    //     var ws = wb.addWorksheet(req.daily.title);
+    //     ws.cell(1, 1).string('วันที่');
+    //     ws.cell(1, 2).string('เลขเอกสาร');
+    //     ws.cell(1, 3).string('รายการ');
+    //     ws.cell(1, 4).string('รหัสบัญชี');
+    //     ws.cell(1, 5).string('เช็ค/ใบสำคัญ');
+    //     ws.cell(1, 6).string('ลงวันที่');
+    //     ws.cell(1, 7).string('เดบิต');
+    //     ws.cell(1, 8).string('เครดิด');
+
+    //     var i = 2;
+    //     req.daily.transaction.forEach(function (tran) {
+    //         ws.cell(i, 1).string(tran.docdate.toISOString().slice(0, 10).replace(/-/g, ""));
+    //         ws.cell(i, 2).string(tran.docno);
+    //         tran.list.forEach(function (detail) {
+    //             ws.cell(i, 3).string(detail.accountname);
+    //             ws.cell(i, 4).string(detail.accountno);
+    //             ws.cell(i, 5).string('');
+    //             ws.cell(i, 6).string('');
+    //             ws.cell(i, 7).number(detail.debit || 0).style(numStyle);
+    //             ws.cell(i, 8).number(detail.credit || 0).style(numStyle);
+    //             i++;
+    //         });
+    //         i++;
+    //     });
+    // }
+
+    if (req.balancetests) {
+        var ws = wb.addWorksheet(req.balancetests.title);
+        ws.cell(1, 1).string('เลขบัญชี');
+        ws.cell(1, 2).string('ชื่อบัญชี');
+        ws.cell(1, 3).string('ยกมา(เดบิต)');
+        ws.cell(1, 4).string('ยกมา(เครดิต)');
+        ws.cell(1, 5).string('ในงวด(เดบิต)');
+        ws.cell(1, 6).string('ในงวด(เครดิต)');
+        ws.cell(1, 7).string('ยกไป(เดบิต)');
+        ws.cell(1, 8).string('ยกไป(เครดิต)');
+
+        var i = 2;
+        req.balancetests.transaction.forEach(function (tran) {
+            ws.cell(i, 1).string(tran.accountno);
+            ws.cell(i, 2).string(tran.name);
+            ws.cell(i, 3).number(tran.bfdebit).style(numStyle);
+            ws.cell(i, 4).number(tran.bfcredit).style(numStyle);
+            ws.cell(i, 5).number(tran.currdebit).style(numStyle);
+            ws.cell(i, 6).number(tran.currcredit).style(numStyle);
+            ws.cell(i, 7).number(tran.afdebit).style(numStyle);
+            ws.cell(i, 8).number(tran.afcredit).style(numStyle);
+            i++;
+        });
+    }
+
+
+
+    wb.write('ExcelFile.xlsx', res);
 };
 
 function generateGlByType(acceach, accountChart, type, name) {
